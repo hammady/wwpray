@@ -1,0 +1,20 @@
+org: hammady
+app: wwpray
+service: scraper
+
+frameworkVersion: '3'
+
+
+provider:
+  name: aws
+  runtime: python3.9
+
+functions:
+  rateHandler:
+    handler: handler.run
+    events:
+      # Invoke Lambda function every minute
+      - schedule: cron(* * * * ? *)
+
+plugins:
+  - serverless-python-requirements
