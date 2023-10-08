@@ -4,17 +4,26 @@ service: scraper
 
 frameworkVersion: '3'
 
+params:
+  default:
+    log_level: warning
+  prod:
+    log_level: info
+  dev:
+    log_level: debug
 
 provider:
   name: aws
-  runtime: python3.9
+  runtime: python3.9	
+  environment:
+    LOG_LEVEL: ${param:log_level}
 
 functions:
-  rateHandler:
+  cronHandler:
     handler: handler.run
     events:
-      # Invoke Lambda function every minute
-      - schedule: cron(* * * * ? *)
+      # Invoke Lambda function every 6 hours on minute 0
+      - schedule: cron(0 */6 * * ? *)
 
 plugins:
   - serverless-python-requirements

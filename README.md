@@ -20,4 +20,4 @@ Subscribers are stored in Amazon SES as contacts with a separate topic for each 
 
 ## Masjids database
 
-Each masjid has its own folder which contains some metadata about the masjid and the code that scrapes its website. This is a simple approach that may be replaced in the future with a more sophisticated solution. To support a wider range of masjids, the code can be modified later to only operate on a subset of the masjids and deployed under different subdomains, where visitors will be typically interested in the masjids in their area.
+Each masjid has its own Python class which contains some metadata about the masjid and the code that scrapes its website. This is a simple approach that may be replaced in the future with a more sophisticated solution. To support a wider range of masjids, the code can be modified later to only operate on a subset of the masjids and deployed under different subdomains, where visitors will be typically interested in the masjids in their area.
