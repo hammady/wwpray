@@ -1,8 +1,8 @@
 {
   "name": "wwpray-scraper",
   "version": "1.0.0",
-  "description": "Example of creating a function that runs as a cron job using the serverless `schedule` event",
-  "author": "",
+  "description": "Scraper service for wwpray",
+  "author": "Hossam Hammady <github@hammady.net>",
   "license": "MIT",
   "devDependencies": {
     "serverless-python-requirements": "^6.0.0"

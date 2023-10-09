@@ -5,7 +5,6 @@ service: scraper
 frameworkVersion: '3'
 
 params:
-  default:
   dev:
     log_level: debug
     s3_bucket: wwpray-dev
