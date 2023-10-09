@@ -1,7 +1,7 @@
 import os
 import datetime
 import logging
-import csv
+import json
 from requests import get as requests_get
 from boto3 import client as boto3_client
 
@@ -39,13 +39,23 @@ class TMASource(Source):
             raise Exception("No response set for source: " + self.name)
         masjid = self._response.json()["masjid"]
         iqamas = {
-            "fajr": masjid["fajr"],
-            "zuhr": masjid["zuhr"],
-            "asr": masjid["asr"],
-            "maghrib": masjid["maghrib"],
-            "isha": masjid["isha"],
+            "fajr": {
+                "time": masjid["fajr"]
+            },
+            "zuhr": {
+                "time": masjid["zuhr"]
+            },
+            "asr": {
+                "time": masjid["asr"]
+            },
+            "maghrib": {
+                "time": masjid["maghrib"]
+            },
+            "isha": {
+                "time": masjid["isha"]
+            },
         }
-        jumas = [(juma["timeDesc"], juma["locationDesc"]) for juma in masjid["jumas"]]
+        jumas = [f"{juma['timeDesc']} - {juma['locationDesc']}" for juma in masjid["jumas"]]
 
         return iqamas, jumas
     
@@ -74,45 +84,36 @@ def run(event, context):
     name = context.function_name
     logger.info("Your scheduled function " + name + " ran at " + str(current_time))
 
-    max_jumas = 0
-    all_names = []
-    all_iqamas = []
-    all_jumas = []
+    response = {"max_jumaas": 0, "masjids": {}}
     for input in inputs:
         klass = getattr(__import__("handler"), input)
         source = klass()
-        all_names.append(source.name)
         logger.info(f"Running source: {source.name}")
         source.request()
         iqamas, jumas = source.parse()
         logger.info(f"Iqamas: {iqamas}")
         logger.info(f"Jumas: {jumas}")
-        all_iqamas.append(iqamas)
-        all_jumas.append(jumas)
-        max_jumas = max(max_jumas, len(jumas))
-        logger.debug(f"Max jumas: {max_jumas}")
+        response["masjids"][source.name] = {
+            "iqamas": iqamas,
+            "jumas": jumas,
+        }
+        response["max_jumaas"] = max(response["max_jumaas"], len(jumas))
+        logger.debug(f"Max jumas: {response['max_jumaas']}")
     
-    # write to csv
-    csv_file_path = "/tmp/output.csv"
-    header = ["fajr", "zuhr", "asr", "maghrib", "isha"]
-    with open(csv_file_path, "w") as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow(["name"] + header + [f"juma {i+1}" for i in range(max_jumas)])
-        for name, iqamas, jumas in zip(all_names, all_iqamas, all_jumas):
-            jumas_arr = [f"{juma[0]} at {juma[1]}" for juma in jumas]
-            # pad jumas array to max length
-            jumas_arr += [""] * (max_jumas - len(jumas))
-            writer.writerow([name] + [iqamas[key] for key in header] + jumas_arr)
-    
+    # write response to json file
+    json_file_path = "/tmp/output.json"
+    with open(json_file_path, "w") as jsonfile:
+        json.dump(response, jsonfile, indent=4)
+
     # upload to s3
     s3_client = boto3_client('s3')
     bucket_name = os.environ.get('S3_BUCKET')
     if bucket_name is None:
         raise Exception("No S3 bucket set, please set S3_BUCKET environment variable")
     s3_client.upload_file(
-        Filename=csv_file_path,
+        Filename=json_file_path,
         Bucket=bucket_name,
-        Key='csvs/scraped.csv'
+        Key='data/scraped.json'
     )
 
     return "Success"
