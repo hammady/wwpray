@@ -41,8 +41,8 @@ functions:
           bucket: ${param:s3_bucket}
           event: s3:ObjectCreated:*
           rules:
-            - prefix: csvs/
-            - suffix: scraped.csv
+            - prefix: data/
+            - suffix: scraped.json
           existing: true
           forceDeploy: true # to force deploy the s3 trigger on an existing bucket
 
