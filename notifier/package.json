@@ -1,0 +1,10 @@
+{
+  "name": "wwpray-notifier",
+  "version": "1.0.0",
+  "description": "Notifier service for wwpray",
+  "author": "Hossam Hammady <github@hammady.net>",
+  "license": "MIT",
+  "devDependencies": {
+    "serverless-python-requirements": "^6.0.0"
+  }
+}
