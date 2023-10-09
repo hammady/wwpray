@@ -9,9 +9,11 @@ params:
   dev:
     log_level: debug
     s3_bucket: wwpray-dev
+    cron_enabled: false
   prod:
     log_level: info
     s3_bucket: wwpray-prod
+    cron_enabled: true
 
 provider:
   name: aws
@@ -34,8 +36,9 @@ functions:
     handler: handler.run
     events:
       # Invoke Lambda function every 6 hours on minute 0
-      - schedule: cron(0 */6 * * ? *)
-
+      - schedule:
+          rate: cron(0 */6 * * ? *)
+          enabled: ${param:cron_enabled}
 resources:
   Resources:
     S3Bucketwwpray:
