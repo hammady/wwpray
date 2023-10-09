@@ -81,6 +81,38 @@ def run(event, context):
         new_data = read_json(new_file_path)
         logger.debug(f"New data: {new_data}")
 
+        changes = {}
+
+        # iterate through masjids in new data
+        for new_key, new_value in new_data["masjids"].items():
+            # check if masjid doesn't exist in old data
+            old_value = old_data["masjids"].get(new_key)
+            if old_value is None:
+                # masjid doesn't exist in old data, add it to changes
+                changes[new_key] = True
+                continue
+            
+            # check if iqamas changed
+            new_iqamas = new_value["iqamas"]
+            old_iqamas = old_value["iqamas"]
+            for new_iqama_key, new_iqama_value in new_iqamas.items():
+                old_iqama_value = old_iqamas.get(new_iqama_key)
+                if old_iqama_value is None or new_iqama_value["time"] != old_iqama_value["time"]:
+                    # iqama changed, add it to changes
+                    changes[new_key] = True
+                    new_iqama_value["changed"] = True
+
+        # write back the new file if there are changes
+        if len(changes.keys()) > 0:
+            with open(new_file_path, 'w') as f:
+                json.dump(new_data, f, indent=4)
+            # filter and return new_data["masjids"] by changes
+            return {k: v for k, v in new_data["masjids"].items() if k in changes.keys()}
+    
+    def notify_subscribers(changes):
+        logger.info(f"Changes: {changes}")
+        # TODO: implement this
+
     # download new file from s3
     download_new_file()
     logger.debug("New file downloaded")
@@ -96,18 +128,21 @@ def run(event, context):
     logger.debug("Old file downloaded")
 
     # detect changes
-    changed, changes = detect_changes()
+    changes = detect_changes()
 
-    if not changed:
+    # notify subscribers of changes if any
+    if changes is None:
         logger.info("No changes detected")
     else:
         logger.info("Changes detected")
-        # notify subscribers of changes if any
-        # TODO: implement notification logic
 
         # replace old file with new one
         replace_old_with_new()
         logger.debug("Old file replaced with new one")
+
+        # notify subscribers
+        notify_subscribers(changes)
+        logger.debug("Subscribers notified")
 
     # add last updated timestamp
     create_last_updated_timestamp()
@@ -117,4 +152,4 @@ def run(event, context):
     delete_new_file()
     logger.debug("New file deleted")
 
-    return f"Changed: {changed}"
+    return f"Changes: {changes}"
