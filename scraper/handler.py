@@ -1,7 +1,8 @@
 import os
 import datetime
 import logging
-from requests import get
+import csv
+from requests import get as requests_get
 
 # set log level from environment variable, defaulting to WARNING
 # valid values are DEBUG, INFO, WARNING, ERROR, CRITICAL
@@ -18,7 +19,7 @@ class Source:
     def request(self):
         if self._url is None:
             raise Exception("No URL set for source: " + self.name)
-        response = get(self._url, headers=self._headers)
+        response = requests_get(self._url, headers=self._headers)
         response.raise_for_status()
         self._response = response
 
@@ -71,13 +72,33 @@ def run(event, context):
     name = context.function_name
     logger.info("Your scheduled function " + name + " ran at " + str(current_time))
 
+    max_jumas = 0
+    all_names = []
+    all_iqamas = []
+    all_jumas = []
     for input in inputs:
         klass = getattr(__import__("handler"), input)
         source = klass()
-        logger.info("Running source: " + source.name)
+        all_names.append(source.name)
+        logger.info(f"Running source: {source.name}")
         source.request()
         iqamas, jumas = source.parse()
         logger.info(f"Iqamas: {iqamas}")
         logger.info(f"Jumas: {jumas}")
+        all_iqamas.append(iqamas)
+        all_jumas.append(jumas)
+        max_jumas = max(max_jumas, len(jumas))
+        logger.debug(f"Max jumas: {max_jumas}")
+    
+    # write to csv
+    header = ["fajr", "zuhr", "asr", "maghrib", "isha"]
+    with open("output.csv", "w") as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(["name"] + header + [f"juma {i+1}" for i in range(max_jumas)])
+        for name, iqamas, jumas in zip(all_names, all_iqamas, all_jumas):
+            jumas_arr = [f"{juma[0]} at {juma[1]}" for juma in jumas]
+            # pad jumas array to max length
+            jumas_arr += [""] * (max_jumas - len(jumas))
+            writer.writerow([name] + [iqamas[key] for key in header] + jumas_arr)
     
     return True
