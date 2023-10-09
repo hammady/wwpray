@@ -6,17 +6,28 @@ frameworkVersion: '3'
 
 params:
   default:
-    log_level: warning
-  prod:
-    log_level: info
   dev:
     log_level: debug
+    s3_bucket: wwpray-dev
+  prod:
+    log_level: info
+    s3_bucket: wwpray-prod
 
 provider:
   name: aws
   runtime: python3.9	
   environment:
     LOG_LEVEL: ${param:log_level}
+    S3_BUCKET: ${param:s3_bucket}
+  iam:
+    role:
+      statements:
+        # Allow functions to write objects in a bucket
+        - Effect: Allow
+          Action:
+            - 's3:PutObject'
+          Resource:
+            - 'arn:aws:s3:::${param:s3_bucket}/*'
 
 functions:
   cronHandler:
@@ -24,6 +35,26 @@ functions:
     events:
       # Invoke Lambda function every 6 hours on minute 0
       - schedule: cron(0 */6 * * ? *)
+
+resources:
+  Resources:
+    S3Bucketwwpray:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${param:s3_bucket}
+        WebsiteConfiguration:
+          IndexDocument: index.html
+          ErrorDocument: error.html
+        CorsConfiguration:
+          CorsRules:
+            - AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - HEAD
+              MaxAge: 3000
 
 plugins:
   - serverless-python-requirements

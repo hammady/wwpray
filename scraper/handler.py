@@ -3,6 +3,8 @@ import datetime
 import logging
 import csv
 from requests import get as requests_get
+from boto3 import client as boto3_client
+
 
 # set log level from environment variable, defaulting to WARNING
 # valid values are DEBUG, INFO, WARNING, ERROR, CRITICAL
@@ -91,8 +93,9 @@ def run(event, context):
         logger.debug(f"Max jumas: {max_jumas}")
     
     # write to csv
+    csv_file_path = "/tmp/output.csv"
     header = ["fajr", "zuhr", "asr", "maghrib", "isha"]
-    with open("output.csv", "w") as csvfile:
+    with open(csv_file_path, "w") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["name"] + header + [f"juma {i+1}" for i in range(max_jumas)])
         for name, iqamas, jumas in zip(all_names, all_iqamas, all_jumas):
@@ -101,4 +104,15 @@ def run(event, context):
             jumas_arr += [""] * (max_jumas - len(jumas))
             writer.writerow([name] + [iqamas[key] for key in header] + jumas_arr)
     
-    return True
+    # upload to s3
+    s3_client = boto3_client('s3')
+    bucket_name = os.environ.get('S3_BUCKET')
+    if bucket_name is None:
+        raise Exception("No S3 bucket set, please set S3_BUCKET environment variable")
+    s3_client.upload_file(
+        Filename=csv_file_path,
+        Bucket=bucket_name,
+        Key='csvs/scraped.csv'
+    )
+
+    return "Success"
