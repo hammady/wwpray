@@ -110,8 +110,108 @@ def run(event, context):
             return {k: v for k, v in new_data["masjids"].items() if k in changes.keys()}
     
     def notify_subscribers(changes):
-        logger.info(f"Changes: {changes}")
-        # TODO: implement this
+        # get environment variables
+        contact_list_name = os.environ.get('CONTACT_LIST_NAME')
+        if contact_list_name is None:
+            raise Exception("No contact list name set, please set CONTACT_LIST_NAME environment variable")
+        email_from = os.environ.get('EMAIL_FROM')
+        if email_from is None:
+            raise Exception("No email from set, please set EMAIL_FROM environment variable")
+        email_template = os.environ.get('EMAIL_TEMPLATE')
+        if email_template is None:
+            raise Exception("No email template set, please set EMAIL_TEMPLATE environment variable")
+        
+        ses_client = boto3_client('sesv2')
+
+        # merge existing topics with new topics and return unique topics
+        def merge_topics(existing_topics, new_topics):
+            unique_tuples = {tuple(d.items()) for d in existing_topics + new_topics}
+            return [dict(t) for t in unique_tuples]
+        
+        # create structure for new topics from changes
+        def convert_changes_to_topics():            
+            return [{
+                "TopicName": topic,
+                "DisplayName": f"{topic} Masjid",
+                "Description": "Get email notifications for prayer time updates from this masjid",
+                "DefaultSubscriptionStatus": "OPT_OUT"
+            } for topic in changes.keys()]
+        
+        # get contact list from Amazon SES and create or update it with new topics
+        def create_or_update_contact_list(new_topics):
+            try:
+                logger.debug(f"Getting contact list: {contact_list_name}")
+                existing_topics = ses_client.get_contact_list(ContactListName=contact_list_name)["Topics"]
+                logger.debug(f"Contact list exists: {contact_list_name}, topics: {existing_topics}")
+                merged_topics = merge_topics(existing_topics, new_topics)
+                logger.debug(f"Merged topics: {merged_topics}")
+                ses_client.update_contact_list(ContactListName=contact_list_name, Topics=merged_topics)
+                logger.debug(f"Contact list updated: {contact_list_name}, topics: {merged_topics}")
+            except ClientError:
+                logger.debug(f"Contact list doesn't exist, creating it: {contact_list_name}")
+                ses_client.create_contact_list(ContactListName=contact_list_name, Topics=new_topics)
+                logger.debug(f"Contact list created: {contact_list_name}, topics: {new_topics}")
+
+        def list_contacts_paginated(topic, next_token):
+            kwargs = {
+                'ContactListName': contact_list_name,
+                'Filter': {
+                    'FilteredStatus': 'OPT_IN',
+                    'TopicFilter': {
+                        'TopicName': topic,
+                        'UseDefaultIfPreferenceUnavailable': True
+                    }
+                },
+                'PageSize': 100
+            }
+            if next_token is not None:
+                kwargs["NextToken"] = next_token
+            return ses_client.list_contacts(**kwargs)
+
+        def send_email_to_contacts(contacts, topic, values):
+            for contact in contacts:
+                logger.debug(f"Sending email to contact: {contact}")
+                ses_client.send_email(
+                    FromEmailAddress=email_from,
+                    Destination={
+                        'ToAddresses': [contact["EmailAddress"]]
+                    },
+                    Content={
+                        'Template': {
+                            'TemplateName': email_template,
+                            'TemplateData': json.dumps({
+                                "masjid": topic,
+                                "iqamas": values["iqamas"]
+                            })
+                        }
+                    },
+                    ListManagementOptions={
+                        'ContactListName': contact_list_name,
+                        'TopicName': topic
+                    }
+                )
+
+        def iterate_on_topics_and_send_email_to_subscribers():
+            for topic, values in changes.items():
+                logger.info(f"Topic: {topic}, Values: {values}")
+                # get contacts for topic
+                next_token = None
+                while True:
+                    # TODO check if it raises 404 error if no more contacts
+                    response = list_contacts_paginated(topic, next_token)
+                    contacts = response["Contacts"]
+                    logger.debug(f"Contacts: {contacts}")
+                    if len(contacts) == 0:
+                        break
+                    send_email_to_contacts(contacts, topic, values)
+                    next_token = response.get("NextToken")
+                    logger.debug(f"Next token: {next_token}")
+                    if next_token is None or next_token == '':
+                        break
+
+        new_topics = convert_changes_to_topics()
+        create_or_update_contact_list(new_topics)
+        iterate_on_topics_and_send_email_to_subscribers()
 
     # download new file from s3
     download_new_file()
@@ -133,6 +233,9 @@ def run(event, context):
     # notify subscribers of changes if any
     if changes is None:
         logger.info("No changes detected")
+        # add last updated timestamp so that it shows a recent check even if not updated
+        create_last_updated_timestamp()
+        logger.debug("Last updated timestamp created")
     else:
         logger.info("Changes detected")
 
@@ -140,13 +243,13 @@ def run(event, context):
         replace_old_with_new()
         logger.debug("Old file replaced with new one")
 
+        # add last updated timestamp
+        create_last_updated_timestamp()
+        logger.debug("Last updated timestamp created")
+
         # notify subscribers
         notify_subscribers(changes)
         logger.debug("Subscribers notified")
-
-    # add last updated timestamp
-    create_last_updated_timestamp()
-    logger.debug("Last updated timestamp created")
 
     # delete new file
     delete_new_file()

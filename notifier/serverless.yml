@@ -20,6 +20,9 @@ provider:
   environment:
     LOG_LEVEL: ${param:log_level}
     S3_BUCKET: ${param:s3_bucket}
+    CONTACT_LIST_NAME: wwpray
+    EMAIL_FROM: wwpray-noreply@hammady.net
+    EMAIL_TEMPLATE: wwpray-iqamas-changed
   iam:
     role:
       statements:
@@ -31,6 +34,15 @@ provider:
             - 's3:DeleteObject'
           Resource:
             - 'arn:aws:s3:::${param:s3_bucket}/*'
+        # Allow functions to manage contact lists and send emails
+        - Effect: Allow
+          Action:
+            - 'ses:GetContactList'
+            - 'ses:UpdateContactList'
+            - 'ses:CreateContactList'
+            - 'ses:ListContacts'
+            - 'ses:SendTemplatedEmail'
+          Resource: '*'
 
 functions:
   s3fileHandler:
