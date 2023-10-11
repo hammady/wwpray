@@ -1,0 +1,47 @@
+org: hammady
+app: wwpray
+service: subscriber
+frameworkVersion: '3'
+
+params:
+  dev:
+    log_level: debug
+  prod:
+    log_level: info
+
+provider:
+  name: aws
+  runtime: python3.9
+  environment:
+    LOG_LEVEL: ${param:log_level}
+    CONTACT_LIST_NAME: wwpray
+    EMAIL_FROM: wwpray-noreply@hammady.net
+    EMAIL_TEMPLATE: wwpray-subscription-confirmation
+  httpApi:
+    cors: true
+  logs:
+    httpApi: true
+  iam:
+    role:
+      statements:
+        # Allow functions to manage contacts and send emails
+        - Effect: Allow
+          Action:
+            - 'ses:GetContactList'
+            - 'ses:GetContact'
+            - 'ses:UpdateContact'
+            - 'ses:CreateContact'
+            - 'ses:SendTemplatedEmail'
+          Resource: '*'
+
+functions:
+  subscriptionHandler:
+    handler: handler.run
+    events:
+      - httpApi:
+          path: /
+          method: post
+
+
+plugins:
+  - serverless-python-requirements
