@@ -147,7 +147,7 @@ def run(event, context):
                 logger.debug(f"Merged topics: {merged_topics}")
                 ses_client.update_contact_list(ContactListName=contact_list_name, Topics=merged_topics)
                 logger.debug(f"Contact list updated: {contact_list_name}, topics: {merged_topics}")
-            except ClientError:
+            except ses_client.exceptions.NotFoundException:
                 logger.debug(f"Contact list doesn't exist, creating it: {contact_list_name}")
                 ses_client.create_contact_list(ContactListName=contact_list_name, Topics=new_topics)
                 logger.debug(f"Contact list created: {contact_list_name}, topics: {new_topics}")

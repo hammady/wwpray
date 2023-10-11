@@ -5,3 +5,4 @@
 __pycache__
 serverless_sdk
 node_modules
+output*.json
