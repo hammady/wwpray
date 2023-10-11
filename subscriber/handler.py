@@ -143,7 +143,7 @@ def run(event, context):
     if len(subscribed_topics) > 0:
         # send confirmation email
         send_confirmation_email(subscribed_topics)
-        message = f"Succesfully subscribed to new topics. A confirmation email has been sent to {email}."
+        message = f"Successfully subscribed to new topics. A confirmation email has been sent to {email}."
     else:
         message = "Already subscribed to all topics."
 
