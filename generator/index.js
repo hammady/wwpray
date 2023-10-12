@@ -3,9 +3,11 @@ module.exports.handler = async (event, context) => {
 
   // prepare s3 client
   const {
-    S3
-  } = require("@aws-sdk/client-s3")
-  const s3 = new S3()
+    S3Client,
+    GetObjectCommand,
+    PutObjectCommand,
+  } = require("@aws-sdk/client-s3");
+  const s3_client = new S3Client({});
 
   // get bucket name from environment variable
   const bucketName = process.env.S3_BUCKET
@@ -17,55 +19,47 @@ module.exports.handler = async (event, context) => {
   lastUpdatedFileKey = 'data/last_updated.txt'
   lastUpdatedFilePath = '/tmp/last_updated.txt'
 
-  function downloadFile(key, path) {
-    return new Promise((resolve, reject) => {
-      const params = {
-        Bucket: bucketName,
-        Key: key
-      }
-      const file = require('fs').createWriteStream(path)
-      const stream = s3.getObject(params).createReadStream()
-      stream.on('error', reject)
-      file.on('error', reject)
-      file.on('finish', resolve)
-      stream.pipe(file)
-    })
+  const { writeFile, readFile } = require("node:fs/promises");
+
+  const downloadFile = async (key, path) => {
+    const get_command = new GetObjectCommand({
+      Bucket: bucketName,
+      Key: key
+    });
+    const { Body } = await s3_client.send(get_command);
+    await writeFile(path, Body);
   }
 
-  function uploadDirectory(directoryPath, directoryKey) {
-    return new Promise((resolve, reject) => {
-      const walk = require('walk')
-      const walker = walk.walk(directoryPath)
-      walker.on('file', (root, fileStats, next) => {
-        const filePath = root + '/' + fileStats.name
-        const fileKey = directoryKey + filePath.replace(directoryPath, '')
-        const file = require('fs').createReadStream(filePath)
-        const params = {
-          Bucket: bucketName,
-          Key: fileKey,
-          Body: file
-        }
-        s3.putObject(params, (err, data) => {
-          if (err) {
-            reject(err)
-          } else {
-            next()
-          }
-        })
-      })
-      walker.on('end', resolve)
-    })
+  const uploadFile = async (filePath, fileKey) => {
+    const file = require('fs').createReadStream(filePath)
+    const put_command = new PutObjectCommand({
+      Bucket: bucketName,
+      Key: fileKey,
+      Body: file
+    });
+    await s3_client.send(put_command);
+  }
+
+  const uploadDirectory = async (directoryPath, directoryKey) => {
+    const { glob } = require('glob')
+    const files = await glob(directoryPath + '/**/*')
+    for (const filePath of files) {
+      const fileKey = filePath.replace(directoryPath, directoryKey)
+      await uploadFile(filePath, fileKey)
+    }
   }
 
   // download data file
   console.log(`Downloading ${dataFileKey} from s3...`)
   await downloadFile(dataFileKey, dataFilePath)
+  console.log(await readFile(dataFilePath, 'utf8'))
   // download last updated file
   console.log(`Downloading ${lastUpdatedFileKey} from s3...`)
   await downloadFile(lastUpdatedFileKey, lastUpdatedFilePath)
+  console.log(await readFile(lastUpdatedFilePath, 'utf8'))
 
   // generate data
-  const destinationDir = '/tmp/dist/'
+  const destinationDir = '/tmp/dist'
   const generate = require('./generate')
   console.log(`Generating data into ${destinationDir}...`)
   await generate(dataFilePath, lastUpdatedFilePath, destinationDir)
