@@ -8,3 +8,5 @@ node_modules
 !.env.example
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+src/routes/last_updated.txt
+src/routes/notified.json
