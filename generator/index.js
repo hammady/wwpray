@@ -2,8 +2,10 @@ module.exports.handler = async (event, context) => {
   console.log(`Your s3 triggered function ${context.functionName} ran at ${new Date()}`)
 
   // prepare s3 client
-  const AWS = require('aws-sdk')
-  const s3 = new AWS.S3()
+  const {
+    S3
+  } = require("@aws-sdk/client-s3")
+  const s3 = new S3()
 
   // get bucket name from environment variable
   const bucketName = process.env.S3_BUCKET
