@@ -1,15 +1,22 @@
 module.exports = async (dataFilePath, lastUpdatedFilePath, destinationDir) => {
-    // TODO: dummy implementation, replace with actual generator code
-
-    // make sure destinationDir exists
     const fs = require('fs')
-    if (!fs.existsSync(destinationDir)) {
-        fs.mkdirSync(destinationDir)
-    }
+    const { execSync } = require('child_process')
+    const svelteDir = './svelte'
+    
+    // Copy data files to be used by Svelte
+    const notifiedDestinationPath = svelteDir + '/static/data/notified.json'
+    const lastUpdatedDestinationPath = svelteDir + '/src/routes/last_updated.txt'
 
-    var data = JSON.parse(fs.readFileSync(dataFilePath, 'utf8')).masjids
-    const filePath = destinationDir + '/index.html'
-    fs.writeFileSync(filePath, JSON.stringify(data))
-    const lastUpdatedDestinationPath = destinationDir + '/last_updated.txt'
-    fs.copyFileSync(lastUpdatedFilePath, lastUpdatedDestinationPath)
+    fs.cpSync(dataFilePath, notifiedDestinationPath)
+    fs.cpSync(lastUpdatedFilePath, lastUpdatedDestinationPath)
+    
+    // Generate static site using Svelte
+    execSync('npm install', { cwd: svelteDir, stdio: 'inherit' })
+    execSync('npm run build', { cwd: svelteDir, stdio: 'inherit' })
+
+    const svelteBuildDir = svelteDir + '/build'
+    fs.mkdirSync(destinationDir, { recursive: true })
+    fs.cpSync(svelteBuildDir, destinationDir, { recursive: true })
+
+    // Output HTML file will be on destinationDir/index.html
 }
