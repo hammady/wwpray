@@ -44,19 +44,6 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${param:s3_bucket}
-        WebsiteConfiguration:
-          IndexDocument: index.html
-          ErrorDocument: error.html
-        CorsConfiguration:
-          CorsRules:
-            - AllowedOrigins:
-                - '*'
-              AllowedHeaders:
-                - '*'
-              AllowedMethods:
-                - GET
-                - HEAD
-              MaxAge: 3000
 
 plugins:
   - serverless-python-requirements
