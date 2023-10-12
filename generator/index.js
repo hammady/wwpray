@@ -42,7 +42,7 @@ module.exports.handler = async (event, context) => {
 
   const uploadDirectory = async (directoryPath, directoryKey) => {
     const { glob } = require('glob')
-    const files = await glob(directoryPath + '/**/*')
+    const files = await glob(directoryPath + '/**/*', { nodir: true })
     for (const filePath of files) {
       const fileKey = filePath.replace(directoryPath, directoryKey)
       await uploadFile(filePath, fileKey)
