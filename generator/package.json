@@ -1,0 +1,10 @@
+{
+  "name": "wwpray-generator",
+  "version": "1.0.0",
+  "description": "Generator service for wwpray",
+  "author": "Hossam Hammady <github@hammady.net>",
+  "license": "MIT",
+  "dependencies": {
+    "walk": "^2.3.15"
+  }
+}

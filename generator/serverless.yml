@@ -1,0 +1,41 @@
+org: hammady
+app: wwpray
+service: generator
+frameworkVersion: '3'
+
+params:
+  dev:
+    s3_bucket: wwpray-dev
+  prod:
+    s3_bucket: wwpray-prod
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  environment:
+    S3_BUCKET: ${param:s3_bucket}
+  iam:
+    role:
+      statements:
+        # Allow functions to write objects in a bucket
+        - Effect: Allow
+          Action:
+            - 's3:GetObject'
+            - 's3:PutObject'
+          Resource:
+            - 'arn:aws:s3:::${param:s3_bucket}/*'
+
+functions:
+  generator:
+    handler: index.handler
+    events:
+      # Invoke Lambda function each time a new object is created in the bucket
+      - s3:
+          bucket: ${param:s3_bucket}
+          event: s3:ObjectCreated:*
+          rules:
+            - prefix: data/
+            - suffix: last_updated.txt
+          existing: true
+          forceDeploy: true # to force deploy the s3 trigger on an existing bucket
+
