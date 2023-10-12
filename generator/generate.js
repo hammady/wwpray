@@ -4,7 +4,7 @@ module.exports = async (dataFilePath, lastUpdatedFilePath, destinationDir) => {
     const svelteDir = './svelte'
     
     // Copy data files to be used by Svelte
-    const notifiedDestinationPath = svelteDir + '/static/data/notified.json'
+    const notifiedDestinationPath = svelteDir + '/src/routes/notified.json'
     const lastUpdatedDestinationPath = svelteDir + '/src/routes/last_updated.txt'
 
     fs.cpSync(dataFilePath, notifiedDestinationPath)
