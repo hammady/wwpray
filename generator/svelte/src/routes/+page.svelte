@@ -7,7 +7,6 @@
 	import { APP_NAME } from '$lib/constants';
 	import SideOver from '$lib/components/SideOver.svelte';
 	import { env } from '$env/dynamic/public';
-	import { enhance } from '$app/forms';
 	import Spacer from '$lib/components/Spacer.svelte';
 
 	// This data object is the one returned by the load function
@@ -26,9 +25,17 @@
 	const SUBSCRIPTION_SIDEOVER_ID = 'subscription-sideover';
 	const SUBSCRIPTIONS_BASE_URL = env.PUBLIC_SUBSCRIPTIONS_BASE_URL;
 
-	let chosenMasjid: (typeof masjids)[number][0] | null;
-	const onMasjidSubscription = (masjid: typeof chosenMasjid) => {
-		chosenMasjid = masjid;
+	let masjidsList: HTMLUListElement;
+	const onMasjidSubscription = (name: string) => {
+		const checkbox = masjidsList.querySelector<HTMLInputElement>(`#${name}`);
+
+		if (!checkbox) {
+			alert('err');
+			// TODO setup a toast system and show error here
+			return;
+		}
+
+		checkbox.checked = true;
 	};
 </script>
 
@@ -95,7 +102,7 @@
 		class="flex flex-col flex-grow min-h-0 px-2 py-4 prose prose-li:my-0 prose-ul:px-0"
 		method="GET"
 		action={SUBSCRIPTIONS_BASE_URL}
-		use:enhance
+		on:submit|preventDefault
 	>
 		<h2>Subscribe to Masjid Prayer Times</h2>
 
@@ -115,7 +122,7 @@
 		<label for="topics" class="label text-base font-medium">
 			<span>Which masjids do you want to subscribe to?</span>
 		</label>
-		<ul class="w-full mt-1">
+		<ul class="w-full mt-1" bind:this={masjidsList}>
 			{#each masjids as [name]}
 				<li>
 					<label class="label justify-start cursor-pointer my-1">
@@ -125,8 +132,6 @@
 							name="topics"
 							class="checkbox checkbox-primary"
 							value={name}
-							checked={chosenMasjid === name || undefined}
-							on:change={() => (chosenMasjid = null)}
 						/>
 						<span class="label-text">{name}</span>
 					</label>
