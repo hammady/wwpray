@@ -16,7 +16,7 @@ module.exports = async (dataFilePath, lastUpdatedFilePath, destinationDir) => {
 
     const svelteBuildDir = svelteDir + '/build'
     fs.mkdirSync(destinationDir, { recursive: true })
-    fs.cpSync(svelteBuildDir, destinationDir, { recursive: true })
-
-    // Output HTML file will be on destinationDir/index.html
+    for (const file of ['/_app', '/index.html', '/favicon.png']) {
+        fs.cpSync(svelteBuildDir + file, destinationDir + file, { recursive: true })
+    }
 }
