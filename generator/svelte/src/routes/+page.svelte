@@ -102,7 +102,6 @@
 		class="flex flex-col flex-grow min-h-0 px-2 py-4 prose prose-li:my-0 prose-ul:px-0"
 		method="GET"
 		action={SUBSCRIPTIONS_BASE_URL}
-		on:submit|preventDefault
 	>
 		<h2>Subscribe to Masjid Prayer Times</h2>
 
