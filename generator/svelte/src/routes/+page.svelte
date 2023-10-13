@@ -45,13 +45,13 @@
 			the top.
 		</p>
 
-		<div class="w-full capitalize">
+		<div class="px-8 w-full capitalize">
 			{#each masjids as [name, { iqamas, jumas }], i}
 				<h2 class="flex items-center justify-between">
 					<span>{name}</span>
 
 					<button on:click={() => onMasjidSubscription(name)}>
-						<label class="btn btn-primary drawer-button" for={SUBSCRIPTION_SIDEOVER_ID}>
+						<label class="btn btn-primary btn-sm drawer-button" for={SUBSCRIPTION_SIDEOVER_ID}>
 							Subscribe
 						</label>
 					</button>
