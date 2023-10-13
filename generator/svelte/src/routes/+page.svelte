@@ -4,13 +4,14 @@
 	import type { PageData } from './$types';
 	import entries from 'lodash/entries';
 	import { browser } from '$app/environment';
+	import { APP_NAME } from '$lib/constants';
 
 	// This data object is the one returned by the load function
 	// wait we didn't assign it to anything, how does it work?
 	// This is the magic of Svelte :D
 	export let data: PageData;
 
-	// Reactive declarations, thise are re-evaluated when the variables they depend on change.
+	// Reactive declarations, those are re-evaluated when the variables they depend on change.
 	$: url = $page.url;
 	$: search = browser && url.searchParams.get('search');
 	$: masjids = entries(data.masjids).filter(([name]) => {
@@ -20,7 +21,7 @@
 </script>
 
 <svelte:head>
-	<title>wwpray</title>
+	<title>{APP_NAME}</title>
 	<meta name="description" content="Prayer times for various masjids in tabular format" />
 </svelte:head>
 
