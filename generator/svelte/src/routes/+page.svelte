@@ -25,6 +25,11 @@
 
 	const SUBSCRIPTION_SIDEOVER_ID = 'subscription-sideover';
 	const SUBSCRIPTIONS_BASE_URL = env.PUBLIC_SUBSCRIPTIONS_BASE_URL;
+
+	let chosenMasjid: (typeof masjids)[number][0] | null;
+	const onMasjidSubscription = (masjid: typeof chosenMasjid) => {
+		chosenMasjid = masjid;
+	};
 </script>
 
 <svelte:head>
@@ -42,13 +47,16 @@
 
 		<div class="w-full capitalize">
 			{#each masjids as [name, { iqamas, jumas }], i}
-				<div class="flex items-center justify-between">
-					<h2>{name}</h2>
+				<h2 class="flex items-center justify-between">
+					<span>{name}</span>
 
-					<label for={SUBSCRIPTION_SIDEOVER_ID} class="btn btn-primary drawer-button">
-						Subscribe
-					</label>
-				</div>
+					<button on:click={() => onMasjidSubscription(name)}>
+						<label class="btn btn-primary drawer-button" for={SUBSCRIPTION_SIDEOVER_ID}>
+							Subscribe
+						</label>
+					</button>
+				</h2>
+
 				<div class="overflow-x-auto px-4">
 					<table class="table table-zebra">
 						<thead>
@@ -111,7 +119,15 @@
 			{#each masjids as [name]}
 				<li>
 					<label class="label justify-start cursor-pointer my-1">
-						<input type="checkbox" name="topics" class="checkbox checkbox-primary" value={name} />
+						<input
+							id={name}
+							type="checkbox"
+							name="topics"
+							class="checkbox checkbox-primary"
+							value={name}
+							checked={chosenMasjid === name || undefined}
+							on:change={() => (chosenMasjid = null)}
+						/>
 						<span class="label-text">{name}</span>
 					</label>
 				</li>
