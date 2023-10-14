@@ -2,6 +2,7 @@ import os
 import datetime
 import logging
 import json
+import time
 from boto3 import client as boto3_client
 from botocore.exceptions import ClientError
 
@@ -102,11 +103,20 @@ def run(event, context):
                     changes[new_key] = True
                     new_iqama_value["changed"] = True
 
-        # write back the new file if there are changes
+            # check if jumas changed
+            new_jumas = set(new_value["jumas"])
+            old_jumas = set(old_value["jumas"])
+            if new_jumas != old_jumas:
+                # jumas changed, add it to changes
+                changes[new_key] = True
+                new_value["jumas_changed"] = True
+
+        # if there are changes do the following
         if len(changes.keys()) > 0:
+            # 1. write back the new file
             with open(new_file_path, 'w') as f:
                 json.dump(new_data, f, indent=4)
-            # filter and return new_data["masjids"] by changes
+            # 2. return only the masjids that changed
             return {k: v for k, v in new_data["masjids"].items() if k in changes.keys()}
     
     def notify_subscribers(changes):
@@ -168,28 +178,45 @@ def run(event, context):
                 kwargs["NextToken"] = next_token
             return ses_client.list_contacts(**kwargs)
 
+        def attempt_to_send_email_to_contact(contact, topic, values):
+            ses_client.send_email(
+                FromEmailAddress=email_from,
+                Destination={
+                    'ToAddresses': [contact["EmailAddress"]]
+                },
+                Content={
+                    'Template': {
+                        'TemplateName': email_template,
+                        'TemplateData': json.dumps({
+                            "masjid": topic,
+                            "iqamas": values["iqamas"],
+                            "jumas": values["jumas"],
+                            "jumas_changed": values.get("jumas_changed")
+                        })
+                    }
+                },
+                ListManagementOptions={
+                    'ContactListName': contact_list_name,
+                    'TopicName': topic
+                }
+            )
+
         def send_email_to_contacts(contacts, topic, values):
             for contact in contacts:
-                logger.debug(f"Sending email to contact: {contact}")
-                ses_client.send_email(
-                    FromEmailAddress=email_from,
-                    Destination={
-                        'ToAddresses': [contact["EmailAddress"]]
-                    },
-                    Content={
-                        'Template': {
-                            'TemplateName': email_template,
-                            'TemplateData': json.dumps({
-                                "masjid": topic,
-                                "iqamas": values["iqamas"]
-                            })
-                        }
-                    },
-                    ListManagementOptions={
-                        'ContactListName': contact_list_name,
-                        'TopicName': topic
-                    }
-                )
+                try:
+                    logger.debug(f"Sending email to contact: {contact}")
+                    attempt_to_send_email_to_contact(contact, topic, values)
+                    logger.info(f"Email sent to contact: {contact}")
+                except ClientError as e:
+                    if e.response['Error']['Code'] == 'TooManyRequestsException':
+                        logger.warning(f"Too many requests, retrying in 1 second")
+                        time.sleep(1)
+                        attempt_to_send_email_to_contact(contact, topic, values)
+                        logger.info(f"Email sent to contact: {contact}")
+                    elif e.response['Error']['Code'] == 'MessageRejected':
+                        logger.warning(f"Message rejected, skipping contact: {contact}")
+                    else:
+                        raise e
 
         def iterate_on_topics_and_send_email_to_subscribers():
             for topic, values in changes.items():
