@@ -40,7 +40,8 @@ functions:
     events:
       - httpApi:
           path: /
-          method: post
+          # support any method
+          method: '*'
 
 
 plugins:
