@@ -23,7 +23,7 @@ def run(event, context):
             accept_header = headers.get("accept") or headers.get("Accept")
             referer_header = headers.get("referer") or headers.get("Referer")
             if ['application/json', 'text/json', '*/*'].count(accept_header) > 0:
-                logger.debug(f"Returning JSON response with status code: {status_code}")
+                logger.debug(f"Returning JSON response with status code: {status_code}.")
                 return {
                     "statusCode": status_code,
                     "headers": {
@@ -32,6 +32,7 @@ def run(event, context):
                     "body": json.dumps({"message": message, "topics": topics})
                 }
             elif referer_header is not None:
+                logger.debug(f"Returning redirect response.")
                 return {
                     "statusCode": 302,
                     "headers": {
@@ -39,6 +40,7 @@ def run(event, context):
                     }
                 }
         
+        logger.debug(f"Returning HTML response with status code: {status_code}.")
         return {
             "statusCode": status_code,
             "headers": {
