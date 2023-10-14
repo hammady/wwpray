@@ -3,7 +3,7 @@ import datetime
 import logging
 import json
 from boto3 import client as boto3_client
-from urllib.parse import quote_plus
+from urllib.parse import quote_plus, urlparse, parse_qs, urlunparse
 
 
 # set log level from environment variable, defaulting to WARNING
@@ -18,36 +18,54 @@ def run(event, context):
     logger.info("Your httpApi function " + name + " ran at " + str(current_time))
 
     def respond_with(status_code, message = '', topics = []):
+        def respond_with_html():
+            logger.debug(f"Returning HTML response with status code: {status_code}.")
+            return {
+                "statusCode": status_code,
+                "headers": {
+                    "Content-Type": "text/html"
+                },
+                "body": f"<html><body><p>{message}</p><p>Topics: {','.join(topics)}</p></body></html>"
+            }
+        
+        def respond_with_json():
+            logger.debug(f"Returning JSON response with status code: {status_code}.")
+            return {
+                "statusCode": status_code,
+                "headers": {
+                    "Content-Type": "application/json"
+                },
+                "body": json.dumps({"message": message, "topics": topics})
+            }
+
+        def respond_with_redirect(url):
+            logger.debug(f"Returning redirect response with url: {url}.")
+            return {
+                "statusCode": 302,
+                "headers": {
+                    "Location": url
+                }
+            }
+        
         headers = event.get("headers")
         if headers is not None:
             accept_header = headers.get("accept") or headers.get("Accept")
             referer_header = headers.get("referer") or headers.get("Referer")
             if ['application/json', 'text/json'].count(accept_header) > 0:
-                logger.debug(f"Returning JSON response with status code: {status_code}.")
-                return {
-                    "statusCode": status_code,
-                    "headers": {
-                        "Content-Type": "application/json"
-                    },
-                    "body": json.dumps({"message": message, "topics": topics})
-                }
+                return respond_with_json()
             elif referer_header is not None:
-                logger.debug(f"Returning redirect response.")
-                return {
-                    "statusCode": 302,
-                    "headers": {
-                        "Location": f"{referer_header}?message={quote_plus(message)}&topics={','.join(topics)}"
-                    }
-                }
+                # validate referer header and append message and topics to query string
+                referer = urlparse(referer_header)
+                if referer.netloc == '':
+                    logger.error(f"Invalid referer header: {referer_header}")
+                    return respond_with_html()
+                qs_arr = parse_qs(referer.query)
+                qs_arr["message"] = [quote_plus(message)]
+                qs_arr["topics"] = [','.join(topics)]
+                qs_str = '&'.join([f"{key}={value[0]}" for key, value in qs_arr.items()])
+                return respond_with_redirect(urlunparse(referer._replace(query=qs_str)))
         
-        logger.debug(f"Returning HTML response with status code: {status_code}.")
-        return {
-            "statusCode": status_code,
-            "headers": {
-                "Content-Type": "text/html"
-            },
-            "body": f"<html><body><p>{message}</p><p>Topics: {','.join(topics)}</p></body></html>"
-        }
+        return respond_with_html()
     
     # get environment variables
     contact_list_name = os.environ.get('CONTACT_LIST_NAME')
