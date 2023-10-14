@@ -36,7 +36,7 @@ functions:
     events:
       # Invoke Lambda function every 6 hours on minute 0
       - schedule:
-          rate: cron(0 */6 * * ? *)
+          rate: cron(0 7 * * ? *)
           enabled: ${param:cron_enabled}
 
 plugins:
