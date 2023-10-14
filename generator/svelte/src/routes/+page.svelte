@@ -8,6 +8,7 @@
 	import SideOver from '$lib/components/SideOver.svelte';
 	import { env } from '$env/dynamic/public';
 	import Spacer from '$lib/components/Spacer.svelte';
+	import Alert from '$lib/components/Alert.svelte';
 
 	// This data object is the one returned by the load function
 	// wait we didn't assign it to anything, how does it work?
@@ -17,6 +18,7 @@
 	// Reactive declarations, those are re-evaluated when the variables they depend on change.
 	$: url = $page.url;
 	$: search = browser && url.searchParams.get('search');
+	$: message = browser && url.searchParams.get('message');
 	$: masjids = entries(data.masjids).filter(([name]) => {
 		if (!search) return true;
 		return name.toLowerCase().includes(search.toLowerCase());
@@ -51,6 +53,12 @@
 			View prayer times for various masjids below. To find a specific masjid, use the search bar at
 			the top.
 		</p>
+
+		{#if message}
+			<Spacer />
+			<Alert>{message}</Alert>
+			<Spacer />
+		{/if}
 
 		<div class="px-8 w-full capitalize">
 			{#each masjids as [name, { iqamas, jumas }], i}
