@@ -30,12 +30,97 @@ functions:
     handler: index.handler
     events:
       # Invoke Lambda function each time a new object is created in the bucket
-      - s3:
+      - s3: # Generates S3BucketWwpraydev CloudFormation resource
           bucket: ${param:s3_bucket}
           event: s3:ObjectCreated:*
           rules:
             - prefix: data/
             - suffix: last_updated.txt
-          existing: true
-          forceDeploy: true # to force deploy the s3 trigger on an existing bucket
 
+# https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html
+resources:
+  Resources:
+    S3BucketPolicywwpray:
+      Type: AWS::S3::BucketPolicy
+      Properties: 
+        Bucket: !Ref S3BucketWwpraydev
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Action: s3:GetObject
+              Effect: Allow
+              Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Ref S3BucketWwpraydev
+                  - /*
+              Principal:
+                Service: cloudfront.amazonaws.com
+              Condition:
+                StringEquals:
+                  AWS:SourceArn: !Join
+                    - ''
+                    - - 'arn:aws:cloudfront::'
+                      - !Ref 'AWS::AccountId'
+                      - ':distribution/'
+                      - !Ref CloudFrontDistributionwwpray
+    OriginAccessControlwwpray:
+      Type: AWS::CloudFront::OriginAccessControl
+      Properties:
+        OriginAccessControlConfig:
+            Description: An OAC to allow CloudFront access to the private S3 bucket
+            Name: ${param:s3_bucket}OAC
+            OriginAccessControlOriginType: s3
+            SigningBehavior: always
+            SigningProtocol: sigv4
+    CloudFrontDistributionwwpray:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Enabled: true
+          Origins:
+            - DomainName: ${param:s3_bucket}.s3.${aws:region}.amazonaws.com
+              Id: S3Origin
+              OriginAccessControlId: !Ref OriginAccessControlwwpray
+              OriginPath: /static
+              S3OriginConfig:
+                OriginAccessIdentity: ''
+          # Aliases:
+          #   - wwpray.net
+          #   - www.wwpray.net
+          # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-viewercertificate.html
+          ViewerCertificate:
+            # Refactor once we set up custom domains in Aliases
+            CloudFrontDefaultCertificate: true
+          DefaultRootObject: index.html
+          PriceClass: PriceClass_100 # North America & Europe edge locations only
+          CacheBehaviors:
+            - TargetOriginId: S3Origin
+              ViewerProtocolPolicy: redirect-to-https
+              ForwardedValues:
+                QueryString: false
+                Cookies:
+                  Forward: none
+              PathPattern: /_app/immutable/*
+              Compress: true
+              AllowedMethods: ['GET', 'HEAD']
+              CachedMethods: ['GET', 'HEAD']
+              # if origin does not send Cache-Control headers, set to 1 year
+              DefaultTTL: 31536000
+              # if origin sends Cache-Control headers, override to 1 year
+              MaxTTL: 31536000
+              MinTTL: 31536000
+              SmoothStreaming: false
+          DefaultCacheBehavior:
+            TargetOriginId: S3Origin
+            ViewerProtocolPolicy: redirect-to-https
+            ForwardedValues:
+              QueryString: false
+              Cookies:
+                Forward: none
+            Compress: false
+            AllowedMethods: ['GET', 'HEAD']
+            CachedMethods: ['GET', 'HEAD']
+            # Do not cache anything by default
+            DefaultTTL: 0
+            MaxTTL: 0

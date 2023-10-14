@@ -38,12 +38,6 @@ functions:
       - schedule:
           rate: cron(0 */6 * * ? *)
           enabled: ${param:cron_enabled}
-resources:
-  Resources:
-    S3Bucketwwpray:
-      Type: AWS::S3::Bucket
-      Properties:
-        BucketName: ${param:s3_bucket}
 
 plugins:
   - serverless-python-requirements
