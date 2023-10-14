@@ -22,7 +22,7 @@ def run(event, context):
         if headers is not None:
             accept_header = headers.get("accept") or headers.get("Accept")
             referer_header = headers.get("referer") or headers.get("Referer")
-            if ['application/json', 'text/json', '*/*'].count(accept_header) > 0:
+            if ['application/json', 'text/json'].count(accept_header) > 0:
                 logger.debug(f"Returning JSON response with status code: {status_code}.")
                 return {
                     "statusCode": status_code,
