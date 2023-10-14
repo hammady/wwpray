@@ -30,12 +30,31 @@ module.exports.handler = async (event, context) => {
     await writeFile(path, Body);
   }
 
+  const getMimeType = (filePath) => {
+    const ext = require('path').extname(filePath)
+    switch (ext) {
+      case '.html':
+        return 'text/html; charset=utf-8'
+      case '.css':
+        return 'text/css; charset=utf-8'
+      case '.js':
+        return 'application/javascript; charset=utf-8'
+      case '.json':
+        return 'application/json; charset=utf-8'
+      case '.png':
+        return 'image/png'
+      default:
+        return 'application/octet-stream'
+    }
+  }
+
   const uploadFile = async (filePath, fileKey) => {
     const file = require('fs').createReadStream(filePath)
     const put_command = new PutObjectCommand({
       Bucket: bucketName,
       Key: fileKey,
-      Body: file
+      Body: file,
+      ContentType: getMimeType(filePath)
     });
     await s3_client.send(put_command);
   }
