@@ -3,6 +3,7 @@ import datetime
 import logging
 import json
 from boto3 import client as boto3_client
+from urllib.parse import quote_plus
 
 
 # set log level from environment variable, defaulting to WARNING
@@ -16,6 +17,36 @@ def run(event, context):
     name = context.function_name
     logger.info("Your httpApi function " + name + " ran at " + str(current_time))
 
+    def respond_with(status_code, message = '', topics = []):
+        headers = event.get("headers")
+        if headers is not None:
+            accept_header = headers.get("accept") or headers.get("Accept")
+            referer_header = headers.get("referer") or headers.get("Referer")
+            if ['application/json', 'text/json', '*/*'].count(accept_header) > 0:
+                logger.debug(f"Returning JSON response with status code: {status_code}")
+                return {
+                    "statusCode": status_code,
+                    "headers": {
+                        "Content-Type": "application/json"
+                    },
+                    "body": json.dumps({"message": message, "topics": topics})
+                }
+            elif referer_header is not None:
+                return {
+                    "statusCode": 302,
+                    "headers": {
+                        "Location": f"{referer_header}?message={quote_plus(message)}&topics={','.join(topics)}"
+                    }
+                }
+        
+        return {
+            "statusCode": status_code,
+            "headers": {
+                "Content-Type": "text/html"
+            },
+            "body": f"<html><body><p>{message}</p><p>Topics: {','.join(topics)}</p></body></html>"
+        }
+    
     # get environment variables
     contact_list_name = os.environ.get('CONTACT_LIST_NAME')
     if contact_list_name is None:
@@ -45,16 +76,16 @@ def run(event, context):
     # get query string parameters
     qs_params = event.get("queryStringParameters")
     if qs_params is None:
-        return {"statusCode": 400, "body": "No query string parameters provided"}
+        return respond_with(400, message="No query string parameters provided.")
     email = qs_params.get("email")
     if email is None:
-        return {"statusCode": 400, "body": "No email provided"}
+        return respond_with(400, message="No email provided.")
     topics = qs_params.get("topics")
     if topics is None:
-        return {"statusCode": 400, "body": "No topics provided"}
+        return respond_with(400, message="No topics provided.")
     new_topics = topics.split(",")
     if validate_topics(new_topics) is False:
-        return {"statusCode": 400, "body": "Invalid topics provided"}
+        return respond_with(400, message="Invalid topics provided.")
     logger.info(f"Email: {email}, Topics: {new_topics}")
     
     def subscribe_contact_to_topics():
@@ -138,7 +169,7 @@ def run(event, context):
         subscribed_topics = subscribe_contact_to_topics()
     except ses_client.exceptions.BadRequestException as e:
         logger.error(f"BadRequestException: {e}")
-        return {"statusCode": 400, "body": "Invalid email provided"}
+        return respond_with(400, message="Invalid email provided.")
     
     if len(subscribed_topics) > 0:
         # send confirmation email
@@ -147,13 +178,4 @@ def run(event, context):
     else:
         message = "Already subscribed to all topics."
 
-    return {
-        "statusCode": 200,
-        "headers": {
-            "Content-Type": "application/json"
-        },
-        "body": json.dumps({
-            "message": message,
-            "topics": subscribed_topics
-        })
-    }
+    return respond_with(200, message=message, topics=subscribed_topics)
