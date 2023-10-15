@@ -1,0 +1,149 @@
+org: hammady
+app: wwpray
+service: forwarder
+
+frameworkVersion: '3'
+
+params:
+  dev:
+    log_level: debug
+    s3_bucket: wwpraymail-dev
+    ses_rule_set: wwpray-feedback-dev
+    feedback_email: wwpray@aws.hammady.net
+    email_from: wwpray-noreply@hammady.net
+    email_to: amazon@hammady.net
+  prod:
+    log_level: info
+    s3_bucket: wwpraymail-prod
+    ses_rule_set: wwpray-feedback-prod
+    # TODO change to other emails?
+    feedback_email: wwpray@aws.hammady.net
+    email_from: wwpray-noreply@hammady.net
+    email_to: amazon@hammady.net
+
+provider:
+  name: aws
+  runtime: python3.9	
+  environment:
+    LOG_LEVEL: ${param:log_level}
+    S3_BUCKET: ${param:s3_bucket}
+    EMAIL_FROM: ${param:email_from}
+    EMAIL_TO: amazon@hammady.net
+  iam:
+    role:
+      statements:
+        # Allow functions to read objects from the bucket under the mail/ prefix
+        - Effect: Allow
+          Action:
+            - 's3:GetObject'
+          Resource:
+            - 'arn:aws:s3:::${param:s3_bucket}/mail/*'
+        # Allow functions to send emails
+        - Effect: Allow
+          Action:
+            - 'ses:SendRawEmail'
+          Resource: '*'
+
+functions:
+  s3fileHandler:
+    handler: handler.run
+    events: [] # SES rule invokes this function
+
+plugins:
+  - serverless-python-requirements
+
+resources:
+  Resources:
+    S3BucketWwpraymaildev:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${param:s3_bucket}
+        LifecycleConfiguration:
+          Rules:
+            - Id: DeleteAll
+              Prefix: mail/
+              Status: Enabled
+              ExpirationInDays: 30
+    # Allow SES to invoke Lambda function
+    SESLambdaPermission:
+      Type: AWS::Lambda::Permission
+      Properties:
+        FunctionName: !Ref S3fileHandlerLambdaFunction
+        Action: lambda:InvokeFunction
+        Principal: ses.amazonaws.com
+        SourceAccount: !Ref AWS::AccountId
+        SourceArn: !Join
+          - ''
+          - - 'arn:aws:ses:'
+            - !Ref 'AWS::Region'
+            - ':'
+            - !Ref 'AWS::AccountId'
+            - ':receipt-rule-set/'
+            - !Ref SESRuleSet
+            - ':receipt-rule/'
+            - ${param:ses_rule_set}
+            - '-rule'
+    S3BucketPolicywwpray:
+      DependsOn:
+        - S3BucketWwpraymaildev
+      Type: AWS::S3::BucketPolicy
+      Properties: 
+        Bucket: !Ref S3BucketWwpraymaildev
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Action: s3:PutObject
+              Effect: Allow
+              Resource: !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Ref S3BucketWwpraymaildev
+                  - /mail/*
+              Principal:
+                Service: ses.amazonaws.com
+              Condition:
+                StringEquals:
+                  AWS:SourceArn: !Join
+                    - ''
+                    - - 'arn:aws:ses:'
+                      - !Ref 'AWS::Region'
+                      - ':'
+                      - !Ref 'AWS::AccountId'
+                      - ':receipt-rule-set/'
+                      - !Ref SESRuleSet
+                      - ':receipt-rule/'
+                      - ${param:ses_rule_set}
+                      - '-rule'
+    SESRuleSet:
+      Type: AWS::SES::ReceiptRuleSet
+      Properties:
+        RuleSetName: ${param:ses_rule_set}
+    SESRule:
+      DependsOn:
+        - S3BucketPolicywwpray
+        - SESLambdaPermission
+        - SESRuleSet
+      Type: AWS::SES::ReceiptRule
+      Properties:
+        RuleSetName: !Ref SESRuleSet
+        Rule:
+          Name: ${param:ses_rule_set}-rule
+          Enabled: true
+          Recipients:
+            - ${param:feedback_email}
+          Actions:
+            - S3Action:
+                BucketName: !Ref S3BucketWwpraymaildev
+                ObjectKeyPrefix: mail/
+            - LambdaAction:
+                FunctionArn: !Join
+                  - ''
+                  - - 'arn:aws:lambda:'
+                    - !Ref 'AWS::Region'
+                    - ':'
+                    - !Ref 'AWS::AccountId'
+                    - ':function:'
+                    - !Ref S3fileHandlerLambdaFunction
+                InvocationType: Event
+          ScanEnabled: true
+          TlsPolicy: Require

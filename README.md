@@ -13,6 +13,7 @@ The application is built using serverless components on AWS:
 1. **Notifier**: A Lambda function triggered as soon as a new JSON file is created (typically from the Scraper) and compares it to the previous JSON file. If there are any changes, it sends an email notification to the subscribers. Finally, it replaces the previous JSON file with the new one. Each masjid has its own list of subscribers.
 1. **Generator**: A Lambda function triggered as soon as a new JSON file is created (typically from the Notifier) and generates a static HTML file from it. The HTML file is then uploaded to S3 and served via CloudFront. The website lists all the masjids and their prayer times in a tabular format. It has a form to subscribe to notifications where it submits to the Subscriber Lambda function (see below).
 1. **Subscriber**: A Lambda function triggered when a user submits the subscription form which adds the user to the masjid's list of subscribers.
+1. **Forwarder**: A Lambda function triggered when a user sends an email to the feedback email address. It forwards the feedback email to the admin.
 
 ## Email notifications
 
