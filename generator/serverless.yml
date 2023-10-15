@@ -17,13 +17,18 @@ provider:
   iam:
     role:
       statements:
-        # Allow functions to write objects in a bucket
+        # Allow functions to read objects in a bucket
         - Effect: Allow
           Action:
             - 's3:GetObject'
+          Resource:
+            - 'arn:aws:s3:::${param:s3_bucket}/data/*'
+        # Allow functions to write objects in a bucket
+        - Effect: Allow
+          Action:
             - 's3:PutObject'
           Resource:
-            - 'arn:aws:s3:::${param:s3_bucket}/*'
+            - 'arn:aws:s3:::${param:s3_bucket}/static/*'
 
 functions:
   generator:
@@ -53,7 +58,7 @@ resources:
                 - ''
                 - - 'arn:aws:s3:::'
                   - !Ref S3BucketWwpraydev
-                  - /*
+                  - /static/*
               Principal:
                 Service: cloudfront.amazonaws.com
               Condition:

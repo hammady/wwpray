@@ -28,7 +28,7 @@ provider:
           Action:
             - 's3:PutObject'
           Resource:
-            - 'arn:aws:s3:::${param:s3_bucket}/*'
+            - 'arn:aws:s3:::${param:s3_bucket}/data/*'
 
 functions:
   cronHandler:
