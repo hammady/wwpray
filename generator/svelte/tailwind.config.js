@@ -2,7 +2,11 @@
 export default {
   content: ['./src/**/*.{html,js,svelte,ts}'],
   theme: {
-    extend: {},
+    extend: {
+      spacing: {
+        navbar: '6rem',
+      }
+    },
   },
   plugins: [
     require("@tailwindcss/typography"),
