@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { ALERT_PATHS, EAlertType } from '$lib/constants';
+	import { ALERT_ICONS, EAlertType } from '$lib/constants';
+	import Icon from '@krowten/svelte-heroicons/Icon.svelte';
 
 	export let type = EAlertType.Info;
 	let classes = '';
@@ -7,17 +8,7 @@
 </script>
 
 <div class="alert {type} {classes}">
-	<svg
-		xmlns="http://www.w3.org/2000/svg"
-		class="stroke-current shrink-0 h-6 w-6"
-		fill="none"
-		stroke-linecap="round"
-		stroke-linejoin="round"
-		stroke-width="2"
-		viewBox="0 0 24 24"
-	>
-		<path d={ALERT_PATHS[type]} />
-	</svg>
+	<Icon name={ALERT_ICONS[type]} class="w-6 h-6 text-current" />
 	<span>
 		<slot />
 	</span>
