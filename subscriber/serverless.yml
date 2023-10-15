@@ -4,10 +4,15 @@ service: subscriber
 frameworkVersion: '3'
 
 params:
+  default:
+    email_template: wwpray-subscription-confirmation
   dev:
     log_level: debug
+    feedback_email: wwpray@aws.hammady.net
   prod:
     log_level: info
+    # TODO change to other emails?
+    feedback_email: wwpray@aws.hammady.net
 
 provider:
   name: aws
@@ -16,7 +21,7 @@ provider:
     LOG_LEVEL: ${param:log_level}
     CONTACT_LIST_NAME: wwpray
     EMAIL_FROM: wwpray-noreply@hammady.net
-    EMAIL_TEMPLATE: wwpray-subscription-confirmation
+    EMAIL_TEMPLATE: ${param:email_template}
   httpApi:
     cors: true
   logs:
@@ -46,3 +51,33 @@ functions:
 
 plugins:
   - serverless-python-requirements
+
+resources:
+  Resources:
+    SESTemplate:
+      Type: AWS::SES::Template
+      Properties:
+        Template:
+          TemplateName: ${param:email_template}
+          SubjectPart: "WWPray: Subscription confirmation"
+          TextPart: ''
+          HtmlPart: |
+            Dear subscriber,<br/>
+            This is to confirm that you have subscribed to notifications of prayer time updates for the following:<br/>
+            <ol>
+                {{#each topics}}
+                <li>{{.}} Masjid</li>
+                {{/each}}
+            </ol>
+
+            <p>
+            To manage your subscriptions, please <a href="{{amazonSESUnsubscribeUrl}}">click here</a>.
+            </p>
+
+            <p>
+            Regards,<br/>
+            The WWPray team<br/>
+            Web site coming soon.<br/>
+            For feedback, please email <a href="mailto:${param:feedback_email}">${param:feedback_email}</a><br/>
+            <a href="https://github.com/hammady/wwpray">Github</a><br/>
+            </p>

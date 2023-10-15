@@ -5,14 +5,19 @@ service: notifier
 frameworkVersion: '3'
 
 params:
+  default:
+    email_template: wwpray-times-changed
   dev:
     log_level: debug
     s3_bucket: wwpray-dev
     event_enabled: false
+    feedback_email: wwpray@aws.hammady.net
   prod:
     log_level: info
     s3_bucket: wwpray-prod
     event_enabled: true
+    # TODO change to other emails?
+    feedback_email: wwpray@aws.hammady.net
 
 provider:
   name: aws
@@ -22,7 +27,7 @@ provider:
     S3_BUCKET: ${param:s3_bucket}
     CONTACT_LIST_NAME: wwpray
     EMAIL_FROM: wwpray-noreply@hammady.net
-    EMAIL_TEMPLATE: wwpray-iqamas-changed
+    EMAIL_TEMPLATE: ${param:email_template}
   iam:
     role:
       statements:
@@ -60,3 +65,43 @@ functions:
 
 plugins:
   - serverless-python-requirements
+
+resources:
+  Resources:
+    SESTemplate:
+      Type: AWS::SES::Template
+      Properties:
+        Template:
+          TemplateName: ${param:email_template}
+          SubjectPart: "WWPray/{{masjid}}: Prayer times have changed"
+          TextPart: ''
+          HtmlPart: |
+            Dear subscriber,<br/>
+            The prayer times have changed for the masjid you have subscribed to: {{masjid}}.<br/>
+            Below are the new iqama times:<br/>
+            <ol>
+                <li>Fajr: {{iqamas.fajr.time}} {{#if iqamas.fajr.changed }} <strong>(Changed)</strong> {{/if}} </li>
+                <li>Zuhr: {{iqamas.zuhr.time}} {{#if iqamas.zuhr.changed }} <strong>(Changed)</strong> {{/if}} </li>
+                <li>Asr: {{iqamas.asr.time}} {{#if iqamas.asr.changed }} <strong>(Changed)</strong> {{/if}} </li>
+                <li>Maghrib: {{iqamas.maghrib.time}} {{#if iqamas.maghrib.changed }} <strong>(Changed)</strong> {{/if}} </li>
+                <li>Isha: {{iqamas.isha.time}} {{#if iqamas.isha.changed }} <strong>(Changed)</strong> {{/if}} </li>
+            </ol>
+
+            Jumuaa times: {{#if jumas_changed }} <strong>(Changed)</strong> {{/if}} <br/>
+            <ol>
+                {{#each jumas}}
+                <li>{{.}}</li>
+                {{/each}}
+            </ol>
+
+            <p>
+            To stop receiving these emails, or to subscribe to more masjids, please <a href="{{amazonSESUnsubscribeUrl}}">click here</a>.
+            </p>
+
+            <p>
+            Regards,<br/>
+            The WWPray team<br/>
+            Web site coming soon.<br/>
+            For feedback, please email <a href="mailto:${param:feedback_email}">${param:feedback_email}</a><br/>
+            <a href="https://github.com/hammady/wwpray">Github</a><br/>
+            </p>
