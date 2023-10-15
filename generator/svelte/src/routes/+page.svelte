@@ -9,6 +9,8 @@
 	import { env } from '$env/dynamic/public';
 	import Spacer from '$lib/components/Spacer.svelte';
 	import Alert from '$lib/components/Alert.svelte';
+	import { toast } from '$lib/stores/toast';
+	import { subscribeToMasjid } from '$lib/service';
 
 	// This data object is the one returned by the load function
 	// wait we didn't assign it to anything, how does it work?
@@ -28,16 +30,38 @@
 	const SUBSCRIPTIONS_BASE_URL = env.PUBLIC_SUBSCRIPTIONS_BASE_URL;
 
 	let masjidsList: HTMLUListElement;
-	const onMasjidSubscription = (name: string) => {
+	const onMasjidSubscribeClick = (name: string) => {
 		const checkbox = masjidsList.querySelector<HTMLInputElement>(`#${name}`);
 
 		if (!checkbox) {
-			alert('err');
-			// TODO setup a toast system and show error here
+			toast.error('Something went wrong, please try again later');
 			return;
 		}
 
 		checkbox.checked = true;
+	};
+
+	// Progressive Enhancement
+	// Works in case JS is enabled, otherwise the form will be submitted normally
+	const onMasjidSubscribeSubmit = (e: Event) => {
+		e.preventDefault();
+
+		const form = e.target as HTMLFormElement;
+		const formData = new FormData(form);
+		const email = formData.get('email') as string;
+		const topics = formData.getAll('topics') as string[];
+
+		if (!email) {
+			toast.error('Please enter a valid email');
+			return;
+		}
+
+		if (!topics.length) {
+			toast.error('Please select at least one masjid');
+			return;
+		}
+
+		subscribeToMasjid({ email, topics });
 	};
 </script>
 
@@ -65,7 +89,7 @@
 				<h2 class="flex items-center justify-between">
 					<span>{name}</span>
 
-					<button on:click={() => onMasjidSubscription(name)}>
+					<button on:click={() => onMasjidSubscribeClick(name)}>
 						<label class="btn btn-primary btn-sm drawer-button" for={SUBSCRIPTION_SIDEOVER_ID}>
 							Subscribe
 						</label>
@@ -110,6 +134,7 @@
 		class="flex flex-col flex-grow min-h-0 px-2 py-4 prose prose-li:my-0 prose-ul:px-0"
 		method="GET"
 		action={SUBSCRIPTIONS_BASE_URL}
+		on:submit={onMasjidSubscribeSubmit}
 	>
 		<h2>Subscribe to Masjid Prayer Times</h2>
 
