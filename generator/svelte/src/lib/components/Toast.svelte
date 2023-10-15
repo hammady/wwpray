@@ -1,12 +1,13 @@
 <script lang="ts">
-	import { EAlertType } from '$lib/constants';
+	import type { EAlertType } from '$lib/constants';
+	import { fly } from 'svelte/transition';
 
-	export let type = EAlertType.Info;
+	export let type: EAlertType;
 	let classes = '';
 	export { classes as class };
 </script>
 
-<div class="toast {classes}">
+<div transition:fly={{ y: -16, duration: 300 }} class={classes}>
 	<div class="alert {type}">
 		<span>
 			<slot />
