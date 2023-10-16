@@ -9,7 +9,7 @@
 
 <div transition:fly={{ y: -16, duration: 300 }} class="alert {type} {classes}">
 	<div class="flex items-center gap-2 text-white font-bold">
-		<Icon name={ALERT_ICONS[type]} class="h-6 w-6 text-crrent" />
+		<Icon name={ALERT_ICONS[type]} class="min-w-[1.5rem] min-h-[1.5rem] w-6 h-6 text-crrent" />
 		<span>
 			<slot />
 		</span>
