@@ -3,10 +3,12 @@
 		id: string;
 		'close-aria-label': string;
 	};
+
+	export let sideInput: HTMLInputElement;
 </script>
 
 <div class="drawer drawer-end">
-	<input {id} type="checkbox" class="drawer-toggle" />
+	<input bind:this={sideInput} {id} type="checkbox" class="drawer-toggle" />
 	<div class="drawer-content">
 		<slot name="page" />
 	</div>

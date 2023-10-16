@@ -41,6 +41,7 @@
 		checkbox.checked = true;
 	};
 
+	export let sideInput: HTMLInputElement;
 	// Progressive Enhancement
 	// Works in case JS is enabled, otherwise the form will be submitted normally
 	const onMasjidSubscribeSubmit = (e: Event) => {
@@ -62,6 +63,8 @@
 		}
 
 		subscribeToMasjid({ email, topics });
+
+		sideInput.checked = false;
 	};
 </script>
 
@@ -70,7 +73,11 @@
 	<meta name="description" content="Prayer times for various masjids in tabular format" />
 </svelte:head>
 
-<SideOver id={SUBSCRIPTION_SIDEOVER_ID} close-aria-label="close subscriptions sideover">
+<SideOver
+	bind:sideInput
+	id={SUBSCRIPTION_SIDEOVER_ID}
+	close-aria-label="close subscriptions sideover"
+>
 	<div slot="page" class="mx-auto prose max-w-6xl py-12 px-6 lg:px-8">
 		<h1>Masjid Prayer Times</h1>
 		<p>
