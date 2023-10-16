@@ -56,10 +56,8 @@ def run(event, context):
         del parsed_message["Return-Path"]
         # add Reply-To header
         parsed_message.add_header("Reply-To", original_from)
-        # prepend [Forwarded] to subject
-        parsed_message.replace_header("Subject", f"[Forwarded] {parsed_message['Subject']}")
-        # prepend original sender to body
-        parsed_message.set_payload(f"Original sender: {original_from} (Reply to this email to send them a response).\n\n{parsed_message.get_payload()}")
+        # prepend [Forwarded] and append original From to Subject
+        parsed_message.replace_header("Subject", f"[Forwarded] {parsed_message['Subject']} [replying to {original_from}]")
 
         ses_client.send_email(
             Destination={
