@@ -7,5 +7,8 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.427.0",
     "glob": "^10.3.10"
-  }
+  },
+  "workspaces": [
+    "svelte"
+  ]
 }
