@@ -6,7 +6,7 @@ frameworkVersion: '3'
 
 params:
   default:
-    sources: MNNexusSource,ShalimarSource,ICCOSource,WEICSource
+    sources: MNNexusSource,ShalimarSource,ICCOSource,WEICSource,ISNACanadaSource
   dev:
     log_level: debug
     s3_bucket: wwpray-dev
