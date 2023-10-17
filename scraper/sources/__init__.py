@@ -3,3 +3,4 @@ from .shalimar import ShalimarSource
 from .icco import ICCOSource
 from .weic import WEICSource
 from .isnacanada import ISNACanadaSource
+from .darfoundation import DarFoundationSource

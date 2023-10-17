@@ -2,14 +2,12 @@ from .base import Source
 from datetime import datetime, date, time
 
 class MasjidBoxSource(Source):
-    def __init__(self, apikey, xkey, xfrom):
+    def __init__(self, apikey, masjidbox_id):
         # get today's midnight time in iso format including local time zone
-        today = datetime.combine(date.today(), time(0)).astimezone().isoformat(timespec='milliseconds')
+        self._today = datetime.combine(date.today(), time(0)).astimezone().isoformat()
         super().__init__("MasjidBox", headers={
-            "apikey": apikey,
-            "x-key": xkey,
-            "x-from": xfrom
-        }, url=f"https://api.masjidbox.com/1.0/masjidbox/landing/athany?get=wg&days=9&begin={today}")
+            "Apikey": apikey
+        }, url=f"https://api.masjidbox.com/1.0/masjidbox/landing/athany/{masjidbox_id}?get=at&days=9&begin={self._today}")
         
     def parse(self):
         if self._response is None:
@@ -19,7 +17,13 @@ class MasjidBoxSource(Source):
             return datetime.fromisoformat(time).strftime("%-I:%M %p")
         
         timetable = self._response.json()['timetable']
-        today_iqamas = timetable[0]['iqamah']
+
+        # search for today, expected to be first element but sometimes not
+        today_iqamas = None
+        for day in timetable:
+            if day['date'] == self._today:
+                today_iqamas = day['iqamah']
+                break
 
         iqamas = {
             "fajr": {
@@ -43,7 +47,7 @@ class MasjidBoxSource(Source):
         jumas = []
         for day in timetable:
             if 'jumuah' in day:
-                jumas = [parse_time(juma) for juma in day['jumuah']]
+                jumas = [f"{label} Prayer: {parse_time(juma)}" for juma, label in zip(day['jumuah'], self._counter_labels)]
                 break
 
         return iqamas, jumas

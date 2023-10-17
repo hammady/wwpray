@@ -6,6 +6,9 @@ class Source:
         self.name = name
         self._headers = headers
         self._url = url
+        self._counter_labels = [
+            'First', 'Second', 'Third', 'Fourth', 'Fifth',
+            'Sixth', 'Seventh', 'Eighth', 'Ninth', 'Tenth']
 
     def request(self):
         if self._url is None:
