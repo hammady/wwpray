@@ -1,15 +1,29 @@
 from .base import Source
 from datetime import datetime, date, time
+import pytz
 
 
 class MasjidBoxSource(Source):
-    def __init__(self, apikey, masjidbox_id):
-        # get today's midnight time in iso format including local time zone
-        self._today = datetime.combine(date.today(), time(0)).astimezone().isoformat()
+    def __init__(self, apikey, masjidbox_id, timezone):
+        self._today = self._get_midnight_in_timezone(timezone).isoformat()
         super().__init__("MasjidBox", headers={
             "Apikey": apikey
         }, url=f"https://api.masjidbox.com/1.0/masjidbox/landing/athany/{masjidbox_id}?get=at&days=9&begin={self._today}")
+    
+    @staticmethod
+    def _get_midnight_in_timezone(timezone):
+        # Get the current time in UTC
+        current_time = datetime.now(pytz.utc)
         
+        # Convert UTC time to the specified timezone
+        specified_timezone = pytz.timezone(timezone)
+        current_time_in_timezone = current_time.astimezone(specified_timezone)
+        
+        # Set the time to midnight
+        midnight_in_timezone = current_time_in_timezone.replace(hour=0, minute=0, second=0, microsecond=0)
+        
+        return midnight_in_timezone
+    
     def parse(self):
         if self._response is None:
             raise Exception("No response set for source: " + self.name)

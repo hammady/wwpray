@@ -18,7 +18,7 @@ params:
 
 provider:
   name: aws
-  runtime: python3.9	
+  runtime: python3.9
   environment:
     LOG_LEVEL: ${param:log_level}
     S3_BUCKET: ${param:s3_bucket}
