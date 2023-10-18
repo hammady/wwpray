@@ -38,6 +38,7 @@ provider:
 functions:
   generator:
     handler: index.handler
+    timeout: 60 # default is 6, not enough for generation of static site
     events:
       # Invoke Lambda function each time a new object is created in the bucket
       - s3: # Generates S3BucketWwpraydev CloudFormation resource
@@ -46,6 +47,10 @@ functions:
           rules:
             - prefix: data/
             - suffix: last_updated.txt
+
+package:
+  # we need devDependencies to run the build script
+  excludeDevDependencies: false
 
 # https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html
 resources:
