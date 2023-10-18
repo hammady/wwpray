@@ -5,3 +5,4 @@ from .weic import WEICSource
 from .isnacanada import ISNACanadaSource
 from .darfoundation import DarFoundationSource
 from .alfalah import AlfalahSource
+from .alfarooq import AlfarooqSource
