@@ -11,6 +11,10 @@ module.exports = async (dataFilePath, lastUpdatedFilePath, destinationDir) => {
     fs.mkdirSync(writableRootDir, { recursive: true })
     fs.cpSync(svelteDir, path.join(writableRootDir, 'svelte'), { recursive: true })
 
+    for (const file of ['svelte', 'package.json', 'package-lock.json', 'node_modules']) {
+        fs.cpSync(file, writableRootDir + '/' + file, { recursive: true })
+    }
+    
     process.chdir(writableRootDir)
     
     // Copy data files to be used by Svelte
