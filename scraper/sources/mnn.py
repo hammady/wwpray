@@ -1,4 +1,4 @@
-from .tma import TMASource
+from .bases import TMASource
 
 
 class MNNexusSource(TMASource):

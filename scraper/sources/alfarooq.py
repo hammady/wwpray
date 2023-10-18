@@ -1,17 +1,14 @@
-from .base import Source
-from bs4 import BeautifulSoup
+from .bases import HTMLSource
 
 
-class AlfarooqSource(Source):
+class AlfarooqSource(HTMLSource):
     def __init__(self):
         super().__init__("Alfarooq", headers={
             "Accept": "text/html",
         }, url="https://www.masjidfarooq.com/")
         
     def parse(self):
-        if self._response is None:
-            raise Exception("No response set for source: " + self.name)
-        soup = BeautifulSoup(self._response.text, "html.parser")
+        soup = super().parse()
 
         nested_rows = soup.select("table.dptTimetable > tr:nth-child(4) > tr")
 

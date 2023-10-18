@@ -1,16 +1,14 @@
-from .base import Source
-from bs4 import BeautifulSoup
+from .bases import HTMLSource
 
-class ICCOSource(Source):
+
+class ICCOSource(HTMLSource):
     def __init__(self):
         super().__init__("ICCO", headers={
             "Accept": "text/html",
         }, url="https://centres.macnet.ca/icco/")
         
     def parse(self):
-        if self._response is None:
-            raise Exception("No response set for source: " + self.name)
-        soup = BeautifulSoup(self._response.text, "html.parser")
+        soup = super().parse()
 
         nested_rows = soup.select("#dailyprayertime-2 > table > tr:nth-child(4) tr")
 

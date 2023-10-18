@@ -1,6 +1,7 @@
 from .base import Source
 from time import time
 
+
 class MasjidalSource(Source):
     def __init__(self, masjid_id, extra_jumas=[]):
         epoch_ms = int(time()*1000)

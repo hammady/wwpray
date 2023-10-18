@@ -1,6 +1,7 @@
 from .base import Source
 from datetime import datetime, date, time
 
+
 class MasjidBoxSource(Source):
     def __init__(self, apikey, masjidbox_id):
         # get today's midnight time in iso format including local time zone

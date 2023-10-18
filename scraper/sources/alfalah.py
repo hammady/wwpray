@@ -1,4 +1,4 @@
-from .masjidal import MasjidalSource
+from .bases import MasjidalSource
 
 
 class AlfalahSource(MasjidalSource):

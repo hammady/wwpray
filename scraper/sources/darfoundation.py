@@ -1,4 +1,4 @@
-from .masjidbox import MasjidBoxSource
+from .bases import MasjidBoxSource
 
 class DarFoundationSource(MasjidBoxSource):
     def __init__(self):

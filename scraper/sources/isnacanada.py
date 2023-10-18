@@ -1,4 +1,4 @@
-from .masjidbox import MasjidBoxSource
+from .bases import MasjidBoxSource
 
 class ISNACanadaSource(MasjidBoxSource):
     def __init__(self):
