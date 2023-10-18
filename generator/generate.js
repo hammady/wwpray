@@ -9,6 +9,7 @@ module.exports = async (dataFilePath, lastUpdatedFilePath, destinationDir) => {
     // Create destination directory and writable root directory
     fs.mkdirSync(destinationDir, { recursive: true })
     fs.mkdirSync(writableRootDir, { recursive: true })
+    fs.cpSync(svelteDir, path.join(writableRootDir, 'svelte'), { recursive: true })
 
     process.chdir(writableRootDir)
     
