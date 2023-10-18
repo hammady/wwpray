@@ -24,8 +24,8 @@ module.exports = async (dataFilePath, lastUpdatedFilePath, destinationDir) => {
   process.chdir(writableRootDir);
 
   // Copy data files to be used by Svelte
-  fs.cpSync(dataFilePath, svelteDir + "/src/routes/notified.json");
-  fs.cpSync(lastUpdatedFilePath, svelteDir + "/src/routes/last_updated.txt");
+  fs.cpSync(dataFilePath, path.join(svelteDir, "src/routes/notified.json"));
+  fs.cpSync(lastUpdatedFilePath, path.join(svelteDir, "/src/routes/last_updated.txt"));
 
   // Generate static site using vite
   execSync("npm install", { stdio: "inherit" }) // Do we need this?
