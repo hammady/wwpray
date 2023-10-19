@@ -11,7 +11,7 @@ params:
   prod:
     s3_bucket: wwpray-prod
     # TODO later configure using a CNAME
-    subscriptions_base_url: TODO
+    subscriptions_base_url: https://w9xzrotbfe.execute-api.us-east-1.amazonaws.com/
 
 provider:
   name: aws

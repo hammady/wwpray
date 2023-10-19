@@ -1,4 +1,9 @@
 {
+  "name": "wwpray-subscriber",
+  "version": "1.0.0",
+  "description": "Subscriber service for wwpray",
+  "author": "Hossam Hammady <github@hammady.net>",
+  "license": "MIT",
   "devDependencies": {
     "serverless-python-requirements": "^6.0.0"
   }
