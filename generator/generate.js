@@ -2,9 +2,8 @@ module.exports = async (dataFilePath, lastUpdatedFilePath, destinationDir) => {
   const fs = require("fs");
   const { build } = require("vite");
   const path = require("path");
-  const { execSync } = require("child_process");
   const writableRootDir = "/tmp/generator";
-  const svelteDir = "./svelte";
+  const svelteDir = path.join(writableRootDir, "svelte");
 
   // Create destination directory and writable root directory
   fs.mkdirSync(destinationDir, { recursive: true });
@@ -20,8 +19,6 @@ module.exports = async (dataFilePath, lastUpdatedFilePath, destinationDir) => {
     fs.cpSync(file, path.join(writableRootDir, file), { recursive: true });
   }
 
-  process.chdir(writableRootDir);
-
   // Copy data files to be used by Svelte
   fs.cpSync(dataFilePath, path.join(svelteDir, "src/routes/notified.json"));
   fs.cpSync(
@@ -29,8 +26,9 @@ module.exports = async (dataFilePath, lastUpdatedFilePath, destinationDir) => {
     path.join(svelteDir, "/src/routes/last_updated.txt")
   );
 
+  process.chdir(svelteDir);
+
   // Generate static site using vite
-  execSync("npm install", { stdio: "inherit" }); // Do we need this?
   await build();
 
   // Copy necessary static files to destination directory
