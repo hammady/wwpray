@@ -10,6 +10,7 @@ module.exports = async (dataFilePath, lastUpdatedFilePath, destinationDir) => {
   fs.mkdirSync(writableRootDir, { recursive: true });
 
   // Copy necessary files to writable root directory
+  console.log(`Copying code files to writable root directory: ${writableRootDir}...`);
   for (const file of [
     "svelte",
     "package.json",
@@ -20,21 +21,27 @@ module.exports = async (dataFilePath, lastUpdatedFilePath, destinationDir) => {
   }
 
   // Copy data files to be used by Svelte
-  fs.cpSync(dataFilePath, path.join(svelteDir, "src/routes/notified.json"));
+  console.log(`Copying data files to svelte directory: ${svelteDir}...`);
+  fs.cpSync(
+    dataFilePath,
+    path.join(svelteDir, "src/routes/notified.json"));
   fs.cpSync(
     lastUpdatedFilePath,
-    path.join(svelteDir, "/src/routes/last_updated.txt")
+    path.join(svelteDir, "src/routes/last_updated.txt")
   );
 
+  console.log(`Changing directory to svelte directory: ${svelteDir}...`);
   process.chdir(svelteDir);
 
   // Generate static site using vite
+  console.log(`Building static site using vite...`);
   await build();
 
   // Copy necessary static files to destination directory
+  console.log(`Copying generated static files to destination directory: ${destinationDir}...`);
   const svelteBuildDir = path.join(svelteDir, "build");
-  for (const file of ["/_app", "/index.html", "/favicon.png"]) {
-    fs.cpSync(svelteBuildDir + file, destinationDir + file, {
+  for (const file of ["_app", "index.html", "favicon.png"]) {
+    fs.cpSync(path.join(svelteBuildDir, file), path.join(destinationDir, file), {
       recursive: true,
     });
   }
