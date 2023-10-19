@@ -5,7 +5,7 @@ name: Deploy subscriber service to prod
 on:
   push:
     branches:
-      - main
+      - change-this-to-main-to-deploy-on-push-to-main
     paths:
       - subscriber/**
       - .github/workflows/sls-subscriber.yaml
