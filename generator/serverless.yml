@@ -6,12 +6,10 @@ frameworkVersion: '3'
 params:
   dev:
     s3_bucket: wwpray-dev
-    # TODO later configure using a CNAME
     subscriptions_base_url: https://lgigm92nn6.execute-api.us-east-1.amazonaws.com
   prod:
     s3_bucket: wwpray-prod
-    # TODO later configure using a CNAME
-    subscriptions_base_url: https://w9xzrotbfe.execute-api.us-east-1.amazonaws.com/
+    subscriptions_base_url: https://w9xzrotbfe.execute-api.us-east-1.amazonaws.com
 
 provider:
   name: aws
