@@ -5,28 +5,29 @@ service: notifier
 frameworkVersion: '3'
 
 params:
-  default:
-    email_template: wwpray-times-changed
   dev:
     log_level: debug
     s3_bucket: wwpray-dev
     event_enabled: false
-    feedback_email: wwpray@aws.hammady.net
+    feedback_email: hello@dev.wwpray.net
+    email_template: wwpray-times-changed-dev
+    website_url: http://dev.wwpray.net
   prod:
     log_level: info
     s3_bucket: wwpray-prod
     event_enabled: true
-    # TODO change to other emails?
-    feedback_email: wwpray@aws.hammady.net
+    feedback_email: hello@wwpray.net
+    email_template: wwpray-times-changed-prod
+    website_url: https://wwpray.net
 
 provider:
   name: aws
-  runtime: python3.9	
+  runtime: python3.9
   environment:
     LOG_LEVEL: ${param:log_level}
     S3_BUCKET: ${param:s3_bucket}
     CONTACT_LIST_NAME: wwpray
-    EMAIL_FROM: wwpray-noreply@hammady.net
+    EMAIL_FROM: noreply@wwpray.net
     EMAIL_TEMPLATE: ${param:email_template}
   iam:
     role:
@@ -101,7 +102,7 @@ resources:
             <p>
             Regards,<br/>
             The WWPray team<br/>
-            Web site coming soon.<br/>
+            ${param:website_url}<br/>
             For feedback, please email <a href="mailto:${param:feedback_email}">${param:feedback_email}</a><br/>
             <a href="https://github.com/hammady/wwpray">Github</a><br/>
             </p>
