@@ -13,7 +13,7 @@ params:
     event_enabled: false
     feedback_email: hello@dev.wwpray.net
     email_template: wwpray-times-changed-dev
-    website_url: http://dev.wwpray.net
+    website_url: https://dev.wwpray.net
   prod:
     log_level: info
     s3_bucket: wwpray-prod

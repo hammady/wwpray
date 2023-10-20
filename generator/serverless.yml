@@ -4,12 +4,17 @@ service: generator
 frameworkVersion: '3'
 
 params:
+  default:
+    # Create a new ACM certificate in the AWS console and replace the value below
+    acm_certificate_arn: 1cc2f296-4575-47b9-82ef-9683b97d56e4
   dev:
     s3_bucket: wwpray-dev
     subscriptions_base_url: https://lgigm92nn6.execute-api.us-east-1.amazonaws.com
+    custom_domain: dev.wwpray.net
   prod:
     s3_bucket: wwpray-prod
     subscriptions_base_url: https://w9xzrotbfe.execute-api.us-east-1.amazonaws.com
+    custom_domain: wwpray.net
 
 provider:
   name: aws
@@ -98,13 +103,19 @@ resources:
               OriginPath: /static
               S3OriginConfig:
                 OriginAccessIdentity: ''
-          # Aliases:
-          #   - wwpray.net
-          #   - www.wwpray.net
-          # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-viewercertificate.html
+          Aliases:
+            - ${param:custom_domain}
           ViewerCertificate:
-            # Refactor once we set up custom domains in Aliases
-            CloudFrontDefaultCertificate: true
+            AcmCertificateArn: !Join
+              - ''
+              - - 'arn:aws:acm:'
+                - ${aws:region}
+                - ':'
+                - ${aws:accountId}
+                - ':certificate/'
+                - ${param:acm_certificate_arn}
+            SslSupportMethod: sni-only
+            MinimumProtocolVersion: TLSv1.2_2021
           DefaultRootObject: index.html
           PriceClass: PriceClass_100 # North America & Europe edge locations only
           CacheBehaviors:

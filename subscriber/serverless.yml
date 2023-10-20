@@ -8,7 +8,7 @@ params:
     log_level: debug
     feedback_email: hello@dev.wwpray.net
     email_template: wwpray-subscription-confirmation-dev
-    website_url: http://dev.wwpray.net
+    website_url: https://dev.wwpray.net
   prod:
     log_level: info
     feedback_email: hello@wwpray.net
