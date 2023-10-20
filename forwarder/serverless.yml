@@ -9,16 +9,13 @@ params:
     log_level: debug
     s3_bucket: wwpraymail-dev
     ses_rule_set: wwpray-feedback-dev
-    feedback_email: wwpray@aws.hammady.net
-    email_from: wwpray-noreply@hammady.net
+    feedback_email: hello@dev.wwpray.net
     email_to: amazon@hammady.net
   prod:
     log_level: info
     s3_bucket: wwpraymail-prod
     ses_rule_set: wwpray-feedback-prod
-    # TODO change to other emails?
-    feedback_email: wwpray@aws.hammady.net
-    email_from: wwpray-noreply@hammady.net
+    feedback_email: hello@wwpray.net
     email_to: amazon@hammady.net
 
 provider:
@@ -27,7 +24,7 @@ provider:
   environment:
     LOG_LEVEL: ${param:log_level}
     S3_BUCKET: ${param:s3_bucket}
-    EMAIL_FROM: ${param:email_from}
+    EMAIL_FROM: noreply@wwpray.net
     EMAIL_TO: amazon@hammady.net
   iam:
     role:
