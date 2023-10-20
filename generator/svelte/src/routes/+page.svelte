@@ -91,7 +91,7 @@
 			<Spacer />
 		{/if}
 
-		<div class="px-8 w-full capitalize">
+		<div class="w-full capitalize">
 			{#each masjids as [name, { iqamas, jumas }], i}
 				<h2 class="flex items-center justify-between">
 					<span>{name}</span>
