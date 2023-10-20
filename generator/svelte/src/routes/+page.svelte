@@ -65,6 +65,7 @@
 		subscribeToMasjid({ email, topics });
 
 		sideInput.checked = false;
+		form.reset();
 	};
 </script>
 
