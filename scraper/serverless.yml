@@ -38,7 +38,7 @@ functions:
     handler: handler.run
     timeout: 15 # default is 6, TODO optimize later by doing requests in parallel
     events:
-      # Invoke Lambda function every 6 hours on minute 0
+      # Invoke Lambda function everyday at 7am UTC
       - schedule:
           rate: cron(0 7 * * ? *)
           enabled: ${param:cron_enabled}
