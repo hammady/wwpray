@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+body {
+	overflow: auto;
+}
+
+body:has(.drawer-toggle:checked) {
+	overflow: hidden;
+}
