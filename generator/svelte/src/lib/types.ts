@@ -15,3 +15,8 @@ export interface ISubscribeResponse {
 	message: string;
 	topics: string[];
 }
+
+export interface IMasjid {
+	iqamas: Record<string, { time: string }>;
+	jumas: string[];
+}

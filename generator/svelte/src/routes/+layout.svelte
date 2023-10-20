@@ -1,6 +1,6 @@
 <script>
-	import Navbar from '$lib/components/Navbar.svelte';
-	import Toast from '$lib/components/Toast.svelte';
+	import Navbar from '$lib/components/uikit/Navbar.svelte';
+	import Toast from '$lib/components/uikit/Toast.svelte';
 	import { toasts } from '$lib/stores/toast';
 	import { flip } from 'svelte/animate';
 	import '../app.css';
