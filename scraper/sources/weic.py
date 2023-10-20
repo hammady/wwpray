@@ -13,12 +13,20 @@ class WEICSource(HTMLSource):
         tbody = soup.select_one("#post-1851 > div > div > div > div.et_pb_section.et_pb_section_1.et_section_regular > div.et_pb_with_border.et_pb_row.et_pb_row_0 > div > div.et_pb_with_border.et_pb_module.et_pb_text.et_pb_text_0.et_pb_text_align_left.et_pb_bg_layout_light > div > table > tbody > tr:nth-child(2) > td > b > table")
         nested_rows = tbody.select_one("tr:nth-child(4)")
 
+        zuhr_spans = nested_rows.select("tr")[0].select("td.jamah > span")
+        if len(zuhr_spans) == 0:
+            # today is not Friday, this is a single value
+            zuhr_tag = nested_rows.select("tr")[0].select_one("td.jamah")
+        else:
+            # today is Friday, jumas will be listed instead of Zuhr, take the first span
+            zuhr_tag = zuhr_spans[0]
+
         iqamas = {
             "fajr": {
                 "time": tbody.select_one("tr:nth-child(3) > td.jamah").text.strip()
             },
             "zuhr": {
-                "time": nested_rows.select("tr")[0].select_one("td.jamah").text.strip()
+                "time": zuhr_tag.text.strip()
             },
             "asr": {
                 "time": nested_rows.select("tr")[1].select_one("td.jamah").text.strip()
