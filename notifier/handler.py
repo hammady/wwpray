@@ -33,13 +33,10 @@ def run(event, context):
     old_file_key = 'data/notified.json'
     old_file_path = '/tmp/notified.json'
 
-    def check_if_old_file_exists():
-        try:
-            s3_client.head_object(Bucket=bucket_name, Key=old_file_key)
-            return True
-        except ClientError:
-            return False
-    
+    def create_empty_old_file():
+        with open(old_file_path, 'w') as f:
+            json.dump({"masjids": {}}, f)
+            
     def replace_old_with_new():
         s3_client.upload_file(
             Filename=new_file_path,
@@ -158,7 +155,7 @@ def run(event, context):
                 ses_client.update_contact_list(ContactListName=contact_list_name, Topics=merged_topics)
                 logger.debug(f"Contact list updated: {contact_list_name}, topics: {merged_topics}")
             except ses_client.exceptions.NotFoundException:
-                logger.debug(f"Contact list doesn't exist, creating it: {contact_list_name}")
+                logger.warning(f"Contact list doesn't exist, creating it: {contact_list_name}")
                 ses_client.create_contact_list(ContactListName=contact_list_name, Topics=new_topics)
                 logger.debug(f"Contact list created: {contact_list_name}, topics: {new_topics}")
 
@@ -244,15 +241,16 @@ def run(event, context):
     download_new_file()
     logger.debug("New file downloaded")
     
-    # check if old file exists and create it if not
-    if not check_if_old_file_exists():
-        logger.debug("No old file found, creating one")
-        # copy new file to old file to cover the initial case
-        replace_old_with_new()
-
     # download old file from s3
-    download_old_file()
-    logger.debug("Old file downloaded")
+    try:
+        download_old_file()
+        logger.debug("Old file downloaded")
+    except ClientError as e:
+        if e.response['Error']['Code'] == '403': # S3 HEAD Object returns 403 if file doesn't exist!
+            create_empty_old_file()
+            logger.debug("Old file not found, created empty one")
+        else:
+            raise e
 
     # detect changes
     changes = detect_changes()

@@ -5,6 +5,8 @@ service: notifier
 frameworkVersion: '3'
 
 params:
+  default:
+    contact_list_name: wwpray
   dev:
     log_level: debug
     s3_bucket: wwpray-dev
@@ -26,7 +28,7 @@ provider:
   environment:
     LOG_LEVEL: ${param:log_level}
     S3_BUCKET: ${param:s3_bucket}
-    CONTACT_LIST_NAME: wwpray
+    CONTACT_LIST_NAME: ${param:contact_list_name}
     EMAIL_FROM: noreply@wwpray.net
     EMAIL_TEMPLATE: ${param:email_template}
   iam:
