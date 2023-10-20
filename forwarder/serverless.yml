@@ -24,7 +24,7 @@ provider:
   environment:
     LOG_LEVEL: ${param:log_level}
     S3_BUCKET: ${param:s3_bucket}
-    EMAIL_FROM: noreply@wwpray.net
+    EMAIL_FROM: WWPray Notifications <noreply@wwpray.net>
     EMAIL_TO: amazon@hammady.net
   iam:
     role:

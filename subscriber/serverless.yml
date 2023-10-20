@@ -21,7 +21,7 @@ provider:
   environment:
     LOG_LEVEL: ${param:log_level}
     CONTACT_LIST_NAME: wwpray
-    EMAIL_FROM: noreply@wwpray.net
+    EMAIL_FROM: WWPray Notifications <noreply@wwpray.net>
     EMAIL_TEMPLATE: ${param:email_template}
   httpApi:
     cors: true
@@ -60,7 +60,7 @@ resources:
       Properties:
         Template:
           TemplateName: ${param:email_template}
-          SubjectPart: "WWPray: Subscription confirmation"
+          SubjectPart: "Subscription confirmation"
           TextPart: ''
           HtmlPart: |
             Dear subscriber,<br/>

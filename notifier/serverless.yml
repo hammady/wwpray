@@ -29,7 +29,7 @@ provider:
     LOG_LEVEL: ${param:log_level}
     S3_BUCKET: ${param:s3_bucket}
     CONTACT_LIST_NAME: ${param:contact_list_name}
-    EMAIL_FROM: noreply@wwpray.net
+    EMAIL_FROM: WWPray Notifications <noreply@wwpray.net>
     EMAIL_TEMPLATE: ${param:email_template}
   iam:
     role:
@@ -77,7 +77,7 @@ resources:
       Properties:
         Template:
           TemplateName: ${param:email_template}
-          SubjectPart: "WWPray/{{masjid}}: Prayer times have changed"
+          SubjectPart: "[{{masjid}}] Prayer times have changed"
           TextPart: ''
           HtmlPart: |
             Dear subscriber,<br/>
