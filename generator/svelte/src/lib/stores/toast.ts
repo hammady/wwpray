@@ -5,10 +5,10 @@ import { writable } from 'svelte/store';
 export const toasts = writable<IToast[]>([]);
 
 const addToast = (type: EAlertType, message: string) => {
-	toasts.update((t) => [...t, { type, message }]);
+	toasts.update((t) => [{ type, message, id: Date.now() }, ...t]);
 
 	setTimeout(() => {
-		toasts.update((t) => t.filter((x) => x.message !== message));
+		toasts.update((t) => t.filter((toast) => toast.id !== t[0].id));
 	}, TOAST_TIMEOUT);
 };
 

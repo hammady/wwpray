@@ -19,7 +19,7 @@ export const subscribeToMasjid = async ({ email, topics }: ISubscribeArgs) => {
 	const data = (await response.json()) satisfies ISubscribeResponse;
 
 	if (!response.ok) {
-		toast.error(data?.message ?? 'An error occurred');
+		return toast.error(data?.message ?? 'An error occurred');
 	}
 
 	data.message && toast.success(data.message);
