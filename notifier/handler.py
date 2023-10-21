@@ -86,8 +86,8 @@ def run(event, context):
                 continue
             
             # check if iqamas changed
-            new_iqamas = new_value["iqamas"]
-            old_iqamas = old_value["iqamas"]
+            new_iqamas = new_value.get("iqamas")
+            old_iqamas = old_value.get("iqamas")
 
             # check if new_iqamas is None (masjid was attempted but failed to be scraped)
             if new_iqamas is None:
