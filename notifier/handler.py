@@ -37,9 +37,9 @@ def run(event, context):
         with open(old_file_path, 'w') as f:
             json.dump({"masjids": {}}, f)
             
-    def replace_old_with_new():
+    def upload_old_file():
         s3_client.upload_file(
-            Filename=new_file_path,
+            Filename=old_file_path,
             Bucket=bucket_name,
             Key=old_file_key
         )
@@ -64,20 +64,14 @@ def run(event, context):
             Key=new_file_key
         )
 
-    def create_last_updated_timestamp():
-        # generate UTC timestamp in ISO format
-        ts = datetime.datetime.utcnow().isoformat()
-        s3_client.put_object(
-            Bucket=bucket_name,
-            Key='data/last_updated.txt',
-            Body=ts
-        )
-
     def detect_changes():
         old_data = read_json(old_file_path)
         logger.debug(f"Old data: {old_data}")
         new_data = read_json(new_file_path)
         logger.debug(f"New data: {new_data}")
+
+        # generate UTC timestamp in ISO format
+        ts = datetime.datetime.utcnow().isoformat()
 
         changes = {}
 
@@ -88,11 +82,23 @@ def run(event, context):
             if old_value is None:
                 # masjid doesn't exist in old data, add it to changes
                 changes[new_key] = True
+                new_value["last_updated"] = ts
                 continue
             
             # check if iqamas changed
             new_iqamas = new_value["iqamas"]
             old_iqamas = old_value["iqamas"]
+
+            # check if new_iqamas is None (masjid was attempted but failed to be scraped)
+            if new_iqamas is None:
+                # copy all values from old data
+                new_value["iqamas"] = old_iqamas
+                new_value["jumas"] = old_value["jumas"]
+                new_value["last_updated"] = old_value["last_updated"]
+                continue
+
+            new_value["last_updated"] = ts
+
             for new_iqama_key, new_iqama_value in new_iqamas.items():
                 old_iqama_value = old_iqamas.get(new_iqama_key)
                 if old_iqama_value is None or new_iqama_value["time"] != old_iqama_value["time"]:
@@ -108,12 +114,13 @@ def run(event, context):
                 changes[new_key] = True
                 new_value["jumas_changed"] = True
 
-        # if there are changes do the following
+        # replace old file with new data
+        with open(old_file_path, 'w') as f:
+            json.dump(new_data, f, indent=4)
+        
+        # if there are changes return them
         if len(changes.keys()) > 0:
-            # 1. write back the new file
-            with open(new_file_path, 'w') as f:
-                json.dump(new_data, f, indent=4)
-            # 2. return only the masjids that changed
+            # return only the masjids that changed
             return {k: v for k, v in new_data["masjids"].items() if k in changes.keys()}
     
     def notify_subscribers(changes):
@@ -255,23 +262,15 @@ def run(event, context):
     # detect changes
     changes = detect_changes()
 
+    # replace old file with new one
+    upload_old_file()
+    logger.debug("Old file replaced with new one")
+
     # notify subscribers of changes if any
     if changes is None:
         logger.info("No changes detected")
-        # add last updated timestamp so that it shows a recent check even if not updated
-        create_last_updated_timestamp()
-        logger.debug("Last updated timestamp created")
     else:
         logger.info("Changes detected")
-
-        # replace old file with new one
-        replace_old_with_new()
-        logger.debug("Old file replaced with new one")
-
-        # add last updated timestamp
-        create_last_updated_timestamp()
-        logger.debug("Last updated timestamp created")
-
         # notify subscribers
         notify_subscribers(changes)
         logger.debug("Subscribers notified")

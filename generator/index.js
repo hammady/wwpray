@@ -16,8 +16,6 @@ module.exports.handler = async (event, context) => {
   }
   dataFileKey = 'data/notified.json'
   dataFilePath = '/tmp/notified.json'
-  lastUpdatedFileKey = 'data/last_updated.txt'
-  lastUpdatedFilePath = '/tmp/last_updated.txt'
 
   const { writeFile, readFile } = require("node:fs/promises");
 
@@ -72,16 +70,12 @@ module.exports.handler = async (event, context) => {
   console.log(`Downloading ${dataFileKey} from s3...`)
   await downloadFile(dataFileKey, dataFilePath)
   console.log(await readFile(dataFilePath, 'utf8'))
-  // download last updated file
-  console.log(`Downloading ${lastUpdatedFileKey} from s3...`)
-  await downloadFile(lastUpdatedFileKey, lastUpdatedFilePath)
-  console.log(await readFile(lastUpdatedFilePath, 'utf8'))
 
   // generate data
   const destinationDir = '/tmp/dist'
   const generate = require('./generate')
   console.log(`Generating data into ${destinationDir}...`)
-  await generate(dataFilePath, lastUpdatedFilePath, destinationDir)
+  await generate(dataFilePath, destinationDir)
 
   // upload data
   console.log(`Uploading ${destinationDir} to s3...`)

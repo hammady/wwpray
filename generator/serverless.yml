@@ -49,7 +49,7 @@ functions:
           event: s3:ObjectCreated:*
           rules:
             - prefix: data/
-            - suffix: last_updated.txt
+            - suffix: notified.json
 
 package:
   # we need devDependencies to run the build script

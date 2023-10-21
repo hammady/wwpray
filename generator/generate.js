@@ -1,4 +1,4 @@
-module.exports = async (dataFilePath, lastUpdatedFilePath, destinationDir) => {
+module.exports = async (dataFilePath, destinationDir) => {
   const fs = require("fs");
   const { build } = require("vite");
   const path = require("path");
@@ -21,14 +21,10 @@ module.exports = async (dataFilePath, lastUpdatedFilePath, destinationDir) => {
   }
 
   // Copy data files to be used by Svelte
-  console.log(`Copying data files to svelte directory: ${svelteDir}...`);
+  console.log(`Copying data file to svelte directory: ${svelteDir}...`);
   fs.cpSync(
     dataFilePath,
     path.join(svelteDir, "src/routes/notified.json"));
-  fs.cpSync(
-    lastUpdatedFilePath,
-    path.join(svelteDir, "src/routes/last_updated.txt")
-  );
 
   console.log(`Changing directory to svelte directory: ${svelteDir}...`);
   process.chdir(svelteDir);
