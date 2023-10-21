@@ -13,7 +13,10 @@ class Source:
     def request(self):
         if self._url is None:
             raise Exception("No URL set for source: " + self.name)
-        response = requests_get(self._url, headers=self._headers)
+        response = requests_get(
+            self._url,
+            headers=self._headers,
+            timeout=(3.05, 2)) # 3.05 seconds to connect, 2 seconds to read
         response.raise_for_status()
         self._response = response
 

@@ -2,8 +2,9 @@ import os
 import datetime
 import logging
 import json
+import traceback
 from boto3 import client as boto3_client
-
+from tenacity import retry, stop_after_attempt, wait_fixed
 
 # set log level from environment variable, defaulting to WARNING
 # valid values are DEBUG, INFO, WARNING, ERROR, CRITICAL
@@ -21,19 +22,32 @@ def run(event, context):
         raise Exception("No SOURCES set, please set SOURCES environment variable")
     source_class_names = source_class_names.split(",")
 
+    @retry(wait=wait_fixed(2), stop=stop_after_attempt(3))
+    def process_source(source):
+        logger.info(f"Running source: {source.name}")
+        source.request()
+        return source.parse()
+
     response = {"max_jumaas": 0, "masjids": {}}
+    processed = 0
     for source_class_name in source_class_names:
         klass = getattr(__import__("sources"), source_class_name)
         source = klass()
-        logger.info(f"Running source: {source.name}")
-        source.request()
-        iqamas, jumas = source.parse()
+        iqamas = None
+        jumas = None
+        try:
+            iqamas, jumas = process_source(source)
+            processed += 1
+        except Exception:
+            logger.error(f"Failed to process source {source.name}: {traceback.format_exc()}")
+            continue
+        finally:
+            response["masjids"][source.name] = {
+                "iqamas": iqamas,
+                "jumas": jumas,
+            }            
         logger.info(f"Iqamas: {iqamas}")
         logger.info(f"Jumas: {jumas}")
-        response["masjids"][source.name] = {
-            "iqamas": iqamas,
-            "jumas": jumas,
-        }
         response["max_jumaas"] = max(response["max_jumaas"], len(jumas))
         logger.debug(f"Max jumas: {response['max_jumaas']}")
     
@@ -53,4 +67,4 @@ def run(event, context):
         Key='data/scraped.json'
     )
 
-    return "Success"
+    return f"Scraped {processed} out of {len(source_class_names)} sources"
