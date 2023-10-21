@@ -223,8 +223,15 @@ def run(event, context):
                         raise e
 
         def iterate_on_topics_and_send_email_to_subscribers():
+            # In non-prod envs, we don't want to send emails to all subscribers
+            # Instead we send all (reduced) emails for a specific topic to a single email address
+            send_all_to = os.environ.get('SEND_ALL_TO')
             for topic, values in changes.items():
                 logger.info(f"Topic: {topic}, Values: {values}")
+                if send_all_to is not None and send_all_to != '':
+                    logger.debug(f"Sending all emails to: {send_all_to}")
+                    send_email_to_contacts([{"EmailAddress": send_all_to}], topic, values)
+                    continue
                 # get contacts for topic
                 next_token = None
                 while True:
@@ -253,7 +260,9 @@ def run(event, context):
         download_old_file()
         logger.debug("Old file downloaded")
     except ClientError as e:
-        if e.response['Error']['Code'] == '403': # S3 HEAD Object returns 403 if file doesn't exist!
+        code = e.response['Error']['Code']
+        # S3 HEAD Object returns 403 if file doesn't exist in some cases
+        if code == '403' or code == '404':
             create_empty_old_file()
             logger.debug("Old file not found, created empty one")
         else:

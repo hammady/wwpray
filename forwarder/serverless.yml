@@ -5,18 +5,18 @@ service: forwarder
 frameworkVersion: '3'
 
 params:
+  default:
+    admin_email: amazon@hammady.net
   dev:
     log_level: debug
     s3_bucket: wwpraymail-dev
     ses_rule_set: wwpray-feedback-dev
     feedback_email: hello@dev.wwpray.net
-    email_to: amazon@hammady.net
   prod:
     log_level: info
     s3_bucket: wwpraymail-prod
     ses_rule_set: wwpray-feedback-prod
     feedback_email: hello@wwpray.net
-    email_to: amazon@hammady.net
 
 provider:
   name: aws
@@ -25,7 +25,7 @@ provider:
     LOG_LEVEL: ${param:log_level}
     S3_BUCKET: ${param:s3_bucket}
     EMAIL_FROM: WWPray Notifications <noreply@wwpray.net>
-    EMAIL_TO: amazon@hammady.net
+    EMAIL_TO: ${param:admin_email}
   iam:
     role:
       statements:
