@@ -4,6 +4,9 @@ from requests import get as requests_get
 class Source:
     def __init__(self, name, url=None, headers = {}):
         self.name = name
+        self.display_name = None
+        self.website = None
+        self.address = None
         self._headers = headers
         self._url = url
         self._counter_labels = [

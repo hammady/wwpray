@@ -6,6 +6,9 @@ class WEICSource(HTMLSource):
         super().__init__("WestEndIslamicCenter", headers={
             "Accept": "text/html",
         }, url="https://weicenter.ca/")
+        self.display_name = 'West End Islamic Center'
+        self.website = 'https://weicenter.ca/'
+        self.address = '12,13-4161 Sladeview Crescent, Mississauga, ON L5L 5R3'
         
     def parse(self):
         soup = super().parse()

@@ -40,10 +40,11 @@ def run(event, context):
         for source_class_name in source_class_names:
             klass = getattr(__import__("sources"), source_class_name)
             source = klass()
-            # Initialize the response object with empty results, in case the thread fails
+            # Initialize the response object with metadata, in case the thread fails
             response["masjids"][source.name] = {
-                "iqamas": None,
-                "jumas": None,
+                "display_name": source.display_name,
+                "website": source.website,
+                "address": source.address
             }
             # Submit the thread to the executor which will be run immediately
             futures.append(executor.submit(process_source, source))
@@ -54,10 +55,8 @@ def run(event, context):
                 # Get the result of the thread, or raise an exception if the thread failed
                 source, iqamas, jumas = future.result()
                 processed += 1
-                response["masjids"][source.name] = {
-                    "iqamas": iqamas,
-                    "jumas": jumas,
-                }            
+                response["masjids"][source.name]["iqamas"] = iqamas
+                response["masjids"][source.name]["jumas"] = jumas
                 logger.info(f"[{source.name}] Iqamas: {iqamas}. Jumas: {jumas}")
             except Exception:
                 logger.error(f"Failed to process source: {traceback.format_exc()}")

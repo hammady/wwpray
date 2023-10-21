@@ -6,6 +6,9 @@ class AlfarooqSource(HTMLSource):
         super().__init__("Alfarooq", headers={
             "Accept": "text/html",
         }, url="https://www.masjidfarooq.com/")
+        self.display_name = 'Masjid Al-Farooq'
+        self.website = 'https://www.masjidfarooq.com/'
+        self.address = '935 Eglinton Ave W, Mississauga, ON L5V 1R6'
         
     def parse(self):
         soup = super().parse()

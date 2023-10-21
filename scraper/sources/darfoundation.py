@@ -8,3 +8,6 @@ class DarFoundationSource(MasjidBoxSource):
             timezone="America/Toronto"
         )
         self.name = "DarFoundation"
+        self.display_name = 'Dar Foundation'
+        self.website = 'https://darfoundation.com/'
+        self.address = '485 Morden Rd, Oakville, ON, L6K 3W6'

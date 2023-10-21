@@ -6,6 +6,9 @@ class ICCOSource(HTMLSource):
         super().__init__("ICCO", headers={
             "Accept": "text/html",
         }, url="https://centres.macnet.ca/icco/")
+        self.display_name = 'Islamic Community Centre of Ontario'
+        self.website = 'https://centres.macnet.ca/icco/'
+        self.address = '2550 Dunwin Dr, Mississauga, ON L5L 1T1'
         
     def parse(self):
         soup = super().parse()
