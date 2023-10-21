@@ -7,13 +7,12 @@ frameworkVersion: '3'
 params:
   default:
     sources: MNNexusSource,ShalimarSource,ICCOSource,WEICSource,ISNACanadaSource,DarFoundationSource,AlfalahSource,AlfarooqSource,ArRehmanSource
+    s3_bucket: wwpray-${sls:stage}
   dev:
     log_level: debug
-    s3_bucket: wwpray-dev
     cron_enabled: false
   prod:
     log_level: info
-    s3_bucket: wwpray-prod
     cron_enabled: true
 
 provider:
