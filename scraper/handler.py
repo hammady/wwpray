@@ -37,7 +37,7 @@ def run(event, context):
     # Run each source in a separate thread
     with ThreadPoolExecutor() as executor:
         futures = []
-        for source_class_name in source_class_names:
+        for source_class_name in sorted(source_class_names):
             klass = getattr(__import__("sources"), source_class_name)
             source = klass()
             # Initialize the response object with metadata, in case the thread fails
