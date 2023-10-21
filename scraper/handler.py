@@ -3,6 +3,7 @@ import datetime
 import logging
 import json
 import traceback
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from boto3 import client as boto3_client
 from tenacity import retry, stop_after_attempt, wait_fixed
 
@@ -26,31 +27,42 @@ def run(event, context):
     def process_source(source):
         logger.info(f"Running source: {source.name}")
         source.request()
-        return source.parse()
+        iqamas, jumas = source.parse()
+        return source, iqamas, jumas
 
-    response = {"max_jumaas": 0, "masjids": {}}
+    # Results objects below are manipulated in the main thread, so we don't need to worry about locking
+    response = {"masjids": {}}
     processed = 0
-    for source_class_name in source_class_names:
-        klass = getattr(__import__("sources"), source_class_name)
-        source = klass()
-        iqamas = None
-        jumas = None
-        try:
-            iqamas, jumas = process_source(source)
-            processed += 1
-        except Exception:
-            logger.error(f"Failed to process source {source.name}: {traceback.format_exc()}")
-            continue
-        finally:
+
+    # Run each source in a separate thread
+    with ThreadPoolExecutor() as executor:
+        futures = []
+        for source_class_name in source_class_names:
+            klass = getattr(__import__("sources"), source_class_name)
+            source = klass()
+            # Initialize the response object with empty results, in case the thread fails
             response["masjids"][source.name] = {
-                "iqamas": iqamas,
-                "jumas": jumas,
-            }            
-        logger.info(f"Iqamas: {iqamas}")
-        logger.info(f"Jumas: {jumas}")
-        response["max_jumaas"] = max(response["max_jumaas"], len(jumas))
-        logger.debug(f"Max jumas: {response['max_jumaas']}")
-    
+                "iqamas": None,
+                "jumas": None,
+            }
+            # Submit the thread to the executor which will be run immediately
+            futures.append(executor.submit(process_source, source))
+
+        # Generate a callback for each thread to be called when the thread is done (no order guaranteed)
+        for future in as_completed(futures):
+            try:
+                # Get the result of the thread, or raise an exception if the thread failed
+                source, iqamas, jumas = future.result()
+                processed += 1
+                response["masjids"][source.name] = {
+                    "iqamas": iqamas,
+                    "jumas": jumas,
+                }            
+                logger.info(f"[{source.name}] Iqamas: {iqamas}. Jumas: {jumas}")
+            except Exception:
+                logger.error(f"Failed to process source: {traceback.format_exc()}")
+                continue
+
     # write response to json file
     json_file_path = "/tmp/output.json"
     with open(json_file_path, "w") as jsonfile:
