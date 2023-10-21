@@ -7,20 +7,19 @@ frameworkVersion: '3'
 params:
   default:
     contact_list_name: wwpray
+    s3_bucket: wwpray-${sls:stage}
+    email_template: wwpray-times-changed-${sls:stage}
+    email_from: WWPray Notifications <noreply@wwpray.net>
   dev:
     log_level: debug
-    s3_bucket: wwpray-dev
     event_enabled: false
     feedback_email: hello@dev.wwpray.net
-    email_template: wwpray-times-changed-dev
     website_url: https://dev.wwpray.net
     send_all_to: amazon@hammady.net
   prod:
     log_level: info
-    s3_bucket: wwpray-prod
     event_enabled: true
     feedback_email: hello@wwpray.net
-    email_template: wwpray-times-changed-prod
     website_url: https://wwpray.net
     send_all_to: ""
 
@@ -31,7 +30,7 @@ provider:
     LOG_LEVEL: ${param:log_level}
     S3_BUCKET: ${param:s3_bucket}
     CONTACT_LIST_NAME: ${param:contact_list_name}
-    EMAIL_FROM: WWPray Notifications <noreply@wwpray.net>
+    EMAIL_FROM: ${param:email_from}
     EMAIL_TEMPLATE: ${param:email_template}
     SEND_ALL_TO: ${param:send_all_to}
   iam:
