@@ -102,8 +102,9 @@ def run(event, context):
             for new_iqama_key, new_iqama_value in new_iqamas.items():
                 old_iqama_value = old_iqamas.get(new_iqama_key)
                 if old_iqama_value is None or new_iqama_value["time"] != old_iqama_value["time"]:
-                    # iqama changed, add it to changes
-                    changes[new_key] = True
+                    # iqama changed, add it to changes, unless it's maghrib
+                    if new_iqama_key != "maghrib":
+                        changes[new_key] = True
                     new_iqama_value["changed"] = True
 
             # check if jumas changed
@@ -277,7 +278,7 @@ def run(event, context):
 
     # notify subscribers of changes if any
     if changes is None:
-        logger.info("No changes detected")
+        logger.info("No changes detected, not counting Maghrib changes")
     else:
         logger.info("Changes detected")
         # notify subscribers
