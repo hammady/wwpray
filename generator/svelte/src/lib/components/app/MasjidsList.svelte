@@ -41,41 +41,43 @@
 
 		<p>Address: {address}</p>
 
-		<div class="overflow-x-auto px-4">
-			<table class="table table-zebra">
-				<thead>
-					<tr>
-						<th>Iqama</th>
-						<th>Time</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each entries(iqamas) as [iqama, { time }]}
+		<div class="px-2 md:px-4">
+			<div class="max-w-[90vw] overflow-x-auto">
+				<table class="table table-zebra">
+					<thead>
 						<tr>
-							<td>{iqama}</td>
-							<td>{time}</td>
-							<td>
-								<time datetime={last_updated} use:timeRendered={last_updated}>
-									<noscript>
-										{last_updated}
-									</noscript>
-								</time>
-							</td>
+							<th>Iqama</th>
+							<th>Time</th>
 						</tr>
-					{/each}
-				</tbody>
-			</table>
+					</thead>
+					<tbody>
+						{#each entries(iqamas) as [iqama, { time }]}
+							<tr>
+								<td>{iqama}</td>
+								<td>{time}</td>
+								<td>
+									<time datetime={last_updated} use:timeRendered={last_updated}>
+										<noscript>
+											{last_updated}
+										</noscript>
+									</time>
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+			<h3>Jumas</h3>
+			<ul>
+				{#each jumas as juma}
+					<li>
+						{juma}
+					</li>
+				{/each}
+			</ul>
+			{#if i !== masjids.length - 1}
+				<Divider />
+			{/if}
 		</div>
-		<h3>Jumas</h3>
-		<ul>
-			{#each jumas as juma}
-				<li>
-					{juma}
-				</li>
-			{/each}
-		</ul>
-		{#if i !== masjids.length - 1}
-			<Divider />
-		{/if}
 	{/each}
 </div>
