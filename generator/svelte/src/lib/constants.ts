@@ -15,3 +15,5 @@ export const ALERT_ICONS = {
 };
 
 export const TOAST_TIMEOUT = 5000;
+
+export const SUBSCRIPTION_SIDEOVER_ID = 'subscription-sideover';
