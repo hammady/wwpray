@@ -80,10 +80,13 @@
 	close-aria-label="close subscriptions sideover"
 >
 	<div slot="page" class="mx-auto prose max-w-6xl py-12 px-6 lg:px-8">
-		<h1>Masjid Prayer Times</h1>
+		<h1>{APP_NAME}</h1>
 		<p>
-			View prayer times for various masjids below. To find a specific masjid, use the search bar at
-			the top.
+			A website that shows the prayer times for a list of masjids.
+			The data is fetched from the masjid websites once daily.
+			You can subscribe to one or more masjids and receive email notifications when the prayer times change.
+			You can unsubscribe at any time by clicking the unsubscribe link in the email.
+			We employ a strict privacy policy and will never share your email with anyone.
 		</p>
 
 		{#if message}
@@ -144,7 +147,7 @@
 		action={SUBSCRIPTIONS_BASE_URL}
 		on:submit={onMasjidSubscribeSubmit}
 	>
-		<h2>Subscribe to Masjid Prayer Times</h2>
+		<h2>Subscribe to changes in prayer times</h2>
 
 		<div class="form-control w-full">
 			<label for="email" class="label">
