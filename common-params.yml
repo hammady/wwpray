@@ -1,0 +1,19 @@
+# This file contains common parameters for all services
+
+# SES contact list will be automatically created if it doesn't exist
+contact_list_name: wwpray
+
+# email_from is used as sender email address, must be verified on SES
+email_from: WWPray Notifications <noreply@wwpray.net>
+
+# feedback_email_user is used as feedback email user @ custom_domain
+feedback_email_user: hello
+
+# s3 bucket suffixed by dash then stage, where json data and static site will be stored
+data_bucket_prefix: wwpray
+
+# custom_domain is used as website url and feedback email domain
+dev:
+  custom_domain: dev.wwpray.net
+prod:
+  custom_domain: wwpray.net

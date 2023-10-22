@@ -6,21 +6,19 @@ frameworkVersion: '3'
 
 params:
   default:
-    contact_list_name: wwpray
-    s3_bucket: wwpray-${sls:stage}
+    contact_list_name: ${file(../common-params.yml):contact_list_name}
+    s3_bucket: ${file(../common-params.yml):data_bucket_prefix}-${sls:stage}
     email_template: wwpray-times-changed-${sls:stage}
-    email_from: WWPray Notifications <noreply@wwpray.net>
+    email_from: ${file(../common-params.yml):email_from}
+    feedback_email: ${file(../common-params.yml):feedback_email_user}@${file(../common-params.yml):${sls:stage}.custom_domain}
+    website_url: https://${file(../common-params.yml):${sls:stage}.custom_domain}
   dev:
     log_level: debug
     event_enabled: false
-    feedback_email: hello@dev.wwpray.net
-    website_url: https://dev.wwpray.net
-    send_all_to: amazon@hammady.net
+    send_all_to: MUST_BE_NON_EMPTY_IN_DEV
   prod:
     log_level: info
     event_enabled: true
-    feedback_email: hello@wwpray.net
-    website_url: https://wwpray.net
     send_all_to: ""
 
 provider:

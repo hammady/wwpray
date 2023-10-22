@@ -7,13 +7,12 @@ params:
   default:
     # Create a new ACM certificate in the AWS console and replace the value below
     acm_certificate_arn: 1cc2f296-4575-47b9-82ef-9683b97d56e4
-    s3_bucket: wwpray-${sls:stage}
+    s3_bucket: ${file(../common-params.yml):data_bucket_prefix}-${sls:stage}
+    custom_domain: ${file(../common-params.yml):${sls:stage}.custom_domain}
   dev:
     subscriptions_base_url: https://lgigm92nn6.execute-api.us-east-1.amazonaws.com
-    custom_domain: dev.wwpray.net
   prod:
     subscriptions_base_url: https://w9xzrotbfe.execute-api.us-east-1.amazonaws.com
-    custom_domain: wwpray.net
 
 provider:
   name: aws
