@@ -9,6 +9,7 @@
 	import Alert from '$lib/components/uikit/Alert.svelte';
 	import MasjidsList from '$lib/components/app/MasjidsList.svelte';
 	import SubscribeForm from '$lib/components/app/SubscribeForm.svelte';
+	import type { IMasjid } from '$lib/types';
 
 	// This data object is the one returned by the load function
 	// wait we didn't assign it to anything, how does it work?
@@ -22,7 +23,7 @@
 	$: masjids = entries(data.masjids).filter(([name]) => {
 		if (!search) return true;
 		return name.toLowerCase().includes(search.toLowerCase());
-	});
+	}) as [string, IMasjid][];
 
 	let masjidsListElement: HTMLUListElement;
 	let sideInputElement: HTMLInputElement;

@@ -4,6 +4,7 @@
 	import Divider from '../uikit/Divider.svelte';
 	import { SUBSCRIPTION_SIDEOVER_ID } from '$lib/constants';
 	import { toast } from '$lib/stores/toast';
+	import { formatISODate } from '$lib/utils';
 
 	export let masjids: [string, IMasjid][];
 	export let masjidsListElement: HTMLUListElement;
@@ -18,10 +19,14 @@
 
 		checkbox.checked = true;
 	};
+
+	const timeRendered = (node: HTMLTimeElement, lastUpdated: string) => {
+		node.innerHTML = formatISODate(lastUpdated);
+	};
 </script>
 
 <div class="w-full">
-	{#each masjids as [name, { display_name: displayName, address, website, iqamas, jumas }], i}
+	{#each masjids as [name, { display_name: displayName, last_updated: lastUpdated, address, website, iqamas, jumas }], i}
 		<h2 class="flex items-center justify-between">
 			<a href={website}>
 				{displayName}
@@ -49,19 +54,26 @@
 						<tr>
 							<td>{iqama}</td>
 							<td>{time}</td>
+							<td>
+								<time datetime={last_updated} use:timeRendered={last_updated}>
+									<noscript>
+										{last_updated}
+									</noscript>
+								</time>
+							</td>
 						</tr>
 					{/each}
 				</tbody>
 			</table>
-			<h3>Jumas</h3>
-			<ul>
-				{#each jumas as juma}
-					<li>
-						{juma}
-					</li>
-				{/each}
-			</ul>
 		</div>
+		<h3>Jumas</h3>
+		<ul>
+			{#each jumas as juma}
+				<li>
+					{juma}
+				</li>
+			{/each}
+		</ul>
 		{#if i !== masjids.length - 1}
 			<Divider />
 		{/if}

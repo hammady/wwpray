@@ -22,4 +22,5 @@ export interface IMasjid {
 	display_name: string;
 	address: string;
 	website: string;
+	last_updated: string;
 }
