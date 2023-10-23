@@ -41,15 +41,14 @@
 
 		<p>Address: {address}</p>
 
-		<p class="">
-			Last updated <time datetime={lastUpdated} use:timeRendered={lastUpdated}>
-				<noscript>{lastUpdated} UTC</noscript>
-			</time>
-		</p>
-
 		<div class="px-2 md:px-4">
+			<span>
+				Last updated <time datetime={lastUpdated} use:timeRendered={lastUpdated}>
+					<noscript>{lastUpdated} UTC</noscript>
+				</time>.
+			</span>
 			<div class="max-w-[90vw] overflow-x-auto">
-				<table class="table table-zebra">
+				<table class="mt-1 table table-zebra border border-neutral-content/50">
 					<thead>
 						<tr>
 							<th>Iqama</th>
