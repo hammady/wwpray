@@ -41,6 +41,12 @@
 
 		<p>Address: {address}</p>
 
+		<p class="">
+			Last updated <time datetime={lastUpdated} use:timeRendered={lastUpdated}>
+				<noscript>{lastUpdated} UTC</noscript>
+			</time>
+		</p>
+
 		<div class="px-2 md:px-4">
 			<div class="max-w-[90vw] overflow-x-auto">
 				<table class="table table-zebra">
