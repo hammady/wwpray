@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import localizedFormat from 'dayjs/plugin/localizedFormat';
-dayjs.extend(localizedFormat);
+import relativeTime from 'dayjs/plugin/relativeTime';
+dayjs.extend(relativeTime);
 
-export const formatISODate = (date: string) => dayjs(date).format('L LT');
+export const convertToRelativeTime = (isoDate: string) => dayjs().from(isoDate);

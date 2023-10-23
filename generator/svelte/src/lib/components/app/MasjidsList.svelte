@@ -4,7 +4,7 @@
 	import Divider from '../uikit/Divider.svelte';
 	import { SUBSCRIPTION_SIDEOVER_ID } from '$lib/constants';
 	import { toast } from '$lib/stores/toast';
-	import { formatISODate } from '$lib/utils';
+	import { convertToRelativeTime } from '$lib/utils';
 
 	export let masjids: [string, IMasjid][];
 	export let masjidsListElement: HTMLUListElement;
@@ -21,7 +21,7 @@
 	};
 
 	const timeRendered = (node: HTMLTimeElement, lastUpdated: string) => {
-		node.innerHTML = formatISODate(lastUpdated);
+		node.innerHTML = convertToRelativeTime(lastUpdated);
 	};
 </script>
 
@@ -55,13 +55,6 @@
 							<tr>
 								<td>{iqama}</td>
 								<td>{time}</td>
-								<td>
-									<time datetime={last_updated} use:timeRendered={last_updated}>
-										<noscript>
-											{last_updated}
-										</noscript>
-									</time>
-								</td>
 							</tr>
 						{/each}
 					</tbody>
