@@ -61,11 +61,11 @@
 		<span>Which masjids do you want to subscribe to?</span>
 	</label>
 	<ul class="w-full mt-1" bind:this={masjidsListElement}>
-		{#each masjids as [name]}
+		{#each masjids as [id, { display_name: name }]}
 			<li>
 				<label class="label justify-start cursor-pointer my-1">
 					<input
-						id={name}
+						{id}
 						type="checkbox"
 						name="topics"
 						class="checkbox checkbox-primary"
