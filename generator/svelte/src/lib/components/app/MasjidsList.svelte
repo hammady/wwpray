@@ -21,9 +21,11 @@
 </script>
 
 <div class="w-full">
-	{#each masjids as [name, { iqamas, jumas }], i}
+	{#each masjids as [name, { display_name: displayName, address, website, iqamas, jumas }], i}
 		<h2 class="flex items-center justify-between">
-			<span>{name}</span>
+			<a href={website}>
+				{displayName}
+			</a>
 
 			<button on:click={() => onMasjidSubscribeClick(name)}>
 				<label class="btn btn-primary btn-sm drawer-button" for={SUBSCRIPTION_SIDEOVER_ID}>
@@ -31,6 +33,8 @@
 				</label>
 			</button>
 		</h2>
+
+		<p>Address: {address}</p>
 
 		<div class="overflow-x-auto px-4">
 			<table class="table table-zebra">
