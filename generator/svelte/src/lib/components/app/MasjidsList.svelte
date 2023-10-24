@@ -48,7 +48,7 @@
 					<tbody>
 						{#each entries(iqamas) as [iqama, { time }]}
 							<tr>
-								<td>{iqama}</td>
+								<td class="capitalize">{iqama}</td>
 								<td>{time}</td>
 							</tr>
 						{/each}
