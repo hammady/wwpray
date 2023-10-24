@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { SUBSCRIPTION_SIDEOVER_ID } from '$lib/constants';
 	import { subscribeToMasjid } from '$lib/service';
+	import { masjidListElement } from '$lib/stores/elements';
 	import { toast } from '$lib/stores/toast';
 	import type { IMasjid } from '$lib/types';
 	import Spacer from '../uikit/Spacer.svelte';
 
 	export let masjids: [string, IMasjid][];
-	export let masjidsListElement: HTMLUListElement;
 	export let sideInputElement: HTMLInputElement;
 
 	// Progressive Enhancement
@@ -60,7 +60,7 @@
 	<label for="topics" class="label text-base font-medium">
 		<span>Which masjids do you want to subscribe to?</span>
 	</label>
-	<ul class="w-full mt-1" bind:this={masjidsListElement}>
+	<ul class="w-full mt-1" bind:this={$masjidListElement}>
 		{#each masjids as [id, { display_name: name }]}
 			<li>
 				<label class="label justify-start cursor-pointer my-1">
