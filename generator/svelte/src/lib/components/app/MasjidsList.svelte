@@ -4,6 +4,7 @@
 	import Divider from '../uikit/Divider.svelte';
 	import { SUBSCRIPTION_SIDEOVER_ID } from '$lib/constants';
 	import { toast } from '$lib/stores/toast';
+	import { convertToRelativeTime } from '$lib/utils';
 	import { masjidListElement } from '$lib/stores/elements';
 
 	export let masjids: [string, IMasjid][];
@@ -18,11 +19,15 @@
 
 		checkbox.checked = true;
 	};
+
+	const timeRendered = (node: HTMLTimeElement, lastUpdated: string) => {
+		node.innerHTML = convertToRelativeTime(lastUpdated);
+	};
 </script>
 
 {#if masjids}
 	<div class="w-full">
-		{#each masjids as [name, { display_name: displayName, address, website, iqamas, jumas }], i}
+		{#each masjids as [name, { display_name: displayName, last_updated: lastUpdated, address, website, iqamas, jumas }], i}
 			<h2 class="flex items-center justify-between">
 				<a href={website}>
 					{displayName}
@@ -37,23 +42,30 @@
 
 			<p>Address: {address}</p>
 
-			<div class="overflow-x-auto px-4">
-				<table class="table table-zebra">
-					<thead>
-						<tr>
-							<th>Iqama</th>
-							<th>Time</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each entries(iqamas) as [iqama, { time }]}
+			<div class="px-2 md:px-4">
+				<span>
+					Last updated <time datetime={lastUpdated} use:timeRendered={lastUpdated}>
+						<noscript>{lastUpdated} UTC</noscript>
+					</time>.
+				</span>
+				<div class="max-w-[90vw] overflow-x-auto">
+					<table class="mt-1 table table-zebra border border-neutral-content/50">
+						<thead>
 							<tr>
-								<td class="capitalize">{iqama}</td>
-								<td>{time}</td>
+								<th>Iqama</th>
+								<th>Time</th>
 							</tr>
-						{/each}
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							{#each entries(iqamas) as [iqama, { time }]}
+								<tr>
+									<td class="capitalize">{iqama}</td>
+									<td>{time}</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
 				<h3>Jumas</h3>
 				<ul>
 					{#each jumas as juma}
@@ -62,10 +74,10 @@
 						</li>
 					{/each}
 				</ul>
+				{#if i !== masjids.length - 1}
+					<Divider />
+				{/if}
 			</div>
-			{#if i !== masjids.length - 1}
-				<Divider />
-			{/if}
 		{/each}
 	</div>
 {/if}

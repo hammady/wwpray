@@ -64,13 +64,7 @@
 		{#each masjids as [id, { display_name: name }]}
 			<li>
 				<label class="label justify-start cursor-pointer my-1">
-					<input
-						{id}
-						type="checkbox"
-						name="topics"
-						class="checkbox checkbox-primary"
-						value={name}
-					/>
+					<input {id} type="checkbox" name="topics" class="checkbox checkbox-primary" value={id} />
 					<span class="label-text">{name}</span>
 				</label>
 			</li>
