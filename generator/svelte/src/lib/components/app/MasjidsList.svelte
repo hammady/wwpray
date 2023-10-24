@@ -2,23 +2,10 @@
 	import type { IMasjid } from '$lib/types';
 	import entries from 'lodash/entries';
 	import Divider from '../uikit/Divider.svelte';
-	import { SUBSCRIPTION_SIDEOVER_ID } from '$lib/constants';
-	import { toast } from '$lib/stores/toast';
 	import { convertToRelativeTime } from '$lib/utils';
-	import { masjidListElement } from '$lib/stores/elements';
+	import SubscribeButton from './SubscribeButton.svelte';
 
 	export let masjids: [string, IMasjid][];
-
-	const onMasjidSubscribeClick = (name: string) => {
-		const checkbox = $masjidListElement?.querySelector<HTMLInputElement>(`#${name}`);
-
-		if (!checkbox) {
-			toast.error('Something went wrong, please try again later');
-			return;
-		}
-
-		checkbox.checked = true;
-	};
 
 	const timeRendered = (node: HTMLTimeElement, lastUpdated: string) => {
 		node.innerHTML = convertToRelativeTime(lastUpdated);
@@ -33,11 +20,7 @@
 					{displayName}
 				</a>
 
-				<button on:click={() => onMasjidSubscribeClick(name)}>
-					<label class="btn btn-primary btn-sm drawer-button" for={SUBSCRIPTION_SIDEOVER_ID}>
-						Subscribe
-					</label>
-				</button>
+				<SubscribeButton {name} />
 			</h2>
 
 			<p>Address: {address}</p>
