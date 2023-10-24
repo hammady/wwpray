@@ -5,7 +5,7 @@
   "author": "Hossam Hammady <github@hammady.net>",
   "license": "MIT",
   "scripts": {
-    "test": "python -m unittest"
+    "test": "pip install -r requirements.txt && python -m unittest"
   },
   "devDependencies": {
     "serverless-python-requirements": "^6.0.0"
