@@ -12,12 +12,8 @@ class MasjidBoxSource(Source):
     
     @staticmethod
     def _get_midnight_in_timezone(timezone):
-        # Get the current time in UTC
-        current_time = datetime.now(pytz.utc)
-        
-        # Convert UTC time to the specified timezone
-        specified_timezone = pytz.timezone(timezone)
-        current_time_in_timezone = current_time.astimezone(specified_timezone)
+        # Get the current time in the specified timezone
+        current_time_in_timezone = Source._get_current_time_in_timezone(timezone)
         
         # Set the time to midnight
         midnight_in_timezone = current_time_in_timezone.replace(hour=0, minute=0, second=0, microsecond=0)

@@ -19,12 +19,10 @@ class MasjidalSource(Source):
 
         combined_times = payload["data"]["iqama"]
 
-        five_prayers = ["fajr", "zuhr", "asr", "maghrib", "isha"]
-
-        iqamas = {f"{key}": {"time": combined_times[key]} for key in five_prayers}
+        iqamas = {f"{key}": {"time": combined_times[key]} for key in self._five_prayers}
 
         # reduce combined times to just the jummah times by removing the 5 prayers
-        for key in five_prayers:
+        for key in self._five_prayers:
             del combined_times[key]
 
         # append the extra jumas to the juma times

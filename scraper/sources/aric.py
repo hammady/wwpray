@@ -19,7 +19,7 @@ class ArRehmanSource(HTMLSource):
             f"{key}": {
                 "time": table.select_one(f"tr:nth-child({index+1}) > td:nth-child(2)").text.strip()
             }
-            for index, key in enumerate(["fajr", "zuhr", "asr", "maghrib", "isha"])
+            for index, key in enumerate(self._five_prayers)
         }
         
         table = soup.select_one("div.et_pb_module.et_pb_text.et_pb_text_4 > div > table > tbody")
