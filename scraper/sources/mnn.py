@@ -3,7 +3,7 @@ from .bases import TMASource
 
 class MNNexusSource(TMASource):
     def __init__(self):
-        super().__init__()
+        super().__init__("America/Toronto")
         self.name = "MNNexus"
         self._url = self._url + "/mnnexus"
         self.display_name = 'Muslim Neighbour Nexus (MNN)'

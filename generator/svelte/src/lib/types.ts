@@ -24,3 +24,8 @@ export interface IMasjid {
 	website: string;
 	last_updated: string;
 }
+
+export type TMasjidsJSON = {
+	max_jumaas: number;
+	masjids: Record<string, IMasjid>;
+};
