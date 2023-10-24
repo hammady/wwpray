@@ -5,6 +5,7 @@
 	import entries from 'lodash/entries';
 	import type { LayoutData } from './$types';
 	import SubscribeButton from '$lib/components/app/SubscribeButton.svelte';
+	import MasjidLastUpdated from '$lib/components/app/MasjidLastUpdated.svelte';
 
 	export let data: LayoutData;
 	$: masjids = data.masjids;
@@ -20,18 +21,26 @@
 			<thead>
 				<tr>
 					<th>Masjid</th>
+					<th>Address</th>
 					<th>Time</th>
+					<th>Last Updated</th>
 					<th>Subscribe</th>
 				</tr>
 			</thead>
 			<tbody>
-				{#each masjids as [id, { display_name: name, iqamas }]}
+				{#each masjids as [id, { display_name: name, address, website, iqamas, last_updated: lastUpdated }]}
 					<tr>
 						<td class="capitalize">
-							{name}
+							<a target="_blank" href={website}>{name}</a>
+						</td>
+						<td>
+							{address}
 						</td>
 						<td>
 							{iqamas[prayer].time}
+						</td>
+						<td>
+							<MasjidLastUpdated {lastUpdated} />
 						</td>
 						<td>
 							<SubscribeButton name={id} />

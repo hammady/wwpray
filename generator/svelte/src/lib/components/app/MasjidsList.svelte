@@ -2,21 +2,17 @@
 	import type { IMasjid } from '$lib/types';
 	import entries from 'lodash/entries';
 	import Divider from '../uikit/Divider.svelte';
-	import { convertToRelativeTime } from '$lib/utils';
 	import SubscribeButton from './SubscribeButton.svelte';
+	import MasjidLastUpdated from './MasjidLastUpdated.svelte';
 
 	export let masjids: [string, IMasjid][];
-
-	const timeRendered = (node: HTMLTimeElement, lastUpdated: string) => {
-		node.innerHTML = convertToRelativeTime(lastUpdated);
-	};
 </script>
 
 {#if masjids}
 	<div class="w-full">
 		{#each masjids as [name, { display_name: displayName, last_updated: lastUpdated, address, website, iqamas, jumas }], i}
 			<h2 class="flex items-center justify-between">
-				<a href={website}>
+				<a target="_blank" href={website}>
 					{displayName}
 				</a>
 
@@ -26,11 +22,8 @@
 			<p>Address: {address}</p>
 
 			<div class="px-2 md:px-4">
-				<span>
-					Last updated <time datetime={lastUpdated} use:timeRendered={lastUpdated}>
-						<noscript>{lastUpdated} UTC</noscript>
-					</time>.
-				</span>
+				<MasjidLastUpdated {lastUpdated} />
+
 				<div class="max-w-[90vw] overflow-x-auto">
 					<table class="mt-1 table table-zebra border border-neutral-content/50">
 						<thead>
