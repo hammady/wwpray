@@ -2,9 +2,7 @@
 	import GroupByTabs from '$lib/components/app/GroupByTabs.svelte';
 	import { EGroupBy } from '$lib/constants';
 	import { extractPrayersFromMasjids } from '$lib/utils';
-	import entries from 'lodash/entries';
 	import type { LayoutData } from './$types';
-	import SubscribeButton from '$lib/components/app/SubscribeButton.svelte';
 	import MasjidLastUpdated from '$lib/components/app/MasjidLastUpdated.svelte';
 
 	export let data: LayoutData;
@@ -23,10 +21,11 @@
 					<th>Masjid</th>
 					<th>Iqama Time</th>
 					<th>Last Updated</th>
+					<th>Changed On</th>
 				</tr>
 			</thead>
 			<tbody>
-				{#each masjids as [id, { display_name: name, address, website, iqamas, last_updated: lastUpdated }]}
+				{#each masjids as [id, { display_name: name, website, iqamas, last_updated: lastUpdated }]}
 					<tr>
 						<td class="capitalize">
 							<a target="_blank" href={website}>{name}</a>
@@ -36,6 +35,11 @@
 						</td>
 						<td>
 							<MasjidLastUpdated {lastUpdated} />
+						</td>
+						<td>
+							{#if iqamas[prayer].changed_on}
+								{iqamas[prayer].changed_on}
+							{/if}
 						</td>
 					</tr>
 				{/each}

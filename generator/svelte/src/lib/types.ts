@@ -17,7 +17,7 @@ export interface ISubscribeResponse {
 }
 
 export interface IMasjid {
-	iqamas: Record<string, { time: string }>;
+	iqamas: Record<string, { time: string; changed_on?: string }>;
 	jumas: string[];
 	display_name: string;
 	address: string;
