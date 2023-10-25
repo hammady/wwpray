@@ -37,9 +37,6 @@
 						<td>
 							<MasjidLastUpdated {lastUpdated} />
 						</td>
-						<td>
-							<SubscribeButton name={id} />
-						</td>
 					</tr>
 				{/each}
 			</tbody>
