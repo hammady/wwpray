@@ -10,6 +10,7 @@
 		<a
 			class="flex-1 tab tab-bordered no-underline"
 			class:tab-active={value === groupBy}
+			class:!border-b-primary={value === groupBy}
 			href={GROUP_BY_ROUTES[value]}
 		>
 			Group by {value}

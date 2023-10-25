@@ -12,7 +12,7 @@
 	<div class="w-full">
 		{#each masjids as [name, { display_name: displayName, last_updated: lastUpdated, address, website, iqamas, jumas }], i}
 			<h2 class="flex items-center justify-between">
-				<a target="_blank" href={website}>
+				<a target="_blank" href={website} id="masjid_{name}">
 					{displayName}
 				</a>
 

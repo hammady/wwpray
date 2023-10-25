@@ -4,6 +4,7 @@ import calendar from 'dayjs/plugin/calendar';
 import utc from 'dayjs/plugin/utc';
 import { keys } from 'lodash';
 import type { IMasjid } from './types';
+import { EGroupBy, GROUP_BY_ROUTES } from './constants';
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
@@ -33,4 +34,8 @@ export const extractPrayersFromMasjids = (masjids: [string, IMasjid][]) => {
 
 	const prayerNames = keys(masjid.iqamas);
 	return prayerNames;
+};
+
+export const getMasjidRoute = (id: string) => {
+	return `${GROUP_BY_ROUTES[EGroupBy.Masjid]}#masjid_${id}`;
 };

@@ -1,9 +1,10 @@
 <script lang="ts">
 	import GroupByTabs from '$lib/components/app/GroupByTabs.svelte';
-	import { EGroupBy } from '$lib/constants';
+	import { EGroupBy, GROUP_BY_ROUTES } from '$lib/constants';
 	import type { LayoutData } from './$types';
 	import MasjidLastUpdated from '$lib/components/app/MasjidLastUpdated.svelte';
-	import { convertToCalendarTime, extractPrayersFromMasjids } from '$lib/utils';
+	import { convertToCalendarTime, extractPrayersFromMasjids, getMasjidRoute } from '$lib/utils';
+	import { goto } from '$app/navigation';
 
 	export let data: LayoutData;
 	$: masjids = data.masjids;
@@ -25,10 +26,14 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each masjids as [_, { display_name: name, website, iqamas, last_updated: lastUpdated }]}
-					<tr>
+				{#each masjids as [id, { display_name: name, iqamas, last_updated: lastUpdated }]}
+					<tr
+						role="button"
+						class="hover:!bg-primary/5 cursor-pointer"
+						on:click={() => goto(getMasjidRoute(id))}
+					>
 						<td class="capitalize">
-							<a target="_blank" href={website}>{name}</a>
+							<a href={getMasjidRoute(id)}>{name}</a>
 						</td>
 						<td>
 							{iqamas[prayer].time}
