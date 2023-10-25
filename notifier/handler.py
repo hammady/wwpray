@@ -3,6 +3,7 @@ import datetime
 import logging
 import json
 import time
+from copy import deepcopy
 from boto3 import client as boto3_client
 from botocore.exceptions import ClientError
 
@@ -17,6 +18,68 @@ logger.setLevel(log_level)
 def read_json(file_path):
     with open(file_path, 'r') as f:
         return json.load(f)
+
+def detect_changes(old_data, new_data, save_to_file=None):
+    logger.debug(f"Old data: {old_data}")
+    logger.debug(f"New data: {new_data}")
+
+    # copy new_data so that we don't modify it
+    new_data = deepcopy(new_data)
+
+    # generate UTC timestamp in ISO format
+    ts = datetime.datetime.utcnow().isoformat()
+
+    changes = {}
+
+    # iterate through masjids in new data
+    for new_key, new_value in new_data["masjids"].items():
+        # check if masjid doesn't exist in old data
+        old_value = old_data["masjids"].get(new_key)
+        if old_value is None:
+            # masjid doesn't exist in old data, add it to changes
+            changes[new_key] = True
+            new_value["last_updated"] = ts
+            continue
+        
+        # check if iqamas changed
+        new_iqamas = new_value.get("iqamas")
+        old_iqamas = old_value.get("iqamas")
+
+        # check if new_iqamas is None (masjid was attempted but failed to be scraped)
+        if new_iqamas is None:
+            # copy all values from old data
+            new_value["iqamas"] = old_iqamas
+            new_value["jumas"] = old_value["jumas"]
+            new_value["last_updated"] = old_value["last_updated"]
+            continue
+
+        new_value["last_updated"] = ts
+
+        for new_iqama_key, new_iqama_value in new_iqamas.items():
+            old_iqama_value = old_iqamas.get(new_iqama_key)
+            if old_iqama_value is None or new_iqama_value["time"] != old_iqama_value["time"]:
+                # iqama changed, add it to changes, unless it's maghrib
+                if new_iqama_key != "maghrib":
+                    changes[new_key] = True
+                new_iqama_value["changed"] = True
+
+        # check if jumas changed
+        new_jumas = set(new_value["jumas"])
+        old_jumas = set(old_value["jumas"])
+        if new_jumas != old_jumas:
+            # jumas changed, add it to changes
+            changes[new_key] = True
+            new_value["jumas_changed"] = True
+
+    # replace old file with new data
+    if save_to_file is not None:
+        with open(save_to_file, 'w') as f:
+            json.dump(new_data, f, indent=4)
+    
+    # if there are changes return them
+    if len(changes.keys()) > 0:
+        # return only the masjids that changed
+        return {k: v for k, v in new_data["masjids"].items() if k in changes.keys()}
 
 def run(event, context):
     current_time = datetime.datetime.now().time()
@@ -63,67 +126,7 @@ def run(event, context):
             Bucket=bucket_name,
             Key=new_file_key
         )
-
-    def detect_changes():
-        old_data = read_json(old_file_path)
-        logger.debug(f"Old data: {old_data}")
-        new_data = read_json(new_file_path)
-        logger.debug(f"New data: {new_data}")
-
-        # generate UTC timestamp in ISO format
-        ts = datetime.datetime.utcnow().isoformat()
-
-        changes = {}
-
-        # iterate through masjids in new data
-        for new_key, new_value in new_data["masjids"].items():
-            # check if masjid doesn't exist in old data
-            old_value = old_data["masjids"].get(new_key)
-            if old_value is None:
-                # masjid doesn't exist in old data, add it to changes
-                changes[new_key] = True
-                new_value["last_updated"] = ts
-                continue
-            
-            # check if iqamas changed
-            new_iqamas = new_value.get("iqamas")
-            old_iqamas = old_value.get("iqamas")
-
-            # check if new_iqamas is None (masjid was attempted but failed to be scraped)
-            if new_iqamas is None:
-                # copy all values from old data
-                new_value["iqamas"] = old_iqamas
-                new_value["jumas"] = old_value["jumas"]
-                new_value["last_updated"] = old_value["last_updated"]
-                continue
-
-            new_value["last_updated"] = ts
-
-            for new_iqama_key, new_iqama_value in new_iqamas.items():
-                old_iqama_value = old_iqamas.get(new_iqama_key)
-                if old_iqama_value is None or new_iqama_value["time"] != old_iqama_value["time"]:
-                    # iqama changed, add it to changes, unless it's maghrib
-                    if new_iqama_key != "maghrib":
-                        changes[new_key] = True
-                    new_iqama_value["changed"] = True
-
-            # check if jumas changed
-            new_jumas = set(new_value["jumas"])
-            old_jumas = set(old_value["jumas"])
-            if new_jumas != old_jumas:
-                # jumas changed, add it to changes
-                changes[new_key] = True
-                new_value["jumas_changed"] = True
-
-        # replace old file with new data
-        with open(old_file_path, 'w') as f:
-            json.dump(new_data, f, indent=4)
-        
-        # if there are changes return them
-        if len(changes.keys()) > 0:
-            # return only the masjids that changed
-            return {k: v for k, v in new_data["masjids"].items() if k in changes.keys()}
-    
+ 
     def notify_subscribers(changes):
         # get environment variables
         contact_list_name = os.environ.get('CONTACT_LIST_NAME')
@@ -270,7 +273,10 @@ def run(event, context):
             raise e
 
     # detect changes
-    changes = detect_changes()
+    old_data = read_json(old_file_path)
+    new_data = read_json(new_file_path)
+
+    changes = detect_changes(old_data=old_data, new_data=new_data, save_to_file=old_file_path)
 
     # replace old file with new one
     upload_old_file()
