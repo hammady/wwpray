@@ -21,10 +21,8 @@
 			<thead>
 				<tr>
 					<th>Masjid</th>
-					<th>Address</th>
-					<th>Time</th>
+					<th>Iqama Time</th>
 					<th>Last Updated</th>
-					<th>Subscribe</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -32,9 +30,6 @@
 					<tr>
 						<td class="capitalize">
 							<a target="_blank" href={website}>{name}</a>
-						</td>
-						<td>
-							{address}
 						</td>
 						<td>
 							{iqamas[prayer].time}
