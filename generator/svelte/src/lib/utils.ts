@@ -1,14 +1,29 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
+import calendar from 'dayjs/plugin/calendar';
 import utc from 'dayjs/plugin/utc';
 import { keys } from 'lodash';
 import type { IMasjid } from './types';
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
+dayjs.extend(calendar);
 
 export const convertToRelativeTime = (isoDate: string) => {
 	return dayjs.utc(isoDate).fromNow();
+};
+
+export const convertToCalendarTime = (isoDate?: string) => {
+	if (!isoDate) return null;
+
+	return dayjs.utc(isoDate).calendar(null, {
+		sameDay: '[Today]',
+		nextDay: '[Tomorrow]',
+		nextWeek: '[Next Week]',
+		lastDay: '[Yesterday]',
+		lastWeek: '[Last Week]',
+		sameElse: 'DD/MM/YYYY'
+	});
 };
 
 export const extractPrayersFromMasjids = (masjids: [string, IMasjid][]) => {
