@@ -80,5 +80,5 @@ resources:
             The WWPray team<br/>
             ${param:website_url}<br/>
             For feedback, please email <a href="mailto:${param:feedback_email}">${param:feedback_email}</a><br/>
-            <a href="https://github.com/hammady/wwpray">Github</a><br/>
+            Proudly open-sourced on <a href="https://github.com/hammady/wwpray">Github</a><br/>
             </p>
