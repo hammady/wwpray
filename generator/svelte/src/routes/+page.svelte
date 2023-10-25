@@ -22,7 +22,7 @@
 					<th>Masjid</th>
 					<th>Iqama Time</th>
 					<th>Last Updated</th>
-					<th>Changed On</th>
+					<th>Changed</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -39,7 +39,7 @@
 							{iqamas[prayer].time}
 						</td>
 						<td>
-							<MasjidLastUpdated {lastUpdated} />
+							<MasjidLastUpdated isShort {lastUpdated} />
 						</td>
 						<td>
 							{#if iqamas[prayer].changed_on}
