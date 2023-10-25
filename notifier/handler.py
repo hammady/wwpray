@@ -156,10 +156,10 @@ def run(event, context):
         def convert_changes_to_topics():            
             return [{
                 "TopicName": topic,
-                "DisplayName": f"{topic} Masjid",
+                "DisplayName": masjid["display_name"],
                 "Description": "Get email notifications for prayer time updates from this masjid",
                 "DefaultSubscriptionStatus": "OPT_OUT"
-            } for topic in changes.keys()]
+            } for topic, masjid in changes.items()]
         
         # get contact list from Amazon SES and create or update it with new topics
         def create_or_update_contact_list(new_topics):
@@ -202,7 +202,9 @@ def run(event, context):
                     'Template': {
                         'TemplateName': email_template,
                         'TemplateData': json.dumps({
-                            "masjid": topic,
+                            "masjid_name": values["display_name"],
+                            "masjid_url": values["website"],
+                            "masjid_address": values["address"],
                             "iqamas": values["iqamas"],
                             "jumas": values["jumas"],
                             "jumas_changed": values.get("jumas_changed")

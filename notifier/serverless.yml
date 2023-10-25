@@ -77,11 +77,13 @@ resources:
       Properties:
         Template:
           TemplateName: ${param:email_template}
-          SubjectPart: "[{{masjid}}] Prayer times have changed"
+          SubjectPart: "{{masjid_name}} prayer times changed"
           TextPart: ''
           HtmlPart: |
             Dear subscriber,<br/>
-            The prayer times have changed for the masjid you have subscribed to: {{masjid}}.<br/>
+            The prayer times have changed for the masjid you have subscribed to:
+            <a href="{{masjid_url}}">{{masjid_name}}</a>.<br/>
+            <i>Address: {{masjid_address}}</i>.<br/><br/>
             Below are the new iqama times:<br/>
             <ol>
                 <li>Fajr: {{iqamas.fajr.time}} {{#if iqamas.fajr.changed }} <strong>(Changed)</strong> {{/if}} </li>
@@ -107,5 +109,5 @@ resources:
             The WWPray team<br/>
             ${param:website_url}<br/>
             For feedback, please email <a href="mailto:${param:feedback_email}">${param:feedback_email}</a><br/>
-            <a href="https://github.com/hammady/wwpray">Github</a><br/>
+            Proudly open-sourced on <a href="https://github.com/hammady/wwpray">Github</a><br/>
             </p>
