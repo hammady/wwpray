@@ -8,7 +8,7 @@ from datetime import datetime
 
 class TestHandler(unittest.TestCase):
     def setUp(self):
-        self.mocked_now = datetime(2023, 10, 24, 0, 0, 0)
+        self.mocked_now = datetime(2022, 10, 24, 0, 0, 0)
         self.base_masjid = {
             "iqamas": {
                 "fajr": {"time": "05:00"},
@@ -36,6 +36,9 @@ class TestHandler(unittest.TestCase):
         self.masjid_with_no_iqamas = cp(self.base_masjid)
         del self.masjid_with_no_iqamas["iqamas"]
 
+        self.masjid_with_changed_on = cp(self.base_masjid)
+        self.masjid_with_changed_on["iqamas"]["fajr"]["changed_on"] = "2020-04-01"
+
         self.test_saved_file = 'test.json'
 
     def tearDown(self):
@@ -45,8 +48,8 @@ class TestHandler(unittest.TestCase):
             pass
 
     @patch('handler.datetime')
-    def test_detect_changes_when_no_changes_return_none_but_save_new_data(self, mock_utcnow):
-        mock_utcnow.datetime.utcnow.return_value = self.mocked_now
+    def test_detect_changes_when_no_changes_return_none_but_save_new_data(self, datetime_mock):
+        datetime_mock.datetime.utcnow.return_value = self.mocked_now
         changes = detect_changes(
             old_data={
                 "masjids": {"m1": self.base_masjid}
@@ -62,8 +65,8 @@ class TestHandler(unittest.TestCase):
         self.assertEqual(saved_data["masjids"]["m1"].get("last_updated"), self.mocked_now.isoformat())
 
     @patch('handler.datetime')
-    def test_detect_changes_when_fajr_changed_return_one_change(self, mock_utcnow):
-        mock_utcnow.datetime.utcnow.return_value = self.mocked_now
+    def test_detect_changes_when_fajr_changed_return_one_change(self, datetime_mock):
+        datetime_mock.datetime.utcnow.return_value = self.mocked_now
         changes = detect_changes(
             old_data={
                 "masjids": {"m1": self.base_masjid, "m2": self.base_masjid}
@@ -144,8 +147,8 @@ class TestHandler(unittest.TestCase):
         self.assertEqual(saved_data["masjids"]["m1"].get("last_updated"), self.base_masjid["last_updated"])
 
     @patch('handler.datetime')
-    def test_detect_changes_when_new_masjid_return_one_change(self, mock_utcnow):
-        mock_utcnow.datetime.utcnow.return_value = self.mocked_now
+    def test_detect_changes_when_new_masjid_return_one_change(self, datetime_mock):
+        datetime_mock.datetime.utcnow.return_value = self.mocked_now
         changes = detect_changes(
             old_data={
                 "masjids": {"m1": self.base_masjid}
@@ -158,3 +161,31 @@ class TestHandler(unittest.TestCase):
         self.assertIn("m2", changes)
         saved_data = read_json(self.test_saved_file)
         self.assertEqual(saved_data["masjids"]["m2"].get("last_updated"), self.mocked_now.isoformat())
+
+    def test_detect_changes_when_no_change_copy_changed_on_from_old_data(self):
+        changes = detect_changes(
+            old_data={
+                "masjids": {"m1": self.masjid_with_changed_on}
+            },
+            new_data={
+                "masjids": {"m1": self.base_masjid}
+            },
+            save_to_file=self.test_saved_file)
+        self.assertIsNone(changes)
+        saved_data = read_json(self.test_saved_file)
+        self.assertEqual(saved_data["masjids"]["m1"]["iqamas"]["fajr"].get("changed_on"), self.masjid_with_changed_on["iqamas"]["fajr"]["changed_on"])
+
+    @patch('handler.datetime')
+    def test_detect_changes_when_fajr_changed_set_changed_on_today(self, datetime_mock):
+        datetime_mock.datetime.utcnow.return_value = self.mocked_now
+        changes = detect_changes(
+            old_data={
+                "masjids": {"m1": self.base_masjid}
+            },
+            new_data={
+                "masjids": {"m1": self.masjid_with_fajr_changed}
+            },
+            save_to_file=self.test_saved_file)
+        self.assertIsNotNone(changes)
+        saved_data = read_json(self.test_saved_file)
+        self.assertEqual(saved_data["masjids"]["m1"]["iqamas"]["fajr"].get("changed_on"), self.mocked_now.date().isoformat())

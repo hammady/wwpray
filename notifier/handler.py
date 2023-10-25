@@ -26,8 +26,10 @@ def detect_changes(old_data, new_data, save_to_file=None):
     # copy new_data so that we don't modify it
     new_data = deepcopy(new_data)
 
-    # generate UTC timestamp in ISO format
-    ts = datetime.datetime.utcnow().isoformat()
+    # generate UTC timestamps in ISO format
+    now = datetime.datetime.utcnow()
+    ts = now.isoformat()
+    today = now.date().isoformat()
 
     changes = {}
 
@@ -62,6 +64,10 @@ def detect_changes(old_data, new_data, save_to_file=None):
                 if new_iqama_key != "maghrib":
                     changes[new_key] = True
                 new_iqama_value["changed"] = True
+                new_iqama_value["changed_on"] = today
+            elif old_iqama_value.get("changed_on") is not None:
+                # iqama didn't change, copy changed_on from old data
+                new_iqama_value["changed_on"] = old_iqama_value.get("changed_on")
 
         # check if jumas changed
         new_jumas = set(new_value["jumas"])
