@@ -4,6 +4,7 @@
 	import Divider from '../uikit/Divider.svelte';
 	import SubscribeButton from './SubscribeButton.svelte';
 	import MasjidLastUpdated from './MasjidLastUpdated.svelte';
+	import { convertToCalendarTime } from '$lib/utils';
 
 	export let masjids: [string, IMasjid][];
 </script>
@@ -30,13 +31,19 @@
 							<tr>
 								<th>Iqama</th>
 								<th>Time</th>
+								<th>Changed</th>
 							</tr>
 						</thead>
 						<tbody>
-							{#each entries(iqamas) as [iqama, { time }]}
+							{#each entries(iqamas) as [iqama, { time, changed_on: changedOn }]}
 								<tr>
 									<td class="capitalize">{iqama}</td>
 									<td>{time}</td>
+									<td>
+										{#if changedOn}
+											{convertToCalendarTime(changedOn)}
+										{/if}
+									</td>
 								</tr>
 							{/each}
 						</tbody>
