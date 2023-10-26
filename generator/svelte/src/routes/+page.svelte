@@ -1,6 +1,6 @@
 <script lang="ts">
 	import GroupByTabs from '$lib/components/app/GroupByTabs.svelte';
-	import { EGroupBy, GROUP_BY_ROUTES } from '$lib/constants';
+	import { EGroupBy } from '$lib/constants';
 	import type { LayoutData } from './$types';
 	import MasjidLastUpdated from '$lib/components/app/MasjidLastUpdated.svelte';
 	import { convertToCalendarTime, extractPrayersFromMasjids, getMasjidRoute } from '$lib/utils';
