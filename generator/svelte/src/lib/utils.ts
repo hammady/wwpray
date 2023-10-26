@@ -2,7 +2,7 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import calendar from 'dayjs/plugin/calendar';
 import utc from 'dayjs/plugin/utc';
-import { keys } from 'lodash';
+import keys from 'lodash/keys';
 import type { IMasjid } from './types';
 import { EGroupBy, GROUP_BY_ROUTES } from './constants';
 
