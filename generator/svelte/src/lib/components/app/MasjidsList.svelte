@@ -29,9 +29,9 @@
 					<table class="mt-1 table table-zebra border border-neutral-content/50">
 						<thead>
 							<tr>
+								<th>Masjid</th>
 								<th>Iqama</th>
-								<th>Time</th>
-								<th>Changed</th>
+								<th>Last Changed</th>
 							</tr>
 						</thead>
 						<tbody>

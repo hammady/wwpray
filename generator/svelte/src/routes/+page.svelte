@@ -20,9 +20,9 @@
 			<thead>
 				<tr>
 					<th>Masjid</th>
-					<th>Iqama Time</th>
+					<th>Iqama</th>
 					<th>Last Updated</th>
-					<th>Changed</th>
+					<th>Last Changed</th>
 				</tr>
 			</thead>
 			<tbody>
