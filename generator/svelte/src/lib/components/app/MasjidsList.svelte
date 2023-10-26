@@ -2,65 +2,48 @@
 	import type { IMasjid } from '$lib/types';
 	import entries from 'lodash/entries';
 	import Divider from '../uikit/Divider.svelte';
-	import { SUBSCRIPTION_SIDEOVER_ID } from '$lib/constants';
-	import { toast } from '$lib/stores/toast';
-	import { convertToRelativeTime } from '$lib/utils';
-	import { masjidListElement } from '$lib/stores/elements';
+	import SubscribeButton from './SubscribeButton.svelte';
+	import MasjidLastUpdated from './MasjidLastUpdated.svelte';
+	import { convertToCalendarTime } from '$lib/utils';
 
 	export let masjids: [string, IMasjid][];
-
-	const onMasjidSubscribeClick = (name: string) => {
-		const checkbox = $masjidListElement?.querySelector<HTMLInputElement>(`#${name}`);
-
-		if (!checkbox) {
-			toast.error('Something went wrong, please try again later');
-			return;
-		}
-
-		checkbox.checked = true;
-	};
-
-	const timeRendered = (node: HTMLTimeElement, lastUpdated: string) => {
-		node.innerHTML = convertToRelativeTime(lastUpdated);
-	};
 </script>
 
 {#if masjids}
 	<div class="w-full">
 		{#each masjids as [name, { display_name: displayName, last_updated: lastUpdated, address, website, iqamas, jumas }], i}
 			<h2 class="flex items-center justify-between">
-				<a href={website}>
+				<a target="_blank" href={website} id="masjid_{name}">
 					{displayName}
 				</a>
 
-				<button on:click={() => onMasjidSubscribeClick(name)}>
-					<label class="btn btn-primary btn-sm drawer-button" for={SUBSCRIPTION_SIDEOVER_ID}>
-						Subscribe
-					</label>
-				</button>
+				<SubscribeButton {name} />
 			</h2>
 
 			<p>Address: {address}</p>
 
 			<div class="px-2 md:px-4">
-				<span>
-					Last updated <time datetime={lastUpdated} use:timeRendered={lastUpdated}>
-						<noscript>{lastUpdated} UTC</noscript>
-					</time>.
-				</span>
+				<MasjidLastUpdated {lastUpdated} />
+
 				<div class="max-w-[90vw] overflow-x-auto">
 					<table class="mt-1 table table-zebra border border-neutral-content/50">
 						<thead>
 							<tr>
+								<th>Masjid</th>
 								<th>Iqama</th>
-								<th>Time</th>
+								<th>Last Changed</th>
 							</tr>
 						</thead>
 						<tbody>
-							{#each entries(iqamas) as [iqama, { time }]}
+							{#each entries(iqamas) as [iqama, { time, changed_on: changedOn }]}
 								<tr>
 									<td class="capitalize">{iqama}</td>
 									<td>{time}</td>
+									<td>
+										{#if changedOn}
+											{convertToCalendarTime(changedOn)}
+										{/if}
+									</td>
 								</tr>
 							{/each}
 						</tbody>
