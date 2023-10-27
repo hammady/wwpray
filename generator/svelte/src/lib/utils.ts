@@ -10,6 +10,7 @@ dayjs.extend(relativeTime);
 dayjs.extend(utc);
 dayjs.extend(calendar);
 
+/** Date helpers */
 export const convertToRelativeTime = (isoDate: string) => {
 	return dayjs.utc(isoDate).fromNow();
 };
@@ -27,6 +28,20 @@ export const convertToCalendarTime = (isoDate?: string) => {
 	});
 };
 
+export const isToday = (isoDate: string) => {
+	return dayjs.utc(isoDate).isSame(dayjs.utc(), 'day');
+};
+
+export const isYesterday = (isoDate: string) => {
+	return dayjs.utc(isoDate).isSame(dayjs.utc().subtract(1, 'day'), 'day');
+};
+
+export const isOlderThanYesterday = (isoDate: string) => {
+	return dayjs.utc(isoDate).isBefore(dayjs.utc().subtract(1, 'day'), 'day');
+};
+
+/** Data transformation */
+
 export const extractPrayersFromMasjids = (masjids: [string, IMasjid][]) => {
 	if (!masjids.length) return [];
 	const masjid = masjids[0][1];
@@ -35,6 +50,8 @@ export const extractPrayersFromMasjids = (masjids: [string, IMasjid][]) => {
 	const prayerNames = keys(masjid.iqamas);
 	return prayerNames;
 };
+
+/** Path helpers */
 
 export const getMasjidRoute = (id: string) => {
 	return `${GROUP_BY_ROUTES[EGroupBy.Masjid]}#masjid_${id}`;
