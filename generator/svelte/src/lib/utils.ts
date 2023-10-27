@@ -3,8 +3,8 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import calendar from 'dayjs/plugin/calendar';
 import utc from 'dayjs/plugin/utc';
 import keys from 'lodash/keys';
-import type { IMasjid } from './types';
-import { EGroupBy, GROUP_BY_ROUTES } from './constants';
+import type { IMasjid, TPrayer } from './types';
+import { EGroupBy, GROUP_BY_ROUTES, PRAYER_NAMES } from './constants';
 
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
@@ -46,13 +46,41 @@ export const getCurrentLocalDateTime = () => {
 
 /** Data transformation */
 
-export const extractPrayersFromMasjids = (masjids: [string, IMasjid][]) => {
-	if (!masjids.length) return [];
-	const masjid = masjids[0][1];
-	if (!masjid) return [];
+export const getPrayers = () => {
+	const prayers: TPrayer[] = [];
 
-	const prayerNames = keys(masjid.iqamas);
-	return prayerNames;
+	for (let i = 0; i < PRAYER_NAMES.length; i++) {
+		const prayer = PRAYER_NAMES[i];
+		(prayer as TPrayer).next = PRAYER_NAMES[i + 1] || PRAYER_NAMES[0];
+		const prayerWithNext = prayer as TPrayer;
+		prayers.push(prayerWithNext);
+	}
+
+	return prayers;
+};
+
+export const getCurrentPrayerForMasjid = (masjid: IMasjid) => {
+	const currentTime = dayjs.utc().local().format('HH:mm:ss');
+	const prayers = getPrayers();
+
+	const currentPrayer = prayers.find((prayer) => {
+		const prayerTime = masjid.iqamas[prayer]?.time;
+
+		if (!prayerTime) return false;
+
+		return currentTime < prayerTime;
+	});
+
+	if (!currentPrayer) {
+		throw new Error('Something wrong, No current prayer found');
+	}
+
+	return currentPrayer;
+};
+
+export const getCurrentPrayerForMasjids = (masjids: [string, IMasjid][]) => {
+	const firstMasjid = masjids[0][1];
+	return getCurrentPrayerForMasjid(firstMasjid);
 };
 
 export const sortMasjidsForPrayer = (masjids: [string, IMasjid][], prayerName: string) => {

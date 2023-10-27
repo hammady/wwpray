@@ -27,3 +27,5 @@ export const GROUP_BY_ROUTES = {
 	[EGroupBy.Prayer]: '/', // TODO Make a /prayers route
 	[EGroupBy.Masjid]: '/masjids'
 };
+
+export const PRAYER_NAMES = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];

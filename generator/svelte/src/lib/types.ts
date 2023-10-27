@@ -29,3 +29,5 @@ export type TMasjidsJSON = {
 	max_jumaas: number;
 	masjids: Record<string, IMasjid>;
 };
+
+export type TPrayer = string & { next: string };
