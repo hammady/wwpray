@@ -5,6 +5,8 @@
 	import SubscribeButton from './SubscribeButton.svelte';
 	import MasjidLastUpdated from './MasjidLastUpdated.svelte';
 	import PrayerTimeChanged from './PrayerTimeChanged.svelte';
+	import { tw } from 'tail-cn';
+	import { getNextPrayerForMasjid, isNextIqama } from '$lib/utils';
 
 	export let masjids: [string, IMasjid][];
 </script>
@@ -36,8 +38,14 @@
 						</thead>
 						<tbody>
 							{#each entries(iqamas) as [iqama, { time, changed_on: changedOn }]}
-								<tr>
-									<td class="capitalize">{iqama}</td>
+								<tr class={tw(['!bg-primary/5 font-semibold', isNextIqama(masjids, name, iqama)])}>
+									<td class="capitalize">
+										{iqama}
+
+										{#if isNextIqama(masjids, name, iqama)}
+											( Next )
+										{/if}
+									</td>
 									<td>{time}</td>
 									<td>
 										<PrayerTimeChanged {changedOn} />

@@ -61,7 +61,7 @@ export const getPrayers = () => {
 	return tPrayers;
 };
 
-export const getNextPrayerForMasjid = (masjid: IMasjid) => {
+export const getNextPrayerForMasjid = (masjid: { iqamas: Record<string, { time: string }> }) => {
 	const currentTime = getCurrentLocalDateTime();
 	const prayers = getPrayers();
 
@@ -107,6 +107,16 @@ export const sortMasjidsForPrayer = (masjids: [string, IMasjid][], prayerName: s
 
 		return aPrayer.time.localeCompare(bPrayer.time);
 	});
+};
+
+export const isNextIqama = (masjids: [string, IMasjid][], masjidName: string, iqama: string) => {
+	const masjid = masjids.find((m) => m[0] === masjidName)?.[1];
+
+	if (!masjid) {
+		throw new Error('Something wrong, masjid not found');
+	}
+
+	return getNextPrayerForMasjid(masjid).name === iqama;
 };
 
 /** Path helpers */
