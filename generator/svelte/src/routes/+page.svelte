@@ -3,13 +3,13 @@
 	import { EGroupBy } from '$lib/constants';
 	import type { LayoutData } from './$types';
 	import MasjidLastUpdated from '$lib/components/app/MasjidLastUpdated.svelte';
-	import { getPrayers, getMasjidRoute, sortMasjidsForPrayer } from '$lib/utils';
+	import { getMasjidRoute, sortMasjidsForPrayer, getSortedPrayers } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import PrayerTimeChanged from '$lib/components/app/PrayerTimeChanged.svelte';
 
 	export let data: LayoutData;
 	$: masjids = data.masjids;
-	$: prayers = getPrayers(masjids);
+	$: prayers = getSortedPrayers(masjids);
 </script>
 
 <GroupByTabs groupBy={EGroupBy.Prayer} />

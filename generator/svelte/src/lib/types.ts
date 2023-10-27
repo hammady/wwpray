@@ -30,4 +30,7 @@ export type TMasjidsJSON = {
 	masjids: Record<string, IMasjid>;
 };
 
-export type TPrayer = string & { next: string };
+export type TPrayer = {
+	name: string;
+	next: TPrayer;
+};
