@@ -14,8 +14,14 @@
 
 <GroupByTabs groupBy={EGroupBy.Prayer} />
 
-{#each prayers as prayer (prayer)}
-	<h2 class="capitalize">{prayer}</h2>
+{#each prayers as prayer, i (prayer)}
+	<h2 class="capitalize">
+		{prayer}
+
+		{#if i === 0}
+			( Next )
+		{/if}
+	</h2>
 	<div class="max-w-[90vw] overflow-x-auto">
 		<table class="mt-1 table table-zebra border border-neutral-content/50">
 			<thead>
