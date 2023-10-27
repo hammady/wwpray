@@ -26,6 +26,5 @@ export interface IMasjid {
 }
 
 export type TMasjidsJSON = {
-	max_jumas: number;
 	masjids: Record<string, IMasjid>;
 };
