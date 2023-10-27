@@ -3,8 +3,9 @@
 	import { EGroupBy } from '$lib/constants';
 	import type { LayoutData } from './$types';
 	import MasjidLastUpdated from '$lib/components/app/MasjidLastUpdated.svelte';
-	import { convertToCalendarTime, extractPrayersFromMasjids, getMasjidRoute } from '$lib/utils';
+	import { extractPrayersFromMasjids, getMasjidRoute } from '$lib/utils';
 	import { goto } from '$app/navigation';
+	import PrayerTimeChanged from '$lib/components/app/PrayerTimeChanged.svelte';
 
 	export let data: LayoutData;
 	$: masjids = data.masjids;
@@ -43,7 +44,7 @@
 						</td>
 						<td>
 							{#if iqamas[prayer].changed_on}
-								{convertToCalendarTime(iqamas[prayer].changed_on)}
+								<PrayerTimeChanged changedOn={iqamas[prayer].changed_on} />
 							{/if}
 						</td>
 					</tr>
