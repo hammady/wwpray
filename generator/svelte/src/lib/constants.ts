@@ -21,7 +21,7 @@ export const SUBSCRIPTION_SIDEOVER_ID = 'subscription-sideover';
 export enum EGroupBy {
 	Prayer = 'Prayer',
 	Masjid = 'Masjid',
-	jumas = 'jumas'
+	jumas = 'Jumas'
 }
 
 export const GROUP_BY_ROUTES = {
