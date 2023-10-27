@@ -36,8 +36,8 @@ export const isYesterday = (isoDate: string) => {
 	return dayjs.utc(isoDate).isSame(dayjs.utc().subtract(1, 'day'), 'day');
 };
 
-export const isOlderThanYesterday = (isoDate: string) => {
-	return dayjs.utc(isoDate).isBefore(dayjs.utc().subtract(1, 'day'), 'day');
+export const isOlderThanAWeek = (isoDate: string) => {
+	return dayjs.utc(isoDate).isBefore(dayjs.utc().subtract(7, 'day'), 'day');
 };
 
 /** Data transformation */
@@ -56,3 +56,6 @@ export const extractPrayersFromMasjids = (masjids: [string, IMasjid][]) => {
 export const getMasjidRoute = (id: string) => {
 	return `${GROUP_BY_ROUTES[EGroupBy.Masjid]}#masjid_${id}`;
 };
+
+/** Classname helpers */
+export { tw } from 'tail-cn';

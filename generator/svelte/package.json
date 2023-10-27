@@ -43,6 +43,7 @@
 	"dependencies": {
 		"@krowten/svelte-heroicons": "^0.1.0",
 		"dayjs": "^1.11.10",
-		"lodash": "^4.17.21"
+		"lodash": "^4.17.21",
+		"tail-cn": "^1.0.20"
 	}
 }
