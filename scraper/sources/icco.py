@@ -32,9 +32,9 @@ class ICCOSource(HTMLSource):
                 "time": nested_rows[3].select_one("td.jamah").text.strip()
             },
         }
-        # Get jumaa table rows and remove first and last rows
-        jumas = [f"{juma.text.strip()}" for juma in soup.select("#text-6 > div > p")][1:-1]
-        # Combine each tow rows into one
-        jumas = [jumas[i] + " by " + jumas[i+1] for i in range(0, len(jumas), 2)]
+        # Get jumaa table rows and remove first row
+        jumas = [f"{juma.text.strip()}" for juma in soup.select("#text-6 > div > p")][1:]
+        # Combine each tow rows into one, discarding the last row if there is an odd number of rows
+        jumas = [jumas[i] + " by " + jumas[i+1] for i in range(0, len(jumas)//2*2, 2)]
 
         return iqamas, jumas
