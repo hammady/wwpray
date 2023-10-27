@@ -15,7 +15,6 @@
 			</h2>
 
 			<div class="px-2 md:px-4">
-				<h3>Jumas</h3>
 				<ul>
 					{#each jumas as juma}
 						<li>
