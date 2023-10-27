@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { EGroupBy, GROUP_BY_ROUTES } from '$lib/constants';
 	import type { IMasjid } from '$lib/types';
 	import Divider from '../uikit/Divider.svelte';
 
@@ -7,9 +8,9 @@
 
 {#if masjids}
 	<div class="w-full">
-		{#each masjids as [name, { display_name: displayName, website, jumas }], i}
+		{#each masjids as [name, { display_name: displayName, jumas }], i}
 			<h2 class="flex items-center justify-between">
-				<a target="_blank" href={website} id="masjid_{name}">
+				<a href="{GROUP_BY_ROUTES[EGroupBy.Masjid]}#masjid_{name}">
 					{displayName}
 				</a>
 			</h2>
