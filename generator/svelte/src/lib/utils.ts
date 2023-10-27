@@ -40,6 +40,10 @@ export const isOlderThanAWeek = (isoDate: string) => {
 	return dayjs.utc(isoDate).isBefore(dayjs.utc().subtract(7, 'day'), 'day');
 };
 
+export const getCurrentLocalDateTime = () => {
+	return dayjs.utc().local().format('YYYY-MM-DD HH:mm:ss');
+};
+
 /** Data transformation */
 
 export const extractPrayersFromMasjids = (masjids: [string, IMasjid][]) => {
@@ -49,6 +53,18 @@ export const extractPrayersFromMasjids = (masjids: [string, IMasjid][]) => {
 
 	const prayerNames = keys(masjid.iqamas);
 	return prayerNames;
+};
+
+export const sortMasjidsForPrayer = (masjids: [string, IMasjid][], prayerName: string) => {
+	return masjids.sort((a, b) => {
+		const aPrayer = a[1].iqamas[prayerName];
+		const bPrayer = b[1].iqamas[prayerName];
+
+		if (!aPrayer) return 1;
+		if (!bPrayer) return -1;
+
+		return aPrayer.time.localeCompare(bPrayer.time);
+	});
 };
 
 /** Path helpers */

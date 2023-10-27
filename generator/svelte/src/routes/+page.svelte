@@ -3,7 +3,7 @@
 	import { EGroupBy } from '$lib/constants';
 	import type { LayoutData } from './$types';
 	import MasjidLastUpdated from '$lib/components/app/MasjidLastUpdated.svelte';
-	import { extractPrayersFromMasjids, getMasjidRoute } from '$lib/utils';
+	import { extractPrayersFromMasjids, getMasjidRoute, sortMasjidsForPrayer } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import PrayerTimeChanged from '$lib/components/app/PrayerTimeChanged.svelte';
 
@@ -27,7 +27,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each masjids as [id, { display_name: name, iqamas, last_updated: lastUpdated }]}
+				{#each sortMasjidsForPrayer(masjids, prayer) as [id, { display_name: name, iqamas, last_updated: lastUpdated }]}
 					<tr
 						role="button"
 						class="hover:!bg-primary/5 cursor-pointer"
