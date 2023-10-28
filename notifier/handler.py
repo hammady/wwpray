@@ -51,14 +51,14 @@ def detect_changes(old_data, new_data, save_to_file=None):
         if new_iqamas is None:
             # copy all values from old data
             new_value["iqamas"] = old_iqamas
-            new_value["jumas"] = old_value["jumas"]
+            new_value["jumas"] = old_value.get("jumas")
             new_value["last_updated"] = old_value["last_updated"]
             continue
 
         new_value["last_updated"] = ts
 
         for new_iqama_key, new_iqama_value in new_iqamas.items():
-            old_iqama_value = old_iqamas.get(new_iqama_key)
+            old_iqama_value = (old_iqamas or {}).get(new_iqama_key)
             if old_iqama_value is None or new_iqama_value["time"] != old_iqama_value["time"]:
                 # iqama changed, add it to changes, unless it's maghrib
                 if new_iqama_key != "maghrib":
