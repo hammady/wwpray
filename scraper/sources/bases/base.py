@@ -24,6 +24,21 @@ class Source:
         specified_timezone = pytz.timezone(timezone)
         return current_time.astimezone(specified_timezone)
 
+    @staticmethod
+    def _parse_time(time_string, timezone):
+        # Get the current time in the specified timezone
+        current_time = Source._get_current_time_in_timezone(timezone)
+
+        # Parse the time string
+        time = datetime.strptime(time_string, '%I:%M %p')
+        time = time.replace(year=current_time.year, month=current_time.month, day=current_time.day)
+
+        # Get the time in seconds since the start of the day
+        seconds = int((time - time.replace(hour=0, minute=0, second=0, microsecond=0)).total_seconds())
+
+        # Subtract the timezone offset so that the time is in UTC
+        return seconds - current_time.utcoffset().total_seconds()
+    
     def request(self):
         if self._url is None:
             raise Exception("No URL set for source: " + self.name)
