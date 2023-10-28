@@ -15,8 +15,7 @@
 	{/if}
 	<time datetime={lastUpdated} use:timeRendered={lastUpdated}>
 		<noscript>{lastUpdated} UTC</noscript>
-	</time>
-	{#if !isShort}
+	</time>{#if !isShort}
 		{'.'}
 	{/if}
 </span>
