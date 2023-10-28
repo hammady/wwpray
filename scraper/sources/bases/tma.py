@@ -3,10 +3,10 @@ from .base import Source
 
 class TMASource(Source):
     def __init__(self, timezone):
-        self._timezone = timezone
         super().__init__("The Masjid App", headers={
             "Accept": "application/json",
-        }, url="https://themasjidapp.net")
+        }, url="https://themasjidapp.net",
+        timezone=timezone)
     
     @staticmethod
     def _find_nearest_day(day_of_year, days):
@@ -38,11 +38,14 @@ class TMASource(Source):
         nearest_day = self._find_nearest_day(day_of_year, days)
         if nearest_day is None:
             raise Exception("No iqamas found for source: " + self.name)
-        iqamas = {
-            prayer: {
-                "time": nearest_day[self._get_prayer_mapping(prayer)]
-            } for prayer in self._five_prayers
-        }
+        
+        iqamas = self.generate_iqamas_output(
+            [
+                nearest_day[self._get_prayer_mapping(key)]
+                for key in self._five_prayers
+            ]
+        )
+
         jumas = [f"{juma['timeDesc']} - {juma['locationDesc']}" for juma in masjid["jumas"]]
 
         return iqamas, jumas

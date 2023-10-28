@@ -8,7 +8,8 @@ class MasjidBoxSource(Source):
         self._today = self._get_midnight_in_timezone(timezone).isoformat()
         super().__init__("MasjidBox", headers={
             "Apikey": apikey
-        }, url=f"https://api.masjidbox.com/1.0/masjidbox/landing/athany/{masjidbox_id}?get=at&days=9&begin={self._today}")
+        }, url=f"https://api.masjidbox.com/1.0/masjidbox/landing/athany/{masjidbox_id}?get=at&days=9&begin={self._today}",
+        timezone=timezone)
     
     @staticmethod
     def _get_midnight_in_timezone(timezone):
@@ -19,7 +20,14 @@ class MasjidBoxSource(Source):
         midnight_in_timezone = current_time_in_timezone.replace(hour=0, minute=0, second=0, microsecond=0)
         
         return midnight_in_timezone
-    
+
+    @staticmethod
+    def _get_prayer_mapping(prayer):
+        if prayer == 'zuhr':
+            return 'dhuhr'
+        else:
+            return prayer
+
     def parse(self):
         if self._response is None:
             raise Exception("No response set for source: " + self.name)
@@ -36,23 +44,12 @@ class MasjidBoxSource(Source):
                 today_iqamas = day['iqamah']
                 break
 
-        iqamas = {
-            "fajr": {
-                "time": parse_time(today_iqamas['fajr'])
-            },
-            "zuhr": {
-                "time": parse_time(today_iqamas['dhuhr'])
-            },
-            "asr": {
-                "time": parse_time(today_iqamas['asr'])
-            },
-            "maghrib": {
-                "time": parse_time(today_iqamas['maghrib'])
-            },
-            "isha": {
-                "time": parse_time(today_iqamas['isha'])
-            },
-        }
+        iqamas = self.generate_iqamas_output(
+            [
+                parse_time(today_iqamas[self._get_prayer_mapping(key)])
+                for key in self._five_prayers
+            ]
+        )
 
         # iterate on timetable until we find jumuah key then parse and return it
         jumas = []

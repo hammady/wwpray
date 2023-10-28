@@ -3,11 +3,12 @@ from time import time
 
 
 class MasjidalSource(Source):
-    def __init__(self, masjid_id, extra_jumas=[]):
+    def __init__(self, masjid_id, extra_jumas=[], timezone=""):
         epoch_ms = int(time()*1000)
         super().__init__("Masjidal", headers={
             "Accept": "*/*"
-        }, url=f"https://masjidal.com/api/v1/time?masjid_id={masjid_id}&_={epoch_ms}")
+        }, url=f"https://masjidal.com/api/v1/time?masjid_id={masjid_id}&_={epoch_ms}",
+        timezone=timezone)
         self._extra_jumas = extra_jumas
 
     def parse(self):
@@ -19,7 +20,7 @@ class MasjidalSource(Source):
 
         combined_times = payload["data"]["iqama"]
 
-        iqamas = {f"{key}": {"time": combined_times[key]} for key in self._five_prayers}
+        iqamas = self.generate_iqamas_output([combined_times[key] for key in self._five_prayers])
 
         # reduce combined times to just the jummah times by removing the 5 prayers
         for key in self._five_prayers:
