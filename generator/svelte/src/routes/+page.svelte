@@ -19,7 +19,7 @@
 		{prayer}
 
 		{#if i === 0}
-			( Next )
+			(Next)
 		{/if}
 	</h2>
 	<div class="max-w-[90vw] overflow-x-auto">
