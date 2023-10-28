@@ -29,3 +29,5 @@ export const GROUP_BY_ROUTES = {
 	[EGroupBy.Masjid]: '/masjids',
 	[EGroupBy.jumas]: '/jumas'
 };
+
+export const PRAYER_NAMES = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];

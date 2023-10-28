@@ -3,21 +3,27 @@
 	import { EGroupBy } from '$lib/constants';
 	import type { LayoutData } from './$types';
 	import MasjidLastUpdated from '$lib/components/app/MasjidLastUpdated.svelte';
-	import { extractPrayersFromMasjids, getMasjidRoute } from '$lib/utils';
+	import { getMasjidRoute, sortMasjidsForPrayer, getSortedPrayers } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import PrayerTimeChanged from '$lib/components/app/PrayerTimeChanged.svelte';
 
 	export let data: LayoutData;
 	$: masjids = data.masjids;
-	$: prayers = extractPrayersFromMasjids(masjids);
+	$: prayers = getSortedPrayers(masjids);
 </script>
 
 <GroupByTabs groupBy={EGroupBy.Prayer} />
 
-{#each prayers as prayer (prayer)}
-	<h2 class="capitalize">{prayer}</h2>
+{#each prayers as prayer, i (prayer)}
+	<h2 class="capitalize">
+		{prayer}
+
+		{#if i === 0}
+			(Next)
+		{/if}
+	</h2>
 	<div class="max-w-[90vw] overflow-x-auto">
-		<table class="mt-1 table table-zebra border border-neutral-content/50">
+		<table class="mt-1 table border border-neutral-content/50">
 			<thead>
 				<tr>
 					<th>Masjid</th>
@@ -27,7 +33,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each masjids as [id, { display_name: name, iqamas, last_updated: lastUpdated }]}
+				{#each sortMasjidsForPrayer(masjids, prayer) as [id, { display_name: name, iqamas, last_updated: lastUpdated }]}
 					<tr
 						role="button"
 						class="hover:!bg-primary/5 cursor-pointer"

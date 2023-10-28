@@ -28,3 +28,8 @@ export interface IMasjid {
 export type TMasjidsJSON = {
 	masjids: Record<string, IMasjid>;
 };
+
+export type TPrayer = {
+	name: string;
+	next: TPrayer;
+};
