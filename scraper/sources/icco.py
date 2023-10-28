@@ -7,7 +7,7 @@ class ICCOSource(HTMLSource):
             "Accept": "text/html",
         }, url="https://centres.macnet.ca/icco/",
         timezone="America/Toronto")
-        self.display_name = 'Islamic Community Centre of Ontario'
+        self.display_name = 'Islamic Community Centre of Ontario (ICCO)'
         self.website = 'https://centres.macnet.ca/icco/'
         self.address = '2550 Dunwin Dr, Mississauga, ON L5L 1T1'
         
