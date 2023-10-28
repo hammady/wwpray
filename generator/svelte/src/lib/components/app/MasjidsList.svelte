@@ -47,14 +47,6 @@
 						</tbody>
 					</table>
 				</div>
-				<h3>Jumas</h3>
-				<ul>
-					{#each jumas as juma}
-						<li>
-							{juma}
-						</li>
-					{/each}
-				</ul>
 				{#if i !== masjids.length - 1}
 					<Divider />
 				{/if}
