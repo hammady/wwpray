@@ -23,7 +23,7 @@
 		{/if}
 	</h2>
 	<div class="max-w-[90vw] overflow-x-auto">
-		<table class="mt-1 table table-zebra border border-neutral-content/50">
+		<table class="mt-1 table border border-neutral-content/50">
 			<thead>
 				<tr>
 					<th>Masjid</th>
