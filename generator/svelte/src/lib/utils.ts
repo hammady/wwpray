@@ -73,7 +73,8 @@ export const getNextPrayerForMasjid = (masjid: { iqamas: Record<string, { time: 
 	});
 
 	if (!nextPrayer) {
-		throw new Error('Something wrong, No current prayer found');
+		console.error('Something wrong, No next prayer found');
+		return prayers[0];
 	}
 
 	return nextPrayer;
@@ -113,7 +114,8 @@ export const isNextIqama = (masjids: [string, IMasjid][], masjidName: string, iq
 	const masjid = masjids.find((m) => m[0] === masjidName)?.[1];
 
 	if (!masjid) {
-		throw new Error('Something wrong, masjid not found');
+		console.error('Something wrong, masjid not found');
+		return false;
 	}
 
 	return getNextPrayerForMasjid(masjid).name === iqama;
