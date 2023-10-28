@@ -43,7 +43,7 @@
 										{iqama}
 
 										{#if isNextIqama(masjids, name, iqama)}
-											( Next )
+											(Next)
 										{/if}
 									</td>
 									<td>{time}</td>
