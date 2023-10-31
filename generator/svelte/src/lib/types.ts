@@ -16,8 +16,14 @@ export interface ISubscribeResponse {
 	topics: string[];
 }
 
+export type TIqama = {
+	time: string;
+	changed_on?: string;
+	seconds_since_midnight_utc: number;
+};
+
 export interface IMasjid {
-	iqamas: Record<string, { time: string; changed_on?: string }>;
+	iqamas: Record<string, TIqama>;
 	jumas: string[];
 	display_name: string;
 	address: string;

@@ -106,7 +106,10 @@ export const sortMasjidsForPrayer = (masjids: [string, IMasjid][], prayerName: s
 		if (!aPrayer) return 1;
 		if (!bPrayer) return -1;
 
-		return aPrayer.time.localeCompare(bPrayer.time);
+		const aSeconds = aPrayer.seconds_since_midnight_utc;
+		const bSeconds = bPrayer.seconds_since_midnight_utc;
+
+		return aSeconds - bSeconds;
 	});
 };
 
