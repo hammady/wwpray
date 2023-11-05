@@ -5,12 +5,21 @@ module.exports = async (dataFilePath, destinationDir) => {
   const writableRootDir = "/tmp/generator";
   const svelteDir = path.join(writableRootDir, "svelte");
 
+  const cleanAndCreateDir = (dir) => {
+    if (fs.existsSync(dir)) {
+      console.log(`Deleting directory: ${dir}...`);
+      fs.rmSync(dir, { recursive: true });
+    }
+    console.log(`Creating directory: ${dir}...`);
+    fs.mkdirSync(dir, { recursive: true });
+  }
+
   // Create destination directory and writable root directory
-  fs.mkdirSync(destinationDir, { recursive: true });
-  fs.mkdirSync(writableRootDir, { recursive: true });
+  cleanAndCreateDir(destinationDir);
+  cleanAndCreateDir(writableRootDir);
 
   // Copy necessary files to writable root directory
-  console.log(`Copying code files to writable root directory: ${writableRootDir}...`);
+  console.log(`Copying code files from current directory ${process.cwd()} to writable root directory: ${writableRootDir}...`);
   for (const file of [
     "svelte",
     "package.json",
