@@ -165,7 +165,7 @@ def run(event, context):
         def create_or_update_contact_list(new_topics):
             try:
                 logger.debug(f"Getting contact list: {contact_list_name}")
-                existing_topics = ses_client.get_contact_list(ContactListName=contact_list_name)["Topics"]
+                existing_topics = ses_client.get_contact_list(ContactListName=contact_list_name).get("Topics", [])
                 logger.debug(f"Contact list exists: {contact_list_name}, topics: {existing_topics}")
                 merged_topics = merge_topics(existing_topics, new_topics)
                 logger.debug(f"Merged topics: {merged_topics}")
