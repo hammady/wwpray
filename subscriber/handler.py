@@ -81,10 +81,9 @@ def run(event, context):
     ses_client = boto3_client('sesv2')
 
     def get_valid_topics():
-        return [
-            topic["TopicName"]
-            for topic in ses_client.get_contact_list(ContactListName=contact_list_name)["Topics"]
-        ]
+        contact_list = ses_client.get_contact_list(ContactListName=contact_list_name)
+        topics = contact_list.get("Topics", [])
+        return [topic["TopicName"] for topic in topics]
         
     def validate_topics(topics):
         valid_topics = get_valid_topics()
@@ -100,13 +99,14 @@ def run(event, context):
     email = qs_params.get("email")
     if email is None:
         return respond_with(400, message="No email provided.")
+    logger.info(f"Email: {email}")
     topics = qs_params.get("topics")
     if topics is None:
         return respond_with(400, message="No topics provided.")
+    logger.info(f"Topics: {topics}")
     new_topics = topics.split(",")
     if validate_topics(new_topics) is False:
         return respond_with(400, message="Invalid topics provided.")
-    logger.info(f"Email: {email}, Topics: {new_topics}")
     
     def subscribe_contact_to_topics():
         try:
