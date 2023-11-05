@@ -120,7 +120,7 @@ def run(event, context):
             # get existing opt-in topics
             contact_topics = [
                 topic["TopicName"]
-                for topic in contact["TopicPreferences"]
+                for topic in contact.get("TopicPreferences", [])
                 if topic["SubscriptionStatus"] == "OPT_IN"
             ]
             logger.debug(f"Contact opt-in topics: {contact_topics}")
