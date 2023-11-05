@@ -2,10 +2,10 @@ from .base import Source
 
 
 class TMASource(Source):
-    def __init__(self, timezone):
+    def __init__(self, timezone, masjid_id):
         super().__init__("The Masjid App", headers={
             "Accept": "application/json",
-        }, url="https://themasjidapp.net",
+        }, url=f"https://themasjidapp.net/{masjid_id}",
         timezone=timezone)
     
     @staticmethod
