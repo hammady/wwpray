@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { invalidate } from '$app/navigation';
+	import { browser } from '$app/environment';
 	import { APP_NAME } from '$lib/constants';
 	import { filteredMasjids, masjids } from '$lib/stores/masjids';
 	import { getFilteredMasjids } from '$lib/utils';
@@ -11,6 +11,8 @@
 
 		$filteredMasjids = getFilteredMasjids(search, $masjids);
 	};
+
+	$: isJSEnabled = browser;
 </script>
 
 <nav class="top-0 z-50 navbar bg-base-100 md:px-4 2xl:px-8 h-navbar shadow-md">
@@ -22,13 +24,15 @@
 	<div class="flex gap-4">
 		<form action="/" method="GET">
 			<div class="form-control pl-6">
-				<input
-					name="search"
-					type="text"
-					placeholder="Search for masjid"
-					class="input input-bordered w-56 md:w-72"
-					on:input={onSearch}
-				/>
+				{#if isJSEnabled}
+					<input
+						name="search"
+						type="text"
+						placeholder="Search for masjid"
+						class="input input-bordered w-56 md:w-72"
+						on:input={onSearch}
+					/>
+				{/if}
 			</div>
 		</form>
 	</div>
