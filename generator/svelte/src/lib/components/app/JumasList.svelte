@@ -1,15 +1,14 @@
 <script lang="ts">
 	import { EGroupBy, GROUP_BY_ROUTES } from '$lib/constants';
+	import { filteredMasjids } from '$lib/stores/masjids';
 	import type { IMasjid } from '$lib/types';
 	import Divider from '../uikit/Divider.svelte';
 	import MasjidLastUpdated from './MasjidLastUpdated.svelte';
-
-	export let masjids: [string, IMasjid][];
 </script>
 
-{#if masjids}
+{#if $filteredMasjids}
 	<div class="w-full">
-		{#each masjids as [name, { display_name: displayName, jumas, last_updated: lastUpdated }], i}
+		{#each $filteredMasjids as [name, { display_name: displayName, jumas, last_updated: lastUpdated }], i}
 			<h2 class="flex items-center justify-between">
 				<a href="{GROUP_BY_ROUTES[EGroupBy.Masjid]}#masjid_{name}">
 					{displayName}
@@ -26,7 +25,7 @@
 						</li>
 					{/each}
 				</ul>
-				{#if i !== masjids.length - 1}
+				{#if i !== $filteredMasjids.length - 1}
 					<Divider />
 				{/if}
 			</div>

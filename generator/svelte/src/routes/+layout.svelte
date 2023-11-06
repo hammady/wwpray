@@ -10,9 +10,11 @@
 	import Alert from '$lib/components/uikit/Alert.svelte';
 	import SubscribeForm from '$lib/components/app/SubscribeForm.svelte';
 	import type { LayoutData } from './$types';
+	import { filteredMasjids, masjids } from '$lib/stores/masjids';
 
 	export let data: LayoutData;
-	let masjids = data.masjids;
+	$masjids = data.masjids;
+	$filteredMasjids = data.filteredMasjids;
 	let message = data.message;
 
 	let sideInputElement: HTMLInputElement;
@@ -45,10 +47,10 @@
 			<Spacer />
 		{/if}
 
-		<slot {masjids} />
+		<slot />
 	</div>
 
-	<SubscribeForm slot="side" {masjids} bind:sideInputElement />
+	<SubscribeForm slot="side" bind:sideInputElement />
 </SideOver>
 
 <ul

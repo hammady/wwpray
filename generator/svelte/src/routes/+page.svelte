@@ -1,15 +1,13 @@
 <script lang="ts">
 	import GroupByTabs from '$lib/components/app/GroupByTabs.svelte';
 	import { EGroupBy } from '$lib/constants';
-	import type { LayoutData } from './$types';
 	import MasjidLastUpdated from '$lib/components/app/MasjidLastUpdated.svelte';
 	import { getMasjidRoute, sortMasjidsForPrayer, getSortedPrayers } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import PrayerTimeChanged from '$lib/components/app/PrayerTimeChanged.svelte';
+	import { filteredMasjids } from '$lib/stores/masjids';
 
-	export let data: LayoutData;
-	$: masjids = data.masjids;
-	$: prayers = getSortedPrayers(masjids);
+	$: prayers = getSortedPrayers($filteredMasjids);
 </script>
 
 <GroupByTabs groupBy={EGroupBy.Prayer} />
@@ -33,7 +31,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each sortMasjidsForPrayer(masjids, prayer) as [id, { display_name: name, iqamas, last_updated: lastUpdated }]}
+				{#each sortMasjidsForPrayer($filteredMasjids, prayer) as [id, { display_name: name, iqamas, last_updated: lastUpdated }]}
 					<tr
 						role="button"
 						class="hover:!bg-primary/5 cursor-pointer"

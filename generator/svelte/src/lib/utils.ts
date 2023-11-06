@@ -124,6 +124,15 @@ export const isNextIqama = (masjids: [string, IMasjid][], masjidName: string, iq
 	return getNextPrayerForMasjid(masjid).name === iqama;
 };
 
+export const getFilteredMasjids = (search: string, masjids: [string, IMasjid][]) =>
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	masjids.filter(([_, masjid]) => {
+		const name = masjid.display_name.toLowerCase();
+		const address = masjid.address.toLowerCase();
+
+		return name.toLowerCase().includes(search) || address.toLowerCase().includes(search);
+	});
+
 /** Path helpers */
 
 export const getMasjidRoute = (id: string) => {
