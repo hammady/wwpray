@@ -45,7 +45,8 @@ module.exports = async (dataFilePath, destinationDir) => {
   // Copy necessary static files to destination directory
   console.log(`Copying generated static files to destination directory: ${destinationDir}...`);
   const svelteBuildDir = path.join(svelteDir, "build");
-  for (const file of ["_app", "index.html", "favicon.png"]) {
+  const layouts = ["index.html", "jumas.html", "masjids.html"]
+  for (const file of ["_app", "favicon.png"].concat(layouts)) {
     fs.cpSync(path.join(svelteBuildDir, file), path.join(destinationDir, file), {
       recursive: true,
     });
