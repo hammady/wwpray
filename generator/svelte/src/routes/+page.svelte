@@ -20,8 +20,8 @@
 			(Next)
 		{/if}
 	</h2>
-	<div class="max-w-[90vw] overflow-x-auto">
-		<table class="mt-1 table border border-neutral-content/50">
+	<div class="border border-neutral-content/50 max-w-[90vw] overflow-x-auto">
+		<table class="mt-1 table">
 			<thead>
 				<tr>
 					<th>Masjid</th>
