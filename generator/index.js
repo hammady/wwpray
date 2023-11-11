@@ -32,6 +32,7 @@ module.exports.handler = async (event, context) => {
     const ext = require('path').extname(filePath)
     switch (ext) {
       case '.html':
+      case '':
         return 'text/html; charset=utf-8'
       case '.css':
         return 'text/css; charset=utf-8'
