@@ -45,10 +45,15 @@ module.exports = async (dataFilePath, destinationDir) => {
   // Copy necessary static files to destination directory
   console.log(`Copying generated static files to destination directory: ${destinationDir}...`);
   const svelteBuildDir = path.join(svelteDir, "build");
-  const layouts = ["index.html", "jumas.html", "masjids.html"]
-  for (const file of ["_app", "favicon.png"].concat(layouts)) {
+  for (const file of ["index.html", "_app", "favicon.png"]) {
     fs.cpSync(path.join(svelteBuildDir, file), path.join(destinationDir, file), {
       recursive: true,
     });
+  }
+  // layouts need to be handled separately to make them http navigable
+  for (const file of ["jumas.html", "masjids.html"]) {
+    // strip .html extension
+    const destFileName = file.replace(".html", "");
+    fs.cpSync(path.join(svelteBuildDir, file), path.join(destinationDir, destFileName));
   }
 };
