@@ -1,4 +1,5 @@
 export const APP_NAME = 'Where & When to Pray';
+export const APP_NAME_SHORT = 'wwpray';
 
 export enum EAlertType {
 	Info = 'alert-info',
