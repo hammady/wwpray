@@ -31,7 +31,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each sortMasjidsForPrayer($filteredMasjids, prayer) as [id, { display_name: name, iqamas, last_updated: lastUpdated }]}
+				{#each sortMasjidsForPrayer($filteredMasjids, prayer) as [id, { display_name: name, iqamas, last_updated: lastUpdated }] (id)}
 					<tr
 						role="button"
 						class="hover:!bg-primary/5 cursor-pointer"

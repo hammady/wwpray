@@ -30,18 +30,16 @@
 		</a>
 	</div>
 	<div class="flex gap-4">
-		<form action="/" method="GET">
-			<div class="form-control pl-6">
-				{#if isJSEnabled}
-					<input
-						name="search"
-						type="text"
-						placeholder="Search for masjid"
-						class="input input-bordered focus:input-primary w-56 md:w-80 focus:border-none"
-						on:input={onSearch}
-					/>
-				{/if}
-			</div>
-		</form>
+		<div class="pl-6">
+			{#if isJSEnabled}
+				<input
+					name="search"
+					type="text"
+					placeholder="Search for masjid"
+					class="input input-bordered focus:input-primary w-56 md:w-80 focus:border-none"
+					on:input={onSearch}
+				/>
+			{/if}
+		</div>
 	</div>
 </nav>
