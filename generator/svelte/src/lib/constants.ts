@@ -19,8 +19,8 @@ export const TOAST_TIMEOUT = 5000;
 export const SUBSCRIPTION_SIDEOVER_ID = 'subscription-sideover';
 
 export enum EGroupBy {
-	Prayer = 'Prayer',
-	Masjid = 'Masjid',
+	Prayer = 'Prayers',
+	Masjid = 'Masjids',
 	jumas = 'Jumas'
 }
 
