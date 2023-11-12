@@ -86,6 +86,8 @@ export const getNextPrayerForMasjids = (masjids: [string, IMasjid][]) => {
 };
 
 export const getSortedPrayers = (masjids: [string, IMasjid][]) => {
+	if (!masjids.length) return [];
+
 	const prayers = getPrayers();
 	let nextPrayer = getNextPrayerForMasjids(masjids);
 	const sortedPrayers: TPrayer[] = [];
@@ -99,7 +101,7 @@ export const getSortedPrayers = (masjids: [string, IMasjid][]) => {
 };
 
 export const sortMasjidsForPrayer = (masjids: [string, IMasjid][], prayerName: string) => {
-	return masjids.sort((a, b) => {
+	return [...masjids].sort((a, b) => {
 		const aPrayer = a[1].iqamas[prayerName];
 		const bPrayer = b[1].iqamas[prayerName];
 
@@ -129,6 +131,9 @@ export const getFilteredMasjids = (search: string, masjids: [string, IMasjid][])
 	masjids.filter(([_, masjid]) => {
 		const name = masjid.display_name.toLowerCase();
 		const address = masjid.address.toLowerCase();
+		search ??= '';
+		search = search.toLowerCase();
+		search = search.trim();
 
 		return name.toLowerCase().includes(search) || address.toLowerCase().includes(search);
 	});

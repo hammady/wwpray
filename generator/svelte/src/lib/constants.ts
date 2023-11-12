@@ -1,4 +1,5 @@
 export const APP_NAME = 'Where & When to Pray';
+export const APP_NAME_SHORT = 'wwpray';
 
 export enum EAlertType {
 	Info = 'alert-info',
@@ -19,8 +20,8 @@ export const TOAST_TIMEOUT = 5000;
 export const SUBSCRIPTION_SIDEOVER_ID = 'subscription-sideover';
 
 export enum EGroupBy {
-	Prayer = 'Prayer',
-	Masjid = 'Masjid',
+	Prayer = 'Prayers',
+	Masjid = 'Masjids',
 	jumas = 'Jumas'
 }
 

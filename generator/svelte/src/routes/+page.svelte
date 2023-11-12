@@ -20,8 +20,8 @@
 			(Next)
 		{/if}
 	</h2>
-	<div class="max-w-[90vw] overflow-x-auto">
-		<table class="mt-1 table border border-neutral-content/50">
+	<div class="border border-neutral-content/50 max-w-[90vw] overflow-x-auto">
+		<table class="mt-1 table">
 			<thead>
 				<tr>
 					<th>Masjid</th>
@@ -31,7 +31,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each sortMasjidsForPrayer($filteredMasjids, prayer) as [id, { display_name: name, iqamas, last_updated: lastUpdated }]}
+				{#each sortMasjidsForPrayer($filteredMasjids, prayer) as [id, { display_name: name, iqamas, last_updated: lastUpdated }] (id)}
 					<tr
 						role="button"
 						class="hover:!bg-primary/5 cursor-pointer"

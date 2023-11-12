@@ -13,7 +13,7 @@
 			class:!border-b-primary={value === groupBy}
 			href={GROUP_BY_ROUTES[value]}
 		>
-			Group by {value}
+			{value}
 		</a>
 	{/each}
 </div>
