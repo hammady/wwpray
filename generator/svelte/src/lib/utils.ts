@@ -29,8 +29,8 @@ export const convertToCalendarTime = (isoDate?: string) => {
 	});
 };
 
-export const isToday = (isoDate: string) => {
-	return dayjs(isoDate).isSame(dayjs(), 'day');
+export const isToday = (dateStr: string) => {
+	return dayjs(dateStr).isSame(dayjs(), 'day');
 };
 
 export const isYesterday = (isoDate: string) => {
