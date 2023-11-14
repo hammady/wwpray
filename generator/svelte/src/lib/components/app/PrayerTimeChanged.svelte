@@ -1,11 +1,12 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { convertToCalendarTime, isOlderThanAWeek, isToday, isYesterday, tw } from '$lib/utils';
 
 	export let changedOn: string | undefined;
 
-	$: today = changedOn && isToday(changedOn);
-	$: yesterday = changedOn && isYesterday(changedOn);
-	$: olderThanAWeek = changedOn && isOlderThanAWeek(changedOn);
+	$: today = changedOn && browser && isToday(changedOn);
+	$: yesterday = changedOn && browser && isYesterday(changedOn);
+	$: olderThanAWeek = changedOn && browser && isOlderThanAWeek(changedOn);
 	$: changedOnCalendarTime = convertToCalendarTime(changedOn);
 </script>
 

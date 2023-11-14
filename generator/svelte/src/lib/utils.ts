@@ -16,10 +16,16 @@ export const convertToRelativeTime = (isoDate: string) => {
 	return dayjs.utc(isoDate).fromNow();
 };
 
-export const convertToCalendarTime = (isoDate?: string) => {
-	if (!isoDate) return null;
+export const convertToCalendarTime = (dateStr?: string) => {
+	if (!dateStr) return null;
 
+<<<<<<< Updated upstream
 	return dayjs.utc(isoDate).local().calendar(null, {
+||||||| Stash base
+	return dayjs.utc(isoDate).calendar(null, {
+=======
+	return dayjs.utc(dateStr).calendar(null, {
+>>>>>>> Stashed changes
 		sameDay: '[Today]',
 		nextDay: '[Tomorrow]',
 		nextWeek: '[Next Week]',
