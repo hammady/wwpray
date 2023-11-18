@@ -14,6 +14,14 @@ log_level = os.environ.get('LOG_LEVEL', 'WARNING').upper()
 logger = logging.getLogger(__name__)
 logger.setLevel(log_level)
 
+# ignore changes for these iqamas on these weekdays
+# 0 is Monday, 6 is Sunday
+IGNORED_WEEKDAY_CHANGES = {
+    'maghrib': list(range(0, 7)), # Everyday
+    'zuhr': [4, 5] # Friday, Saturday
+}
+def should_ignore_weekday_change(iqama_key, weekday):
+    return IGNORED_WEEKDAY_CHANGES.get(iqama_key) is not None and weekday in IGNORED_WEEKDAY_CHANGES[iqama_key]
 
 def read_json(file_path):
     with open(file_path, 'r') as f:
@@ -60,8 +68,8 @@ def detect_changes(old_data, new_data, save_to_file=None):
         for new_iqama_key, new_iqama_value in new_iqamas.items():
             old_iqama_value = (old_iqamas or {}).get(new_iqama_key)
             if old_iqama_value is None or new_iqama_value["time"] != old_iqama_value["time"]:
-                # iqama changed, add it to changes, unless it's maghrib
-                if new_iqama_key != "maghrib":
+                # iqama changed, add it to changes, unless it should be ignored
+                if not should_ignore_weekday_change(new_iqama_key, now.weekday()):
                     changes[new_key] = True
                 new_iqama_value["changed"] = True
                 new_iqama_value["changed_on"] = today

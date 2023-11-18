@@ -9,6 +9,9 @@ from datetime import datetime
 class TestHandler(unittest.TestCase):
     def setUp(self):
         self.mocked_now = datetime(2022, 10, 24, 0, 0, 0)
+        self.mocked_now_with_friday = datetime(2020, 5, 1, 0, 0, 0)
+        self.mocked_now_with_saturday = datetime(2020, 5, 2, 0, 0, 0)
+        self.mocked_now_with_sunday = datetime(2020, 5, 3, 0, 0, 0)
         self.base_masjid = {
             "iqamas": {
                 "fajr": {"time": "05:00"},
@@ -23,6 +26,9 @@ class TestHandler(unittest.TestCase):
 
         self.masjid_with_maghrib_changed = cp(self.base_masjid)
         self.masjid_with_maghrib_changed["iqamas"]["maghrib"] = {"time": "18:05"}
+
+        self.masjid_with_zuhr_changed = cp(self.base_masjid)
+        self.masjid_with_zuhr_changed["iqamas"]["zuhr"] = {"time": "13:30"}
 
         self.masjid_with_jumas_changed = cp(self.base_masjid)
         self.masjid_with_jumas_changed["jumas"] = ["13:30", "14:30"]
@@ -81,7 +87,9 @@ class TestHandler(unittest.TestCase):
         saved_data = read_json(self.test_saved_file)
         self.assertEqual(saved_data["masjids"]["m1"].get("last_updated"), self.mocked_now.isoformat())
 
-    def test_detect_changes_when_maghrib_changed_return_none(self):
+    @patch('handler.datetime')
+    def test_detect_changes_when_maghrib_changed_and_today_is_friday_return_none(self, datetime_mock):
+        datetime_mock.datetime.utcnow.return_value = self.mocked_now_with_friday
         changes = detect_changes(
             old_data={
                 "masjids": {"m1": self.base_masjid, "m2": self.base_masjid}
@@ -90,6 +98,69 @@ class TestHandler(unittest.TestCase):
                 "masjids": {"m1": self.masjid_with_maghrib_changed, "m2": self.base_masjid}
             })
         self.assertIsNone(changes)
+
+    @patch('handler.datetime')
+    def test_detect_changes_when_maghrib_changed_and_today_is_saturday_return_none(self, datetime_mock):
+        datetime_mock.datetime.utcnow.return_value = self.mocked_now_with_saturday
+        changes = detect_changes(
+            old_data={
+                "masjids": {"m1": self.base_masjid, "m2": self.base_masjid}
+            },
+            new_data={
+                "masjids": {"m1": self.masjid_with_maghrib_changed, "m2": self.base_masjid}
+            })
+        self.assertIsNone(changes)
+
+    @patch('handler.datetime')
+    def test_detect_changes_when_zuhr_changed_and_today_is_sunday_return_none(self, datetime_mock):
+        datetime_mock.datetime.utcnow.return_value = self.mocked_now_with_sunday
+        changes = detect_changes(
+            old_data={
+                "masjids": {"m1": self.base_masjid, "m2": self.base_masjid}
+            },
+            new_data={
+                "masjids": {"m1": self.masjid_with_maghrib_changed, "m2": self.base_masjid}
+            })
+        self.assertIsNone(changes)
+
+    @patch('handler.datetime')
+    def test_detect_changes_when_zuhr_changed_and_today_is_friday_return_none(self, datetime_mock):
+        datetime_mock.datetime.utcnow.return_value = self.mocked_now_with_friday
+        changes = detect_changes(
+            old_data={
+                "masjids": {"m1": self.base_masjid, "m2": self.base_masjid}
+            },
+            new_data={
+                "masjids": {"m1": self.masjid_with_zuhr_changed, "m2": self.base_masjid}
+            })
+        self.assertIsNone(changes)
+
+    @patch('handler.datetime')
+    def test_detect_changes_when_zuhr_changed_and_today_is_saturday_return_none(self, datetime_mock):
+        datetime_mock.datetime.utcnow.return_value = self.mocked_now_with_saturday
+        changes = detect_changes(
+            old_data={
+                "masjids": {"m1": self.base_masjid, "m2": self.base_masjid}
+            },
+            new_data={
+                "masjids": {"m1": self.masjid_with_zuhr_changed, "m2": self.base_masjid}
+            })
+        self.assertIsNone(changes)
+
+    @patch('handler.datetime')
+    def test_detect_changes_when_zuhr_changed_and_today_is_sunday_return_one_change(self, datetime_mock):
+        datetime_mock.datetime.utcnow.return_value = self.mocked_now_with_sunday
+        changes = detect_changes(
+            old_data={
+                "masjids": {"m1": self.base_masjid, "m2": self.base_masjid}
+            },
+            new_data={
+                "masjids": {"m1": self.masjid_with_zuhr_changed, "m2": self.base_masjid}
+            })
+        self.assertEqual(len(changes), 1)
+        self.assertIn("m1", changes)
+        self.assertEqual(changes["m1"]["iqamas"]["zuhr"].get("changed"), True)
+        self.assertIsNotNone(changes["m1"].get("last_updated"))
 
     def test_detect_changes_when_jumas_changed_return_one_change(self):
         changes = detect_changes(
