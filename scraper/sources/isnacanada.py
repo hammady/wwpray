@@ -11,3 +11,5 @@ class ISNACanadaSource(MasjidBoxSource):
         self.display_name = 'ISNA Canada - ICC'
         self.website = 'https://www.isnacanada.com/'
         self.address = '2200 S Sheridan Way, Mississauga, ON L5J 2M4'
+        self.latitude = 43.520569
+        self.longitude = -79.650948

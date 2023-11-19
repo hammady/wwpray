@@ -10,6 +10,8 @@ class MNNexusSource(HTMLSource):
         self.display_name = 'Muslim Neighbour Nexus (MNN)'
         self.website = 'https://mnnexus.ca/'
         self.address = '3520 Odyssey Dr, Mississauga, ON L5M 0Y9'
+        self.latitude = 43.535220
+        self.longitude = -79.724570
 
     def parse(self):
         soup = super().parse()

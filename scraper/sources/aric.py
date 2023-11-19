@@ -10,6 +10,8 @@ class ArRehmanSource(HTMLSource):
         self.display_name = 'Ar-Rehman Islamic Center'
         self.website = 'https://aric-icna.ca/'
         self.address = '6120 Montevideo Rd, Mississauga, ON L5N 3W5'
+        self.latitude = 43.582310
+        self.longitude = -79.743180
         
     def parse(self):
         soup = super().parse()

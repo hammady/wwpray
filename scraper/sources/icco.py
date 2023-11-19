@@ -10,6 +10,8 @@ class ICCOSource(HTMLSource):
         self.display_name = 'Islamic Community Centre of Ontario (ICCO)'
         self.website = 'https://centres.macnet.ca/icco/'
         self.address = '2550 Dunwin Dr, Mississauga, ON L5L 1T1'
+        self.latitude = 43.528470
+        self.longitude = -79.681020
         
     def parse(self):
         soup = super().parse()

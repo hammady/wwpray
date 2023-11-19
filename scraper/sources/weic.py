@@ -10,6 +10,8 @@ class WEICSource(HTMLSource):
         self.display_name = 'West End Islamic Center'
         self.website = 'https://weicenter.ca/'
         self.address = '12,13-4161 Sladeview Crescent, Mississauga, ON L5L 5R3'
+        self.latitude = 43.530700
+        self.longitude = -79.718800
         
     def parse(self):
         soup = super().parse()

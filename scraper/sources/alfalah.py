@@ -8,3 +8,5 @@ class AlfalahSource(MasjidalSource):
         self.display_name = 'Al Falah Islamic Centre'
         self.website = 'https://alfalahcentre.ca/'
         self.address = '391 Burnhamthorpe Rd E, Oakville, ON L6H 7B4'
+        self.latitude = 43.503690
+        self.longitude = -79.736310

@@ -44,7 +44,9 @@ def run(event, context):
             response["masjids"][source.name] = {
                 "display_name": source.display_name,
                 "website": source.website,
-                "address": source.address
+                "address": source.address,
+                "latitude": source.latitude,
+                "longitude": source.longitude
             }
             # Submit the thread to the executor which will be run immediately
             futures.append(executor.submit(process_source, source))

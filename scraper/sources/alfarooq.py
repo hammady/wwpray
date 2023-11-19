@@ -10,6 +10,8 @@ class AlfarooqSource(HTMLSource):
         self.display_name = 'Masjid Al-Farooq'
         self.website = 'https://www.masjidfarooq.com/'
         self.address = '935 Eglinton Ave W, Mississauga, ON L5V 1R6'
+        self.latitude = 43.586899
+        self.longitude = -79.675926
         
     def parse(self):
         soup = super().parse()

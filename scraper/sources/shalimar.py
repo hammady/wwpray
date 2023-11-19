@@ -8,3 +8,5 @@ class ShalimarSource(TMASource):
         self.display_name = 'Shalimar Islamic Centre'
         self.website = 'https://www.shalimarislamiccentre.ca/'
         self.address = '79-3024 Cedarglen Gate, Mississauga, ON, L5C 4S3'
+        self.latitude = 43.558650
+        self.longitude = -79.642110

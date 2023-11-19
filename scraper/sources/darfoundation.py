@@ -11,3 +11,5 @@ class DarFoundationSource(MasjidBoxSource):
         self.display_name = 'Dar Foundation'
         self.website = 'https://darfoundation.com/'
         self.address = '485 Morden Rd, Oakville, ON, L6K 3W6'
+        self.latitude = 43.441880
+        self.longitude = -79.695510
