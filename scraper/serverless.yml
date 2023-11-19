@@ -43,7 +43,7 @@ functions:
           enabled: ${param:cron_enabled}
       # Invoke Lambda function more frequently on Fridays
       - schedule:
-          rate: cron(0 15,16,17 * * FRI *)
+          rate: cron(0 14,16 ? * FRI *)
           enabled: ${param:cron_enabled}
 
 plugins:
