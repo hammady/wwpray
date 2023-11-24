@@ -19,13 +19,7 @@ export const convertToRelativeTime = (isoDate: string) => {
 export const convertToCalendarTime = (dateStr?: string) => {
 	if (!dateStr) return null;
 
-<<<<<<< Updated upstream
-	return dayjs.utc(isoDate).local().calendar(null, {
-||||||| Stash base
-	return dayjs.utc(isoDate).calendar(null, {
-=======
-	return dayjs.utc(dateStr).calendar(null, {
->>>>>>> Stashed changes
+	return dayjs.utc(dateStr).local().calendar(null, {
 		sameDay: '[Today]',
 		nextDay: '[Tomorrow]',
 		nextWeek: '[Next Week]',
