@@ -16,6 +16,7 @@ module.exports.handler = async (event, context) => {
   }
   dataFileKey = 'data/notified.json'
   dataFilePath = '/tmp/notified.json'
+  dataFileKeyUploaded = 'static/data.json'
 
   const { writeFile, readFile } = require("node:fs/promises");
 
@@ -81,6 +82,10 @@ module.exports.handler = async (event, context) => {
   // upload data
   console.log(`Uploading ${destinationDir} to s3...`)
   await uploadDirectory(destinationDir, 'static')
+
+  // upload data file
+  console.log(`Uploading ${dataFilePath} to s3...`)
+  await uploadFile(dataFilePath, dataFileKeyUploaded)
 
   return true
 };
