@@ -18,7 +18,8 @@ logger.setLevel(log_level)
 # 0 is Monday, 6 is Sunday
 IGNORED_WEEKDAY_CHANGES = {
     'maghrib': list(range(0, 7)), # Everyday
-    'zuhr': [4, 5] # Friday, Saturday
+    'zuhr': [4, 5], # Friday, Saturday
+    'jumas': [5] # Saturday
 }
 def should_ignore_weekday_change(iqama_key, weekday):
     return IGNORED_WEEKDAY_CHANGES.get(iqama_key) is not None and weekday in IGNORED_WEEKDAY_CHANGES[iqama_key]
@@ -81,8 +82,9 @@ def detect_changes(old_data, new_data, save_to_file=None):
         new_jumas = set(new_value["jumas"])
         old_jumas = set(old_value["jumas"])
         if new_jumas != old_jumas:
-            # jumas changed, add it to changes
-            changes[new_key] = True
+            # jumas changed, add it to changes, unless it should be ignored
+            if not should_ignore_weekday_change("jumas", now.weekday()):
+                changes[new_key] = True
             new_value["jumas_changed"] = True
 
     # replace old file with new data
