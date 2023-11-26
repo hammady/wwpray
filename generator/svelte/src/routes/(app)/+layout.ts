@@ -7,7 +7,7 @@ import { getFilteredMasjids } from '$lib/utils';
 export const prerender = true;
 
 export const load: LayoutLoad = async () => {
-	const data = (await import('./notified.json')) as TMasjidsJSON;
+	const data = (await import('../notified.json')) as TMasjidsJSON;
 	const searchParams = browser ? new URLSearchParams(location.search) : null;
 
 	const search = (browser && searchParams?.get('search')) || '';
