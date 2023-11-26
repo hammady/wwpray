@@ -3,7 +3,7 @@
 	import Toast from '$lib/components/uikit/Toast.svelte';
 	import { toasts } from '$lib/stores/toast';
 	import { flip } from 'svelte/animate';
-	import '../app.css';
+	import '../../app.css';
 	import SideOver from '$lib/components/uikit/SideOver.svelte';
 	import { APP_NAME, SUBSCRIPTION_SIDEOVER_ID } from '$lib/constants';
 	import Spacer from '$lib/components/uikit/Spacer.svelte';
