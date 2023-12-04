@@ -16,10 +16,10 @@ export const convertToRelativeTime = (isoDate: string) => {
 	return dayjs.utc(isoDate).fromNow();
 };
 
-export const convertToCalendarTime = (isoDate?: string) => {
-	if (!isoDate) return null;
+export const convertToCalendarTime = (dateStr?: string) => {
+	if (!dateStr) return null;
 
-	return dayjs.utc(isoDate).calendar(null, {
+	return dayjs.utc(dateStr).local().calendar(null, {
 		sameDay: '[Today]',
 		nextDay: '[Tomorrow]',
 		nextWeek: '[Next Week]',
@@ -29,16 +29,16 @@ export const convertToCalendarTime = (isoDate?: string) => {
 	});
 };
 
-export const isToday = (isoDate: string) => {
-	return dayjs.utc(isoDate).isSame(dayjs.utc(), 'day');
+export const isToday = (dateStr: string) => {
+	return dayjs(dateStr).isSame(dayjs(), 'day');
 };
 
 export const isYesterday = (isoDate: string) => {
-	return dayjs.utc(isoDate).isSame(dayjs.utc().subtract(1, 'day'), 'day');
+	return dayjs(isoDate).isSame(dayjs().subtract(1, 'day'), 'day');
 };
 
 export const isOlderThanAWeek = (isoDate: string) => {
-	return dayjs.utc(isoDate).isBefore(dayjs.utc().subtract(7, 'day'), 'day');
+	return dayjs(isoDate).isBefore(dayjs().subtract(7, 'day'), 'day');
 };
 
 export const getCurrentLocalDateTime = () => {
