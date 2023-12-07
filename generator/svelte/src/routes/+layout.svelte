@@ -27,7 +27,7 @@
 		const jumasRoute = GROUP_BY_ROUTES[EGroupBy.jumas];
 		const isJumasRoute = $page.url.pathname === jumasRoute;
 
-		if (!isJumasRoute && !shouldDefaultToJumas(data.filteredMasjids)) {
+		if (!isJumasRoute && shouldDefaultToJumas(data.filteredMasjids)) {
 			goto(jumasRoute)
 		}
 	});
