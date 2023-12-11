@@ -134,13 +134,10 @@ export const getCurrentPrayer = (masjids: [string, IMasjid][]) => {
 export const shouldDefaultToJumas = (masjids: [string, IMasjid][]) => {
 	const currentPrayer = getCurrentPrayer(masjids);
 
-	const isThursday = dayjs().day() === EDay.Thursday;
 	const isFriday = dayjs().day() === EDay.Friday;
+	const isZuhrNext = currentPrayer === EPrayer.Fajr;
 
-	const isMaghrib = currentPrayer === EPrayer.Maghrib;
-	const isIsha = currentPrayer === EPrayer.Isha;
-
-	return (isThursday && (isMaghrib || isIsha)) || (isFriday && !isMaghrib && !isIsha);
+	return isFriday && isZuhrNext;
 };
 
 export const getFilteredMasjids = (search: string, masjids: [string, IMasjid][]) =>
