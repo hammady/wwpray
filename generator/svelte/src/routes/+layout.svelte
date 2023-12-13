@@ -5,12 +5,16 @@
 	import { flip } from 'svelte/animate';
 	import '../app.css';
 	import SideOver from '$lib/components/uikit/SideOver.svelte';
-	import { APP_NAME, SUBSCRIPTION_SIDEOVER_ID } from '$lib/constants';
+	import { APP_NAME, EGroupBy, GROUP_BY_ROUTES, SUBSCRIPTION_SIDEOVER_ID } from '$lib/constants';
 	import Spacer from '$lib/components/uikit/Spacer.svelte';
 	import Alert from '$lib/components/uikit/Alert.svelte';
 	import SubscribeForm from '$lib/components/app/SubscribeForm.svelte';
 	import type { LayoutData } from './$types';
 	import { filteredMasjids, masjids } from '$lib/stores/masjids';
+	import { onMount } from 'svelte';
+	import { shouldDefaultToJumas } from '$lib/utils';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 
 	export let data: LayoutData;
 	$masjids = data.masjids;
@@ -18,6 +22,15 @@
 	let message = data.message;
 
 	let sideInputElement: HTMLInputElement;
+
+	onMount(() => {
+		const jumasRoute = GROUP_BY_ROUTES[EGroupBy.jumas];
+		const isJumasRoute = $page.url.pathname === jumasRoute;
+
+		if (!isJumasRoute && shouldDefaultToJumas(data.filteredMasjids)) {
+			goto(jumasRoute)
+		}
+	});
 </script>
 
 <svelte:head>

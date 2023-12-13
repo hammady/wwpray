@@ -4,7 +4,7 @@ import calendar from 'dayjs/plugin/calendar';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import utc from 'dayjs/plugin/utc';
 import type { IMasjid, TPrayer } from './types';
-import { EGroupBy, GROUP_BY_ROUTES, PRAYER_NAMES } from './constants';
+import { EDay, EGroupBy, EPrayer, GROUP_BY_ROUTES, PRAYER_NAMES } from './constants';
 
 dayjs.extend(utc);
 dayjs.extend(relativeTime);
@@ -124,6 +124,20 @@ export const isNextIqama = (masjids: [string, IMasjid][], masjidName: string, iq
 	}
 
 	return getNextPrayerForMasjid(masjid).name === iqama;
+};
+
+export const getCurrentPrayer = (masjids: [string, IMasjid][]) => {
+	const sortedPrayers = getSortedPrayers(masjids);
+	return sortedPrayers[sortedPrayers.length - 1];
+};
+
+export const shouldDefaultToJumas = (masjids: [string, IMasjid][]) => {
+	const currentPrayer = getCurrentPrayer(masjids);
+
+	const isFriday = dayjs().day() === EDay.Friday;
+	const isZuhrNext = currentPrayer === EPrayer.Fajr;
+
+	return isFriday && isZuhrNext;
 };
 
 export const getFilteredMasjids = (search: string, masjids: [string, IMasjid][]) =>

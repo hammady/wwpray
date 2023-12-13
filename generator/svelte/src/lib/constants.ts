@@ -32,3 +32,21 @@ export const GROUP_BY_ROUTES = {
 };
 
 export const PRAYER_NAMES = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
+
+export enum EDay {
+	Sunday,
+	Monday,
+	Tuesday,
+	Wednesday,
+	Thursday,
+	Friday,
+	Saturday
+}
+
+export enum EPrayer {
+	Fajr = 'fajr',
+	Zuhr = 'zuhr',
+	Asr = 'asr',
+	Maghrib = 'maghrib',
+	Isha = 'isha'
+}
