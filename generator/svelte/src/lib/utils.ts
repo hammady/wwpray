@@ -5,6 +5,7 @@ import customParseFormat from 'dayjs/plugin/customParseFormat';
 import utc from 'dayjs/plugin/utc';
 import type { IMasjid, TPrayer } from './types';
 import { EDay, EGroupBy, EPrayer, GROUP_BY_ROUTES, PRAYER_NAMES } from './constants';
+import keys from 'lodash/keys';
 
 dayjs.extend(utc);
 dayjs.extend(relativeTime);
@@ -80,9 +81,32 @@ export const getNextPrayerForMasjid = (masjid: { iqamas: Record<string, { time: 
 	return nextPrayer;
 };
 
+export const isPrayerComesAfter = (prayer1: TPrayer, prayer2: TPrayer) => {
+	const prayer1Name = prayer1.name.toLocaleLowerCase();
+	const prayer2Name = prayer2.name.toLocaleLowerCase();
+
+	const prayersNames = keys(EPrayer);
+
+	const prayer1Index = prayersNames.indexOf(prayer1Name);
+	const prayer2Index = prayersNames.indexOf(prayer2Name);
+
+	return prayer1Index > prayer2Index;
+};
+
 export const getNextPrayerForMasjids = (masjids: [string, IMasjid][]) => {
-	const firstMasjid = masjids[0][1];
-	return getNextPrayerForMasjid(firstMasjid);
+	let mostNextPrayer: TPrayer | undefined = undefined;
+
+	// We need to compare for all masjids because we have to only determine a prayer as next IF it's the 'Next' for all Masjids
+	for (const masjid of masjids) {
+		const masjidData = masjid[1];
+		const masjidNextPrayer = getNextPrayerForMasjid(masjidData);
+
+		if (!mostNextPrayer || isPrayerComesAfter(masjidNextPrayer, mostNextPrayer)) {
+			mostNextPrayer = masjidNextPrayer;
+		}
+	}
+
+	return mostNextPrayer;
 };
 
 export const getSortedPrayers = (masjids: [string, IMasjid][]) => {
