@@ -22,15 +22,15 @@
 </script>
 
 <div class={tw(cardMDClasses, "flex flex-col md:flex-row justify-between w-full p-8 lg:px-24 gap-8 md:gap-11", classes)} >
-    <div class={tw(sectionClasses, cardClasses, mdResetClasses)}>
+    <div class={tw(sectionClasses, cardClasses, mdResetClasses, "gap-2")}>
         <div class={sectionHeaderClasses}>
             <CalendarIcon class="w-4 h-4" />
             <span class="text-xs">Today</span>
         </div>
-        <span class="mt-1 text-2xl font-semibold">
+        <span class="text-2xl font-semibold">
             {todayName}
         </span>
-        <time datetime={today.toISOString()}>
+        <time class="leading-[1]" datetime={today.toISOString()}>
             {formattedToday}
         </time>
     </div>
