@@ -1,9 +1,9 @@
 <script lang="ts">
+	import '../app.css';
 	import Navbar from '$lib/components/uikit/Navbar.svelte';
 	import Toast from '$lib/components/uikit/Toast.svelte';
 	import { toasts } from '$lib/stores/toast';
 	import { flip } from 'svelte/animate';
-	import '../app.css';
 	import SideOver from '$lib/components/uikit/SideOver.svelte';
 	import { APP_NAME, EGroupBy, GROUP_BY_ROUTES, SUBSCRIPTION_SIDEOVER_ID } from '$lib/constants';
 	import Spacer from '$lib/components/uikit/Spacer.svelte';
@@ -12,9 +12,10 @@
 	import type { LayoutData } from './$types';
 	import { filteredMasjids, masjids } from '$lib/stores/masjids';
 	import { onMount } from 'svelte';
-	import { shouldDefaultToJumas } from '$lib/utils';
+	import { getNextPrayerForMasjids, getTimeRemainingForNextPrayer, shouldDefaultToJumas } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
+	import SummaryCard from '$lib/components/app/SummaryCard.svelte';
 
 	export let data: LayoutData;
 	$masjids = data.masjids;
@@ -31,6 +32,9 @@
 			goto(jumasRoute)
 		}
 	});
+
+	$: nextPrayer = getNextPrayerForMasjids($masjids);
+	$: timeRemainingForNextPrayer = getTimeRemainingForNextPrayer($masjids)
 </script>
 
 <svelte:head>
@@ -44,7 +48,7 @@
 	id={SUBSCRIPTION_SIDEOVER_ID}
 	close-aria-label="close subscriptions sideover"
 >
-	<div slot="page" class="mx-auto prose max-w-6xl py-12 px-6 lg:px-8">
+	<div slot="page" class="max-w-6xl px-6 py-12 mx-auto prose lg:px-8">
 		<h1>{APP_NAME}</h1>
 		<p>
 			A website that shows the prayer times for a list of masjids. The data is fetched from the
@@ -53,6 +57,10 @@
 			unsubscribe link in the email. We employ a strict privacy policy and will never share your
 			email with anyone.
 		</p>
+
+		{#if nextPrayer && timeRemainingForNextPrayer}
+			<SummaryCard {nextPrayer} {timeRemainingForNextPrayer} class="my-8 md:my-16" />
+		{/if}
 
 		{#if message}
 			<Spacer />
