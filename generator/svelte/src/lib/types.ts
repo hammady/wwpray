@@ -39,3 +39,9 @@ export type TPrayer = {
 	name: string;
 	next: TPrayer;
 };
+
+export type TDuration = {
+	hours: number;
+	minutes: number;
+	seconds: number;
+};

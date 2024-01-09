@@ -50,3 +50,6 @@ export enum EPrayer {
 	Maghrib = 'maghrib',
 	Isha = 'isha'
 }
+
+export const MINUTES_PER_HOUR = 60;
+export const SECONDS_PER_MINUTE = 60;
