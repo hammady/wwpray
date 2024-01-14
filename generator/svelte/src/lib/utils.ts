@@ -54,16 +54,18 @@ export const getCurrentLocalDateTime = () => {
 	return dayjs.utc().local();
 };
 
+export const getCurrentUTCDateSeconds = () => {
+	const todayUTC = dayjs().utc();
+	const today = todayUTC.hour(0).minute(0).second(0).millisecond(0);
+	return todayUTC.diff(today, 'seconds');
+};
+
 export const getFormattedDate = (date: Dayjs) => {
 	return date.format('DD MMM YYYY');
 };
 
 export const getDayNameFromDate = (date: Dayjs) => {
 	return date.format('dddd');
-};
-
-export const parsePrayerTime = (dateStr: string) => {
-	return dayjs(dateStr.toUpperCase(), 'h:mm A').local();
 };
 
 /** Data transformation */
@@ -82,15 +84,16 @@ export const getPrayers = () => {
 	return tPrayers;
 };
 
-export const getNextPrayerForMasjid = (masjid: { iqamas: Record<string, { time: string }> }) => {
-	const currentTime = getCurrentLocalDateTime();
+export const getNextPrayerForMasjid = (masjid: {
+	iqamas: Record<string, { seconds_since_midnight_utc: number }>;
+}) => {
+	const currentTime = getCurrentUTCDateSeconds();
 	const prayers = getPrayers();
 
 	const nextPrayer = prayers.find((prayer) => {
-		const prayerTime = masjid.iqamas[prayer.name]?.time;
-		const prayerDateTime = parsePrayerTime(prayerTime);
+		const prayerTime = masjid.iqamas[prayer.name]?.seconds_since_midnight_utc;
 		if (!prayerTime) return false;
-		return prayerDateTime.isAfter(currentTime);
+		return prayerTime > currentTime;
 	});
 
 	if (!nextPrayer) {
@@ -139,13 +142,11 @@ export const getTimeRemainingForNextPrayer = (majids: [string, IMasjid][]) => {
 	const { masjid, nextPrayer } = findMasjidWithMostNextPrayer(majids);
 	if (!masjid || !nextPrayer) return null;
 
-	const currentTime = getCurrentLocalDateTime();
-
-	const prayerTime = masjid.iqamas[nextPrayer.name]?.time;
-	const prayerDateTime = parsePrayerTime(prayerTime);
+	const currentTime = getCurrentUTCDateSeconds();
+	const prayerTime = masjid.iqamas[nextPrayer.name]?.seconds_since_midnight_utc;
 	if (!prayerTime) return null;
 
-	let seconds = prayerDateTime.diff(currentTime, 'seconds');
+	let seconds = prayerTime - currentTime;
 	let minutes = Math.floor(seconds / SECONDS_PER_MINUTE);
 	seconds = seconds % SECONDS_PER_MINUTE;
 	const hours = Math.floor(minutes / MINUTES_PER_HOUR);
