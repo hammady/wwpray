@@ -12,7 +12,11 @@
 	import type { LayoutData } from './$types';
 	import { filteredMasjids, masjids } from '$lib/stores/masjids';
 	import { onMount } from 'svelte';
-	import { getNextPrayerForMasjids, getTimeRemainingForNextPrayer, shouldDefaultToJumas } from '$lib/utils';
+	import {
+		getNextPrayerForMasjids,
+		getTimeRemainingForNextPrayer,
+		shouldDefaultToJumas
+	} from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import SummaryCard from '$lib/components/app/SummaryCard.svelte';
@@ -29,12 +33,20 @@
 		const isJumasRoute = $page.url.pathname === jumasRoute;
 
 		if (!isJumasRoute && shouldDefaultToJumas(data.filteredMasjids)) {
-			goto(jumasRoute)
+			goto(jumasRoute);
 		}
 	});
 
 	$: nextPrayer = getNextPrayerForMasjids($masjids);
-	$: timeRemainingForNextPrayer = getTimeRemainingForNextPrayer($masjids)
+	$: timeRemainingForNextPrayer = getTimeRemainingForNextPrayer($masjids);
+
+	onMount(() => {
+		let interval = setInterval(() => {
+			timeRemainingForNextPrayer = getTimeRemainingForNextPrayer($masjids);
+		}, 1000);
+
+		return () => clearInterval(interval);
+	});
 </script>
 
 <svelte:head>
