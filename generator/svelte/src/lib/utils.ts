@@ -133,13 +133,20 @@ export const findMasjidWithMostNextPrayer = (masjids: [string, IMasjid][]) => {
 	return { masjid: mostMasjid, nextPrayer: mostNextPrayer };
 };
 
+export const findMasjidWithLeastNextPrayer = (masjids: [string, IMasjid][]) => {
+	const masjid = masjids[0][1];
+	const nextPrayer = getNextPrayerForMasjid(masjid);
+
+	return { masjid, nextPrayer };
+};
+
 export const getNextPrayerForMasjids = (masjids: [string, IMasjid][]) => {
 	const { nextPrayer } = findMasjidWithMostNextPrayer(masjids);
 	return nextPrayer;
 };
 
 export const getTimeRemainingForNextPrayer = (majids: [string, IMasjid][]) => {
-	const { masjid, nextPrayer } = findMasjidWithMostNextPrayer(majids);
+	const { masjid, nextPrayer } = findMasjidWithLeastNextPrayer(majids);
 	if (!masjid || !nextPrayer) return null;
 
 	const currentTime = getCurrentUTCDateSeconds();
