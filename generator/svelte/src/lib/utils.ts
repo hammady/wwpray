@@ -1,10 +1,18 @@
-import dayjs from 'dayjs';
+import dayjs, { Dayjs } from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import calendar from 'dayjs/plugin/calendar';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import utc from 'dayjs/plugin/utc';
 import type { IMasjid, TPrayer } from './types';
-import { EDay, EGroupBy, EPrayer, GROUP_BY_ROUTES, PRAYER_NAMES } from './constants';
+import {
+	EDay,
+	EGroupBy,
+	EPrayer,
+	GROUP_BY_ROUTES,
+	MINUTES_PER_HOUR,
+	PRAYER_NAMES,
+	SECONDS_PER_MINUTE
+} from './constants';
 import keys from 'lodash/keys';
 
 dayjs.extend(utc);
@@ -46,6 +54,20 @@ export const getCurrentLocalDateTime = () => {
 	return dayjs.utc().local();
 };
 
+export const getCurrentUTCDateSeconds = () => {
+	const todayUTC = dayjs().utc();
+	const today = todayUTC.hour(0).minute(0).second(0).millisecond(0);
+	return todayUTC.diff(today, 'seconds');
+};
+
+export const getFormattedDate = (date: Dayjs) => {
+	return date.format('DD MMM YYYY');
+};
+
+export const getDayNameFromDate = (date: Dayjs) => {
+	return date.format('dddd');
+};
+
 /** Data transformation */
 
 export const getPrayers = () => {
@@ -62,15 +84,16 @@ export const getPrayers = () => {
 	return tPrayers;
 };
 
-export const getNextPrayerForMasjid = (masjid: { iqamas: Record<string, { time: string }> }) => {
-	const currentTime = getCurrentLocalDateTime();
+export const getNextPrayerForMasjid = (masjid: {
+	iqamas: Record<string, { seconds_since_midnight_utc: number }>;
+}) => {
+	const currentTime = getCurrentUTCDateSeconds();
 	const prayers = getPrayers();
 
 	const nextPrayer = prayers.find((prayer) => {
-		const prayerTime = masjid.iqamas[prayer.name]?.time.toUpperCase();
-		const prayerDateTime = dayjs(prayerTime, 'h:mm A').local();
+		const prayerTime = masjid.iqamas[prayer.name]?.seconds_since_midnight_utc;
 		if (!prayerTime) return false;
-		return prayerDateTime.isAfter(currentTime);
+		return prayerTime > currentTime;
 	});
 
 	if (!nextPrayer) {
@@ -93,20 +116,50 @@ export const isPrayerComesAfter = (prayer1: TPrayer, prayer2: TPrayer) => {
 	return prayer1Index > prayer2Index;
 };
 
-export const getNextPrayerForMasjids = (masjids: [string, IMasjid][]) => {
-	let mostNextPrayer: TPrayer | undefined = undefined;
+export const findMasjidWithMostNextPrayer = (masjids: [string, IMasjid][]) => {
+	let mostNextPrayer: TPrayer | null = null;
+	let mostMasjid: IMasjid | null = null;
 
-	// We need to compare for all masjids because we have to only determine a prayer as next IF it's the 'Next' for all Masjids
 	for (const masjid of masjids) {
 		const masjidData = masjid[1];
 		const masjidNextPrayer = getNextPrayerForMasjid(masjidData);
 
 		if (!mostNextPrayer || isPrayerComesAfter(masjidNextPrayer, mostNextPrayer)) {
 			mostNextPrayer = masjidNextPrayer;
+			mostMasjid = masjidData;
 		}
 	}
 
-	return mostNextPrayer;
+	return { masjid: mostMasjid, nextPrayer: mostNextPrayer };
+};
+
+export const findMasjidWithLeastNextPrayer = (masjids: [string, IMasjid][]) => {
+	const masjid = masjids[0][1];
+	const nextPrayer = getNextPrayerForMasjid(masjid);
+
+	return { masjid, nextPrayer };
+};
+
+export const getNextPrayerForMasjids = (masjids: [string, IMasjid][]) => {
+	const { nextPrayer } = findMasjidWithMostNextPrayer(masjids);
+	return nextPrayer;
+};
+
+export const getTimeRemainingForNextPrayer = (majids: [string, IMasjid][]) => {
+	const { masjid, nextPrayer } = findMasjidWithLeastNextPrayer(majids);
+	if (!masjid || !nextPrayer) return null;
+
+	const currentTime = getCurrentUTCDateSeconds();
+	const prayerTime = masjid.iqamas[nextPrayer.name]?.seconds_since_midnight_utc;
+	if (!prayerTime) return null;
+
+	let seconds = prayerTime - currentTime;
+	let minutes = Math.floor(seconds / SECONDS_PER_MINUTE);
+	seconds = seconds % SECONDS_PER_MINUTE;
+	const hours = Math.floor(minutes / MINUTES_PER_HOUR);
+	minutes = minutes % MINUTES_PER_HOUR;
+
+	return { hours, minutes, seconds };
 };
 
 export const getSortedPrayers = (masjids: [string, IMasjid][]) => {
@@ -117,6 +170,7 @@ export const getSortedPrayers = (masjids: [string, IMasjid][]) => {
 	const sortedPrayers: TPrayer[] = [];
 
 	while (sortedPrayers.length < prayers.length) {
+		if (!nextPrayer) continue;
 		sortedPrayers.push(nextPrayer);
 		nextPrayer = nextPrayer.next;
 	}
