@@ -16,21 +16,15 @@ class ICCOSource(HTMLSource):
     def parse(self):
         soup = super().parse()
 
-        nested_rows = soup.select("#dailyprayertime-2 > table > tr:nth-child(4) tr")
-
+        class_names = ["fajr", "dhuhr", "asr", "maghrib", "isha"]
         iqamas = self.generate_iqamas_output(
             [value.text.strip() for value in [
-                soup.select_one("#dailyprayertime-2 > table > tr:nth-child(3) > td.jamah"),
-                nested_rows[0].select_one("td.jamah"),
-                nested_rows[1].select_one("td.jamah"),
-                nested_rows[2].select_one("td.jamah"),
-                nested_rows[3].select_one("td.jamah")
+                soup.select_one(f".prayer-time.prayer-{name} .prayer-jamaat")
+                for name in class_names
             ]]
         )
 
-        # Get jumaa table rows and remove first row
-        jumas = [f"{juma.text.strip()}" for juma in soup.select("#text-6 > div > p")][1:]
-        # Combine each tow rows into one, discarding the last row if there is an odd number of rows
-        jumas = [jumas[i] + " by " + jumas[i+1] for i in range(0, len(jumas)//2*2, 2)]
-
+        rows_selector = "div[data-id='7010618'] > div > div"
+        jumas = [row.text.strip().replace('\n', '') for row in soup.select(rows_selector)]
+        
         return iqamas, jumas
