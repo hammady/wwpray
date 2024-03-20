@@ -1,7 +1,6 @@
 # cli to test source scraping
 
 import click
-from sources import *
 
 @click.command()
 @click.option('--source', '-s', required=True, help='Python class name for the source to scrape')
