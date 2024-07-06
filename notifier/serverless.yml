@@ -1,5 +1,3 @@
-org: hammady
-app: wwpray
 service: notifier
 
 frameworkVersion: '3'

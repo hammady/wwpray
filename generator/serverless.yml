@@ -1,6 +1,5 @@
-org: hammady
-app: wwpray
 service: generator
+
 frameworkVersion: '3'
 
 params:

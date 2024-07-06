@@ -1,6 +1,5 @@
-org: hammady
-app: wwpray
 service: subscriber
+
 frameworkVersion: '3'
 
 params:

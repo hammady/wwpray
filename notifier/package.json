@@ -7,7 +7,8 @@
   "scripts": {
     "test": "pip install -r requirements.txt && python -m unittest"
   },
-  "devDependencies": {
-    "serverless-python-requirements": "^6.0.0"
+  "dependencies": {
+    "serverless": "^3.38.0",
+    "serverless-python-requirements": "^6.1.0"
   }
 }
