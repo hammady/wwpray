@@ -28,7 +28,7 @@ jobs:
         with:
           node-version: '18.x'
       - name: Install serverless framework
-        run: npm install -g serverless
+        run: npm install -g serverless@3.38.0
       - name: Install node dependencies
         working-directory: scraper
         run: npm ci
