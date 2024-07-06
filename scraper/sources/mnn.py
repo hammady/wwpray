@@ -22,10 +22,14 @@ class MNNexusSource(HTMLSource):
             [value.text.strip() for value in tds]
         )
 
+        juma_locations = [
+            soup.select("div.mnn-jumas>div.jumas-title")[0].text.strip(),
+            soup.select("div.comm-center-jumas>div.jumas-title")[0].text.strip()
+        ]
         jumas = [
-            f"MNN Masjid {juma.text.strip()}" for juma in soup.select("div.mnn-jumas div.juma")
+            f"{juma_locations[0]} {juma.text.strip()}" for juma in soup.select("div.mnn-jumas>div.juma")
         ] + [
-            f"Churchill Meadows Comm Ctr {juma.text.strip()}" for juma in soup.select("div.comm-center-jumas div.juma")
+            f"{juma_locations[1]} {juma.text.strip()}" for juma in soup.select("div.comm-center-jumas>div.juma")
         ]
 
         return iqamas, jumas
