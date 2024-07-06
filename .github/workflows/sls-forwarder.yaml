@@ -1,14 +1,14 @@
-# github action to deploy subscriber sls service to prod
+# github action to deploy forwarder sls service to prod
 
-name: Deploy subscriber service to prod
+name: Deploy forwarder service to prod
 
 on:
   push:
     branches:
       - main
     paths:
-      - subscriber/**
-      - .github/workflows/sls-subscriber.yaml
+      - forwarder/**
+      - .github/workflows/sls-forwarder.yaml
 
 jobs:
   deploy:
@@ -30,14 +30,14 @@ jobs:
       - name: Install serverless framework
         run: npm install -g serverless
       - name: Install node dependencies
-        working-directory: subscriber
+        working-directory: forwarder
         run: npm ci
       - name: Install python3.9
         uses: actions/setup-python@v2
         with:
           python-version: '3.9'
       - name: Package and deploy
-        working-directory: subscriber
+        working-directory: forwarder
         run: |
           serverless deploy \
             --region ${{ vars.AWS_REGION }} \
