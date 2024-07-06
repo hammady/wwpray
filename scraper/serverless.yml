@@ -1,5 +1,3 @@
-org: hammady
-app: wwpray
 service: scraper
 
 frameworkVersion: '3'
