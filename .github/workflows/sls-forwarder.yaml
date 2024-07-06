@@ -43,3 +43,5 @@ jobs:
             --region ${{ vars.AWS_REGION }} \
             --stage ${{ vars.SLSSTAGE }} \
             --verbose
+        env:
+          ADMIN_EMAIL: ${{ vars.ADMIN_EMAIL }}
