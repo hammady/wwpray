@@ -37,7 +37,7 @@ functions:
     events:
       # Invoke Lambda function everyday at 7am UTC
       - schedule:
-          rate: cron(0 7 * * ? *)
+          rate: cron(0 3,7,15,22 * * ? *)
           enabled: ${param:cron_enabled}
       # Invoke Lambda function more frequently on Fridays
       - schedule:
