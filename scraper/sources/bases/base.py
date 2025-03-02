@@ -51,7 +51,7 @@ class Source:
         response = requests_get(
             self._url,
             headers=self._headers,
-            timeout=(3.05, 2)) # 3.05 seconds to connect, 2 seconds to read
+            timeout=(3.05, 4)) # 3.05 seconds to connect, 4 seconds to read
         response.raise_for_status()
         self._response = response
 
