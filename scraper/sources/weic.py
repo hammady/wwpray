@@ -17,7 +17,7 @@ class WEICSource(HTMLSource):
         soup = super().parse()
 
         tbody = soup.select_one("table.dptTimetable")
-        nested_rows = tbody.select_one("tr:nth-child(6)")
+        nested_rows = tbody.select_one("tr:nth-child(4)")
 
         zuhr_spans = nested_rows.select("tr")[0].select("td.jamah > span")
         if len(zuhr_spans) == 0:
@@ -29,7 +29,7 @@ class WEICSource(HTMLSource):
 
         iqamas = self.generate_iqamas_output(
             [value.text.strip() for value in [
-                tbody.select_one("tr:nth-child(5) > td.jamah"),
+                tbody.select_one("tr:nth-child(3) > td.jamah"),
                 zuhr_tag,
                 nested_rows.select("tr")[1].select_one("td.jamah"),
                 nested_rows.select("tr")[2].select_one("td.jamah"),
