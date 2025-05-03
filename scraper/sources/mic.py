@@ -17,7 +17,7 @@ class MICSource(HTMLSource):
     def parse(self):
         soup = super().parse()
 
-        iqamas_tr = soup.select_one("table#tablepress-6 > tbody > tr")
+        iqamas_tr = soup.select_one("table#tablepress-7 > tbody > tr")
         iqamas = self.generate_iqamas_output(
             [
                 iqamas_tr.select_one(f"td.column-{col}").text.strip() for col in range(2, 7)
@@ -29,7 +29,8 @@ class MICSource(HTMLSource):
         self.request()
         json = self._response.json()
         jumas = [
-            f"{row['value']['payer']}: {row['value']['khutba']} ({row['value']['imam']})" for row in json
+            f"{row['value']['payer']}: {row['value']['khutba']} ({row['value']['imam']}) at {row['value']['location']}"
+            for row in json
         ]
 
         return iqamas, jumas
