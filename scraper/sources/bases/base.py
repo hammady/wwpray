@@ -1,9 +1,10 @@
-from requests import get as requests_get
+from requests import get as requests_get, post as requests_post
 from datetime import datetime
 import pytz
 
 class Source:
-    def __init__(self, name, url=None, timezone='', headers={}):
+    def __init__(self, name, url=None, timezone='', headers={},
+                http_method='GET', request_body=None):
         self.name = name
         self._url = url
         self._timezone = timezone
@@ -15,6 +16,10 @@ class Source:
         self._counter_labels = [
             'First', 'Second', 'Third', 'Fourth', 'Fifth',
             'Sixth', 'Seventh', 'Eighth', 'Ninth', 'Tenth']
+        if http_method not in ['GET', 'POST']:
+            raise ValueError("http_method must be either 'GET' or 'POST'")
+        self._http_method = requests_get if http_method == 'GET' else requests_post
+        self._request_body = request_body
 
     @staticmethod
     def _get_current_time_in_timezone(timezone):
@@ -48,10 +53,11 @@ class Source:
     def request(self):
         if self._url is None:
             raise Exception("No URL set for source: " + self.name)
-        response = requests_get(
+        response = self._http_method(
             self._url,
             headers=self._headers,
-            timeout=(3.05, 4)) # 3.05 seconds to connect, 4 seconds to read
+            data=self._request_body,
+            timeout=(3.05, 6)) # 3.05 seconds to connect, 6 seconds to read
         response.raise_for_status()
         self._response = response
 
