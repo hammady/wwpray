@@ -24,7 +24,10 @@ class ICCOSource(HTMLSource):
             ]]
         )
 
-        rows_selector = "div[data-id='7010618'] > div > div"
-        jumas = [row.text.strip().replace('\n', '') for row in soup.select(rows_selector)]
+        rows_selector = "div[data-id='cbd0f0f'] h2"
+        # skip the first and last rows
+        rows = soup.select(rows_selector)[1:-1]
+        # combine each 2 consecutive rows into a single string separated by a space
+        jumas = [rows[i].text.strip() + ' ' + rows[i + 1].text.strip() for i in range(0, len(rows), 2)]
         
         return iqamas, jumas
