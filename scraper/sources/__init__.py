@@ -8,3 +8,4 @@ from .alfalah import AlfalahSource
 from .alfarooq import AlfarooqSource
 from .aric import ArRehmanSource
 from .mic import MICSource
+from .darultaqwa import DarulTaqwaSource
