@@ -1,6 +1,6 @@
 # github action to deploy scraper sls service to prod
 
-name: Deploy scraper service to prod
+name: Test (always) and deploy (on push) scraper service
 
 on:
   push:
@@ -13,8 +13,8 @@ on:
     paths: *scraper_paths
 
 jobs:
-  deploy:
-    name: Deploy
+  test-and-deploy:
+    name: Test and (if push) deploy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

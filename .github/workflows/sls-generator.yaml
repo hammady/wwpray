@@ -1,6 +1,6 @@
 # github action to deploy generator sls service to prod
 
-name: Deploy generator service to prod
+name: Test (always) and deploy (on push) generator service
 
 on:
   push:
@@ -13,8 +13,8 @@ on:
     paths: *generator_paths
 
 jobs:
-  deploy:
-    name: Deploy
+  test-and-deploy:
+    name: Test and (if push) deploy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
