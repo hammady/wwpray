@@ -13,7 +13,6 @@ import {
 	PRAYER_NAMES,
 	SECONDS_PER_MINUTE
 } from './constants';
-import keys from 'lodash/keys';
 
 dayjs.extend(utc);
 dayjs.extend(relativeTime);
@@ -70,7 +69,7 @@ export const getDayNameFromDate = (date: Dayjs) => {
 
 /** Data transformation */
 
-export const getPrayers = () => {
+const getPrayers = () => {
 	const prayers: Partial<TPrayer>[] = PRAYER_NAMES.map((prayer) => ({ name: prayer }));
 	const tPrayers: TPrayer[] = [];
 
@@ -104,35 +103,6 @@ export const getNextPrayerForMasjid = (masjid: {
 	return nextPrayer;
 };
 
-export const isPrayerComesAfter = (prayer1: TPrayer, prayer2: TPrayer) => {
-	const prayer1Name = prayer1.name.toLocaleLowerCase();
-	const prayer2Name = prayer2.name.toLocaleLowerCase();
-
-	const prayersNames = keys(EPrayer);
-
-	const prayer1Index = prayersNames.indexOf(prayer1Name);
-	const prayer2Index = prayersNames.indexOf(prayer2Name);
-
-	return prayer1Index > prayer2Index;
-};
-
-export const findMasjidWithMostNextPrayer = (masjids: [string, IMasjid][]) => {
-	let mostNextPrayer: TPrayer | null = null;
-	let mostMasjid: IMasjid | null = null;
-
-	for (const masjid of masjids) {
-		const masjidData = masjid[1];
-		const masjidNextPrayer = getNextPrayerForMasjid(masjidData);
-
-		if (!mostNextPrayer || isPrayerComesAfter(masjidNextPrayer, mostNextPrayer)) {
-			mostNextPrayer = masjidNextPrayer;
-			mostMasjid = masjidData;
-		}
-	}
-
-	return { masjid: mostMasjid, nextPrayer: mostNextPrayer };
-};
-
 export const findMasjidWithLeastNextPrayer = (masjids: [string, IMasjid][]) => {
 	const masjid = masjids[0][1];
 	const nextPrayer = getNextPrayerForMasjid(masjid);
@@ -140,26 +110,72 @@ export const findMasjidWithLeastNextPrayer = (masjids: [string, IMasjid][]) => {
 	return { masjid, nextPrayer };
 };
 
-export const getNextPrayerForMasjids = (masjids: [string, IMasjid][]) => {
-	const { nextPrayer } = findMasjidWithMostNextPrayer(masjids);
-	return nextPrayer;
+export const getNextPrayerForMasjids = (masjids: [string, IMasjid][], now?: number) => {
+	if (!masjids.length) return undefined;
+	const prayers = getPrayers();
+	const currentTime = typeof now === 'number' ? now : getCurrentUTCDateSeconds();
+
+	// For each prayer, find the minimum future iqama time across all masjids
+	let soonestPrayer: TPrayer | undefined = undefined;
+	let soonestTime = Number.POSITIVE_INFINITY;
+
+	for (const prayer of prayers) {
+		let minTime = Number.POSITIVE_INFINITY;
+		for (const [, masjid] of masjids) {
+			const iqama = masjid.iqamas[prayer.name];
+			if (iqama && typeof iqama.seconds_since_midnight_utc === 'number') {
+				const t = iqama.seconds_since_midnight_utc;
+				if (t > currentTime && t < minTime) {
+					minTime = t;
+				}
+			}
+		}
+		// Only update if this prayer's soonest time is earlier than any previous
+		if (minTime < soonestTime) {
+			soonestTime = minTime;
+			soonestPrayer = prayer;
+		}
+	}
+
+	// If all prayers are in the past, return the first prayer (e.g., for after isha)
+	if (!soonestPrayer) {
+		soonestPrayer = prayers[0];
+	}
+	return soonestPrayer;
 };
 
-export const getTimeRemainingForNextPrayer = (majids: [string, IMasjid][]) => {
-	const { masjid, nextPrayer } = findMasjidWithLeastNextPrayer(majids);
-	if (!masjid || !nextPrayer) return null;
+export const getTimeRemainingForNextPrayer = (masjids: [string, IMasjid][], now?: number) => {
+	if (!masjids.length) return null;
+	const currentTime = typeof now === 'number' ? now : getCurrentUTCDateSeconds();
+	const nextPrayer = getNextPrayerForMasjids(masjids, currentTime);
+	if (!nextPrayer) return null;
 
-	const currentTime = getCurrentUTCDateSeconds();
-	const prayerTime = masjid.iqamas[nextPrayer.name]?.seconds_since_midnight_utc;
-	if (!prayerTime) return null;
+	// Find all times for that prayer
+	const times: number[] = masjids
+		.map(([, masjid]) => masjid.iqamas[nextPrayer.name]?.seconds_since_midnight_utc)
+		.filter((t): t is number => typeof t === 'number');
+	if (!times.length) return null;
 
-	let seconds = prayerTime - currentTime;
+	// Find the soonest future time
+	const futureTimes = times.filter(t => t > currentTime);
+	let soonestTime: number;
+	if (futureTimes.length > 0) {
+		soonestTime = Math.min(...futureTimes);
+	} else {
+		// All are in the past, so wrap to the earliest for the next day
+		soonestTime = Math.min(...times);
+	}
+
+	let seconds = soonestTime - currentTime;
+	if (seconds < 0) {
+		seconds += 24 * 60 * 60;
+	}
 	let minutes = Math.floor(seconds / SECONDS_PER_MINUTE);
-	seconds = seconds % SECONDS_PER_MINUTE;
+	const remainingSeconds = seconds % SECONDS_PER_MINUTE;
 	const hours = Math.floor(minutes / MINUTES_PER_HOUR);
 	minutes = minutes % MINUTES_PER_HOUR;
 
-	return { hours, minutes, seconds };
+	return { hours, minutes, seconds: remainingSeconds };
 };
 
 export const getSortedPrayers = (masjids: [string, IMasjid][]) => {

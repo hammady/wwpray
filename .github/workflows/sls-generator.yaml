@@ -1,18 +1,20 @@
 # github action to deploy generator sls service to prod
 
-name: Deploy generator service to prod
+name: Test (always) and deploy (on push) generator service
 
 on:
   push:
     branches:
       - main
-    paths:
+    paths: &generator_paths
       - generator/**
       - .github/workflows/sls-generator.yaml
+  pull_request:
+    paths: *generator_paths
 
 jobs:
-  deploy:
-    name: Deploy
+  test-and-deploy:
+    name: Test and (if push) deploy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -32,11 +34,15 @@ jobs:
       - name: Install node dependencies
         working-directory: generator
         run: npm ci
+      - name: Run unit tests
+        working-directory: generator/svelte
+        run: npm run test:unit
       - name: Install python3.9
         uses: actions/setup-python@v2
         with:
           python-version: '3.9'
       - name: Package and deploy
+        if: github.event_name == 'push'
         working-directory: generator
         run: |
           serverless deploy \

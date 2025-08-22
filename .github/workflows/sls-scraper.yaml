@@ -1,18 +1,20 @@
 # github action to deploy scraper sls service to prod
 
-name: Deploy scraper service to prod
+name: Test (always) and deploy (on push) scraper service
 
 on:
   push:
     branches:
       - main
-    paths:
+    paths: &scraper_paths
       - scraper/**
       - .github/workflows/sls-scraper.yaml
+  pull_request:
+    paths: *scraper_paths
 
 jobs:
-  deploy:
-    name: Deploy
+  test-and-deploy:
+    name: Test and (if push) deploy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -32,11 +34,15 @@ jobs:
       - name: Install node dependencies
         working-directory: scraper
         run: npm ci
+      - name: Run tests
+        working-directory: scraper
+        run: npm run test
       - name: Install python3.9
         uses: actions/setup-python@v2
         with:
           python-version: '3.9'
       - name: Package and deploy
+        if: github.event_name == 'push'
         working-directory: scraper
         run: |
           serverless deploy \
