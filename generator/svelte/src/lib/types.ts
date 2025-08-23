@@ -19,7 +19,7 @@ export interface ISubscribeResponse {
 export type TIqama = {
 	time: string;
 	changed_on?: string;
-	seconds_since_midnight_utc: number;
+	seconds_since_midnight_utc: number | null;
 };
 
 export interface IMasjid {

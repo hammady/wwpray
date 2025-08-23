@@ -84,7 +84,7 @@ const getPrayers = () => {
 };
 
 export const getNextPrayerForMasjid = (masjid: {
-	iqamas: Record<string, { seconds_since_midnight_utc: number }>;
+	iqamas: Record<string, { seconds_since_midnight_utc: number | null }>;
 }) => {
 	const currentTime = getCurrentUTCDateSeconds();
 	const prayers = getPrayers();
@@ -202,8 +202,8 @@ export const sortMasjidsForPrayer = (masjids: [string, IMasjid][], prayerName: s
 		if (!aPrayer) return 1;
 		if (!bPrayer) return -1;
 
-		const aSeconds = aPrayer.seconds_since_midnight_utc;
-		const bSeconds = bPrayer.seconds_since_midnight_utc;
+		const aSeconds = aPrayer.seconds_since_midnight_utc ?? 0;
+		const bSeconds = bPrayer.seconds_since_midnight_utc ?? 0;
 
 		return aSeconds - bSeconds;
 	});

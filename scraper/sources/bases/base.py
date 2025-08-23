@@ -42,8 +42,9 @@ class Source:
         try:
             time = datetime.strptime(time_string, format)
         except ValueError:
-            # fallback to last minute of day if the time string is not in the expected format
-            time = datetime.strptime('11:59PM', format)
+            # return None if the time string is not in the expected format
+            return None
+
         time = time.replace(year=current_time.year, month=current_time.month, day=current_time.day)
 
         # Get the time in seconds since the start of the day

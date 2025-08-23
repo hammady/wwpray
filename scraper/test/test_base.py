@@ -78,3 +78,6 @@ class TestSource(TestCase):
 
     def test_parse_time_1_30AM(self):
         self.assert_time_equals("1:30AM", 1 * self.seconds_in_hour + 30 * 60)
+
+    def test_parse_time_invalid(self):
+        self.assertIsNone(Source._parse_time("invalid_time", self.timezone))
