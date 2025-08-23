@@ -1,6 +1,7 @@
 from requests import get as requests_get, post as requests_post
 from datetime import datetime
 import pytz
+import re
 
 class Source:
     def __init__(self, name, url=None, timezone='', headers={},
@@ -35,13 +36,14 @@ class Source:
         # Get the current time in the specified timezone
         current_time = Source._get_current_time_in_timezone(timezone)
 
-        # Parse the time string
-        format = '%I:%M %p'
+        # Normalize: remove any space(s) before AM/PM
+        time_string = re.sub(r'\s+(AM|PM)$', r'\1', time_string.strip(), flags=re.IGNORECASE)
+        format = '%I:%M%p'
         try:
             time = datetime.strptime(time_string, format)
         except ValueError:
             # fallback to last minute of day if the time string is not in the expected format
-            time = datetime.strptime('11:59 PM', format)
+            time = datetime.strptime('11:59PM', format)
         time = time.replace(year=current_time.year, month=current_time.month, day=current_time.day)
 
         # Get the time in seconds since the start of the day

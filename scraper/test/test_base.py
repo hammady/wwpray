@@ -66,3 +66,15 @@ class TestSource(TestCase):
 
     def test_parse_time_08_00_pm(self):
         self.assert_time_equals("08:00 pm", 20 * self.seconds_in_hour)
+
+    def test_parse_time_10_30pm(self):
+        self.assert_time_equals("10:30pm", 22 * self.seconds_in_hour + 30 * 60)
+
+    def test_parse_time_1_30am(self):
+        self.assert_time_equals("1:30am", 1 * self.seconds_in_hour + 30 * 60)
+
+    def test_parse_time_10_30PM(self):
+        self.assert_time_equals("10:30PM", 22 * self.seconds_in_hour + 30 * 60)
+
+    def test_parse_time_1_30AM(self):
+        self.assert_time_equals("1:30AM", 1 * self.seconds_in_hour + 30 * 60)
