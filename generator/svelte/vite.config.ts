@@ -5,6 +5,6 @@ import svg from '@poppanator/sveltekit-svg';
 export default defineConfig({
 	plugins: [sveltekit(), svg()],
 	test: {
-		include: ['src/**/*.{test,spec}.{js,ts}']
+		include: ['tests/**/*.{test,spec}.{js,ts}']
 	}
 });

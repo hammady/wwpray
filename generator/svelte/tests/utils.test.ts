@@ -1,7 +1,9 @@
+import fs from 'fs';
+import path from 'path';
 import { describe, it, expect } from 'vitest';
-import { getNextPrayerForMasjids } from './utils';
-import { getTimeRemainingForNextPrayer } from './utils';
-import type { IMasjid } from './types';
+import { getNextPrayerForMasjids } from '../src/lib/utils';
+import { getTimeRemainingForNextPrayer } from '../src/lib/utils';
+import type { IMasjid } from '../src/lib/types';
 
 // Helper to create a masjid with specific iqama times
 function makeMasjid(iqamas: Record<string, number | null>): IMasjid {
@@ -39,6 +41,21 @@ function makeMasjidPairAC(): [string, IMasjid][] {
         ['A', makeMasjidA()],
         ['C', makeMasjidC()],
     ];
+}
+
+// Helper to parse notified.json and return masjids as [name, IMasjid][]
+function parseNotifiedMasjids(notifiedPath: string): [string, IMasjid][] {
+	const notifiedRaw = fs.readFileSync(notifiedPath, 'utf-8');
+	const notified = JSON.parse(notifiedRaw);
+	return Object.entries(notified.masjids).map(([name, masjidRaw]) => {
+		const masjid = masjidRaw as { iqamas: Record<string, { seconds_since_midnight_utc?: number | null }> };
+		const iqamas: Record<string, number | null> = {};
+		for (const [prayer, iqamaRaw] of Object.entries(masjid.iqamas)) {
+			const iqama = iqamaRaw as { seconds_since_midnight_utc?: number | null };
+			iqamas[prayer] = iqama.seconds_since_midnight_utc ?? null;
+		}
+		return [name, makeMasjid(iqamas)];
+	});
 }
 
 describe('getNextPrayerForMasjids', () => {
@@ -87,6 +104,56 @@ describe('getNextPrayerForMasjids', () => {
 		const masjids = makeMasjidPairAC();
 		const result = getNextPrayerForMasjids(masjids, now);
 		expect(result?.name).toBe('fajr');
+	});
+});
+
+describe('Print next prayer for each minute for notified.json masjids', () => {
+	it('writes a CSV of masjid iqama times (name, fajr, zuhr, asr, maghrib, isha)', async () => {
+		const notifiedPath = path.resolve(__dirname, 'notified-example.json');
+		const masjids = parseNotifiedMasjids(notifiedPath);
+
+		const prayers = ['fajr', 'zuhr', 'asr', 'maghrib', 'isha'];
+		const rows = [['name', ...prayers]];
+		for (const [name, masjid] of masjids) {
+			const row = [name];
+			for (const prayer of prayers) {
+				const iqama = masjid.iqamas[prayer] as { seconds_since_midnight_utc?: number | null } | undefined;
+				row.push(iqama && iqama.seconds_since_midnight_utc != null ? String(iqama.seconds_since_midnight_utc) : '');
+			}
+			rows.push(row);
+		}
+		const csv = rows.map(row => row.join(',')).join('\n');
+		const outputDir = path.resolve(__dirname, 'output');
+		if (!fs.existsSync(outputDir)) {
+			fs.mkdirSync(outputDir);
+		}
+		const outPath = path.join(outputDir, 'notified_masjids_iqama_times.csv');
+		fs.writeFileSync(outPath, csv, 'utf-8');
+		console.log(`CSV written to ${outPath}`);
+	});
+
+	it('writes a table of now and next prayer to a CSV file and compares to reference', async () => {
+		const notifiedPath = path.resolve(__dirname, 'notified-example.json');
+		const masjids = parseNotifiedMasjids(notifiedPath);
+
+		const rows = [['now_raw', 'now', 'next_prayer']];
+		for (let now = 0; now < 86400; now += 60) {
+			const next = getNextPrayerForMasjids(masjids, now);
+			const hours = Math.floor(now / 3600).toString().padStart(2, '0');
+			const minutes = Math.floor((now % 3600) / 60).toString().padStart(2, '0');
+			rows.push([String(now), `${hours}:${minutes}`, next?.name ?? '']);
+		}
+		const csv = rows.map(row => row.join(',')).join('\n');
+		const outputDir = path.resolve(__dirname, 'output');
+		if (!fs.existsSync(outputDir)) {
+			fs.mkdirSync(outputDir);
+		}
+		const outPath = path.join(outputDir, 'notified_next_prayer_table.csv');
+		fs.writeFileSync(outPath, csv, 'utf-8');
+
+		const refPath = path.resolve(__dirname, 'notified_next_prayer_table_correct.csv');
+		const refCsv = fs.readFileSync(refPath, 'utf-8');
+		expect(csv).toBe(refCsv);
 	});
 });
 
@@ -147,5 +214,38 @@ describe('getTimeRemainingForNextPrayer', () => {
 		// Next fajr is at 25000 (A), so 25000-100000 = -75000 + 86400 = 11400
 		// 11400 seconds = 3 hours, 10 minutes, 0 seconds
 		expect(result).toEqual({ hours: 3, minutes: 10, seconds: 0 });
+	});
+
+	it('writes a table of now, next prayer, and time remaining to a CSV file and compares with a reference CSV', async () => {
+		const notifiedPath = path.resolve(__dirname, 'notified-example.json');
+		const masjids = parseNotifiedMasjids(notifiedPath);
+
+		const rows = [['now_raw', 'now', 'next_prayer', 'remaining_hours', 'remaining_minutes', 'remaining_seconds']];
+		for (let now = 0; now < 86400; now += 60) {
+			const next = getNextPrayerForMasjids(masjids, now);
+			const remaining = getTimeRemainingForNextPrayer(masjids, now);
+			const hours = Math.floor(now / 3600).toString().padStart(2, '0');
+			const minutes = Math.floor((now % 3600) / 60).toString().padStart(2, '0');
+			rows.push([
+				String(now),
+				`${hours}:${minutes}`,
+				next?.name ?? '',
+				remaining?.hours !== undefined ? String(remaining.hours) : '',
+				remaining?.minutes !== undefined ? String(remaining.minutes) : '',
+				remaining?.seconds !== undefined ? String(remaining.seconds) : ''
+			]);
+		}
+		const csv = rows.map(row => row.join(',')).join('\n');
+		const outputDir = path.resolve(__dirname, 'output');
+		if (!fs.existsSync(outputDir)) {
+			fs.mkdirSync(outputDir);
+		}
+		const outPath = path.join(outputDir, 'notified_next_prayer_time_remaining_table.csv');
+		fs.writeFileSync(outPath, csv, 'utf-8');
+		console.log(`CSV written to ${outPath}`);
+
+		const refPath = path.resolve(__dirname, 'notified_next_prayer_time_remaining_table_correct.csv');
+		const refCsv = fs.readFileSync(refPath, 'utf-8');
+		expect(csv).toBe(refCsv);
 	});
 });

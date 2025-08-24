@@ -1,0 +1,440 @@
+{
+    "masjids": {
+        "AlfalahICNA": {
+            "display_name": "Al Falah Islamic Centre",
+            "website": "https://alfalahcentre.ca/",
+            "address": "391 Burnhamthorpe Rd E, Oakville, ON L6H 7B4",
+            "latitude": 43.50369,
+            "longitude": -79.73631,
+            "iqamas": {
+                "fajr": {
+                    "time": "5:45 AM",
+                    "seconds_since_midnight_utc": 35100,
+                    "changed_on": "2025-08-20"
+                },
+                "zuhr": {
+                    "time": "1:40 PM",
+                    "seconds_since_midnight_utc": 63600
+                },
+                "asr": {
+                    "time": "6:00 PM",
+                    "seconds_since_midnight_utc": 79200,
+                    "changed_on": "2025-08-20"
+                },
+                "maghrib": {
+                    "time": "8:14 PM",
+                    "seconds_since_midnight_utc": 87240,
+                    "changed_on": "2025-08-23"
+                },
+                "isha": {
+                    "time": "9:45 PM",
+                    "seconds_since_midnight_utc": 92700,
+                    "changed_on": "2025-08-20"
+                }
+            },
+            "jumas": [
+                "First Prayer: 12:15 PM",
+                "Second Prayer: 1:15 PM",
+                "Third Prayer: 2:30PM"
+            ],
+            "last_updated": "2025-08-23T22:00:39.615715"
+        },
+        "Alfarooq": {
+            "display_name": "Masjid Al-Farooq",
+            "website": "https://www.masjidfarooq.com/",
+            "address": "935 Eglinton Ave W, Mississauga, ON L5V 1R6",
+            "latitude": 43.586899,
+            "longitude": -79.675926,
+            "iqamas": {
+                "fajr": {
+                    "time": "5:45 am",
+                    "seconds_since_midnight_utc": 35100,
+                    "changed_on": "2025-08-21"
+                },
+                "zuhr": {
+                    "time": "1:40 pm",
+                    "seconds_since_midnight_utc": 63600,
+                    "changed_on": "2025-08-22"
+                },
+                "asr": {
+                    "time": "5:30 pm",
+                    "seconds_since_midnight_utc": 77400,
+                    "changed_on": "2025-08-21"
+                },
+                "maghrib": {
+                    "time": "8:17 pm",
+                    "seconds_since_midnight_utc": 87420,
+                    "changed_on": "2025-08-23"
+                },
+                "isha": {
+                    "time": "9:45 pm",
+                    "seconds_since_midnight_utc": 92700,
+                    "changed_on": "2025-08-21"
+                }
+            },
+            "jumas": [
+                "First Prayer: 1:00 pm",
+                "Second Prayer: 2:00 pm",
+                "Third Prayer: 3:00 pm"
+            ],
+            "last_updated": "2025-08-23T22:00:39.615715"
+        },
+        "ARIC": {
+            "display_name": "Ar-Rehman Islamic Center",
+            "website": "https://aric-icna.ca/",
+            "address": "6120 Montevideo Rd, Mississauga, ON L5N 3W5",
+            "latitude": 43.58231,
+            "longitude": -79.74318,
+            "iqamas": {
+                "fajr": {
+                    "time": "5:45 am",
+                    "seconds_since_midnight_utc": 35100,
+                    "changed_on": "2025-08-20"
+                },
+                "zuhr": {
+                    "time": "1:45 pm",
+                    "seconds_since_midnight_utc": 63900,
+                    "changed_on": "2025-08-03"
+                },
+                "asr": {
+                    "time": "6:15 pm",
+                    "seconds_since_midnight_utc": 80100,
+                    "changed_on": "2025-08-03"
+                },
+                "maghrib": {
+                    "time": "5 minutes After Azaan",
+                    "seconds_since_midnight_utc": null,
+                    "changed_on": "2025-04-24"
+                },
+                "isha": {
+                    "time": "9:45 pm",
+                    "seconds_since_midnight_utc": 92700,
+                    "changed_on": "2025-08-20"
+                }
+            },
+            "jumas": [
+                "1st: Khutbah: 1:05 pm - Jammah: 1:25 pm",
+                "2nd: Khutbah: 1:40 pm - Jammah: 02:00 pm",
+                "3rd: Khutbah: 02:15 pm - Jammah: 02:35 pm",
+                "4th: Khutbah: 02:50 pm - Jammah: 03:10 pm"
+            ],
+            "last_updated": "2025-08-23T22:00:39.615715"
+        },
+        "DarFoundation": {
+            "display_name": "Dar Foundation",
+            "website": "https://darfoundation.com/",
+            "address": "485 Morden Rd, Oakville, ON, L6K 3W6",
+            "latitude": 43.44188,
+            "longitude": -79.69551,
+            "iqamas": {
+                "fajr": {
+                    "time": "5:45 AM",
+                    "seconds_since_midnight_utc": 35100,
+                    "changed_on": "2025-08-23"
+                },
+                "zuhr": {
+                    "time": "1:45 PM",
+                    "seconds_since_midnight_utc": 63900,
+                    "changed_on": "2025-03-10"
+                },
+                "asr": {
+                    "time": "5:30 PM",
+                    "seconds_since_midnight_utc": 77400,
+                    "changed_on": "2025-08-23"
+                },
+                "maghrib": {
+                    "time": "8:16 PM",
+                    "seconds_since_midnight_utc": 87360,
+                    "changed_on": "2025-08-23"
+                },
+                "isha": {
+                    "time": "9:35 PM",
+                    "seconds_since_midnight_utc": 92100,
+                    "changed_on": "2025-08-23"
+                }
+            },
+            "jumas": [
+                "First Prayer: 12:15 PM",
+                "Second Prayer: 1:30 PM",
+                "Third Prayer: 3:00 PM",
+                "Fourth Prayer: 4:30 PM"
+            ],
+            "last_updated": "2025-08-23T22:00:39.615715"
+        },
+        "DarulTaqwa": {
+            "display_name": "Darul Taqwa",
+            "website": "https://darultaqwa.ca/",
+            "address": "1601 Eglinton Ave W, Mississauga, ON L5M 7C",
+            "latitude": 43.572885,
+            "longitude": -79.691325,
+            "iqamas": {
+                "fajr": {
+                    "time": "6:00AM",
+                    "seconds_since_midnight_utc": 36000,
+                    "changed_on": "2025-08-22"
+                },
+                "zuhr": {
+                    "time": "1:45PM",
+                    "seconds_since_midnight_utc": 63900
+                },
+                "asr": {
+                    "time": "6:30PM",
+                    "seconds_since_midnight_utc": 81000,
+                    "changed_on": "2025-08-22"
+                },
+                "maghrib": {
+                    "time": "sunset",
+                    "seconds_since_midnight_utc": null
+                },
+                "isha": {
+                    "time": "9:40PM",
+                    "seconds_since_midnight_utc": 92400,
+                    "changed_on": "2025-08-22"
+                }
+            },
+            "jumas": [
+                "Azaan: 1:30PM, Iqama: 1:50PM"
+            ],
+            "last_updated": "2025-08-23T22:00:39.615715"
+        },
+        "ICCO": {
+            "display_name": "Islamic Community Centre of Ontario (ICCO)",
+            "website": "https://centres.macnet.ca/icco/",
+            "address": "2550 Dunwin Dr, Mississauga, ON L5L 1T1",
+            "latitude": 43.52847,
+            "longitude": -79.68102,
+            "iqamas": {
+                "fajr": {
+                    "time": "5:45 am",
+                    "seconds_since_midnight_utc": 35100,
+                    "changed_on": "2025-08-19"
+                },
+                "zuhr": {
+                    "time": "2:00 pm",
+                    "seconds_since_midnight_utc": 64800,
+                    "changed_on": "2025-03-09"
+                },
+                "asr": {
+                    "time": "5:45 pm",
+                    "seconds_since_midnight_utc": 78300,
+                    "changed_on": "2025-04-01"
+                },
+                "maghrib": {
+                    "time": "8:17 pm",
+                    "seconds_since_midnight_utc": 87420,
+                    "changed_on": "2025-08-23"
+                },
+                "isha": {
+                    "time": "10:00 pm",
+                    "seconds_since_midnight_utc": 93600,
+                    "changed_on": "2025-08-10"
+                }
+            },
+            "jumas": [
+                "Yasser Albaz - (English) 12:15 P.M.",
+                "Baker Baker (English) 1:15 P.M.",
+                "Sheikh Samir Khalil - (Arabic) 2:15 PM",
+                "Guest - (English) 3:15 P.M."
+            ],
+            "last_updated": "2025-08-23T22:00:39.615715"
+        },
+        "ISNACanada": {
+            "display_name": "ISNA Canada - ICC",
+            "website": "https://www.isnacanada.com/",
+            "address": "2200 S Sheridan Way, Mississauga, ON L5J 2M4",
+            "latitude": 43.520569,
+            "longitude": -79.650948,
+            "iqamas": {
+                "fajr": {
+                    "time": "5:30 AM",
+                    "seconds_since_midnight_utc": 34200,
+                    "changed_on": "2025-08-17"
+                },
+                "zuhr": {
+                    "time": "1:40 PM",
+                    "seconds_since_midnight_utc": 63600,
+                    "changed_on": "2025-03-10"
+                },
+                "asr": {
+                    "time": "6:30 PM",
+                    "seconds_since_midnight_utc": 81000,
+                    "changed_on": "2025-08-17"
+                },
+                "maghrib": {
+                    "time": "8:17 PM",
+                    "seconds_since_midnight_utc": 87420,
+                    "changed_on": "2025-08-23"
+                },
+                "isha": {
+                    "time": "9:45 PM",
+                    "seconds_since_midnight_utc": 92700,
+                    "changed_on": "2025-08-17"
+                }
+            },
+            "jumas": [
+                "First Prayer: 1:00 PM",
+                "Second Prayer: 3:00 PM"
+            ],
+            "last_updated": "2025-08-23T22:00:39.615715"
+        },
+        "MIC": {
+            "display_name": "Meadowvale Islamic Centre",
+            "website": "https://mici.org/",
+            "address": "6508 Winston Churchill Blvd, Mississauga, ON L5N 3W4",
+            "latitude": 43.5809972,
+            "longitude": -79.7645107,
+            "iqamas": {
+                "fajr": {
+                    "time": "5:45 am",
+                    "seconds_since_midnight_utc": 35100,
+                    "changed_on": "2025-08-21"
+                },
+                "zuhr": {
+                    "time": "1:40 pm",
+                    "seconds_since_midnight_utc": 63600
+                },
+                "asr": {
+                    "time": "6:45 pm",
+                    "seconds_since_midnight_utc": 81900,
+                    "changed_on": "2025-08-11"
+                },
+                "maghrib": {
+                    "time": "Sunset",
+                    "seconds_since_midnight_utc": null
+                },
+                "isha": {
+                    "time": "9:40 pm",
+                    "seconds_since_midnight_utc": 92400,
+                    "changed_on": "2025-08-21"
+                }
+            },
+            "jumas": [
+                "1st Jumma: 1:25 PM (Imam Sarmad) at Masjid (Limited Parking)",
+                "2nd Jumma: 2:15 PM (Visiting Imam) at Masjid (Limited Parking)",
+                "3rd Jumma: 3:10 PM (Visiting Imam) at Masjid (Limited Parking)"
+            ],
+            "last_updated": "2025-08-23T22:00:39.615715"
+        },
+        "MNNexus": {
+            "display_name": "Muslim Neighbour Nexus (MNN)",
+            "website": "https://mnnexus.ca/",
+            "address": "3520 Odyssey Dr, Mississauga, ON L5M 0Y9",
+            "latitude": 43.53522,
+            "longitude": -79.72457,
+            "iqamas": {
+                "fajr": {
+                    "time": "5:45 AM",
+                    "seconds_since_midnight_utc": 35100,
+                    "changed_on": "2025-08-16"
+                },
+                "zuhr": {
+                    "time": "1:45 PM",
+                    "seconds_since_midnight_utc": 63900,
+                    "changed_on": "2025-03-09"
+                },
+                "asr": {
+                    "time": "6:30 PM",
+                    "seconds_since_midnight_utc": 81000,
+                    "changed_on": "2025-08-05"
+                },
+                "maghrib": {
+                    "time": "8:12 PM",
+                    "seconds_since_midnight_utc": 87120,
+                    "changed_on": "2025-08-23"
+                },
+                "isha": {
+                    "time": "9:45 PM",
+                    "seconds_since_midnight_utc": 92700,
+                    "changed_on": "2025-08-16"
+                }
+            },
+            "jumas": [
+                "MNN Masjid: 1st: 1:15PM",
+                "MNN Masjid: 2nd: 2:15PM",
+                "MNN Masjid: 3rd: 3:00PM",
+                "Ruth Thompson School Gym: 1st: 1:30PM",
+                "Ruth Thompson School Gym: 2nd: 2:15PM"
+            ],
+            "last_updated": "2025-08-23T22:00:39.615715"
+        },
+        "Shalimar": {
+            "display_name": "Shalimar Islamic Centre",
+            "website": "https://www.shalimarislamiccentre.ca/",
+            "address": "79-3024 Cedarglen Gate, Mississauga, ON, L5C 4S3",
+            "latitude": 43.55865,
+            "longitude": -79.64211,
+            "iqamas": {
+                "fajr": {
+                    "time": "5:45 am",
+                    "seconds_since_midnight_utc": 35100,
+                    "changed_on": "2025-08-19"
+                },
+                "zuhr": {
+                    "time": "1:40 pm",
+                    "seconds_since_midnight_utc": 63600,
+                    "changed_on": "2025-03-13"
+                },
+                "asr": {
+                    "time": "5:45 pm",
+                    "seconds_since_midnight_utc": 78300,
+                    "changed_on": "2025-08-19"
+                },
+                "maghrib": {
+                    "time": "8:20 pm",
+                    "seconds_since_midnight_utc": 87600,
+                    "changed_on": "2025-08-19"
+                },
+                "isha": {
+                    "time": "09:45 pm",
+                    "seconds_since_midnight_utc": 92700,
+                    "changed_on": "2025-08-19"
+                }
+            },
+            "jumas": [
+                "12:35 pm - Shalimar. Walk-in. Come 5 mins early.",
+                "1:35 pm - Shalimar. Walk-in. Come 5 mins early."
+            ],
+            "last_updated": "2025-08-23T22:00:39.615715"
+        },
+        "WestEndIslamicCenter": {
+            "display_name": "West End Islamic Center",
+            "website": "https://weicenter.ca/",
+            "address": "12,13-4161 Sladeview Crescent, Mississauga, ON L5L 5R3",
+            "latitude": 43.5307,
+            "longitude": -79.7188,
+            "iqamas": {
+                "fajr": {
+                    "time": "5:45 AM",
+                    "seconds_since_midnight_utc": 35100,
+                    "changed_on": "2025-08-21"
+                },
+                "zuhr": {
+                    "time": "2:00 PM",
+                    "seconds_since_midnight_utc": 64800,
+                    "changed_on": "2025-08-23"
+                },
+                "asr": {
+                    "time": "6:30 PM",
+                    "seconds_since_midnight_utc": 81000,
+                    "changed_on": "2025-08-21"
+                },
+                "maghrib": {
+                    "time": "8:13 PM",
+                    "seconds_since_midnight_utc": 87180,
+                    "changed_on": "2025-08-23"
+                },
+                "isha": {
+                    "time": "10:00 PM",
+                    "seconds_since_midnight_utc": 93600,
+                    "changed_on": "2025-08-21"
+                }
+            },
+            "jumas": [
+                "1st PrayerKhutbah - 1:30 PM - English",
+                "2nd PrayerKhutbah - 2:30 PM - Urdu",
+                "3rd PrayerKhutbah - 3:30 PM - English"
+            ],
+            "last_updated": "2025-08-23T22:00:39.615715"
+        }
+    }
+}

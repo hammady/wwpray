@@ -125,8 +125,15 @@ export const getNextPrayerForMasjids = (masjids: [string, IMasjid][], now?: numb
 			const iqama = masjid.iqamas[prayer.name];
 			if (iqama && typeof iqama.seconds_since_midnight_utc === 'number') {
 				const t = iqama.seconds_since_midnight_utc;
+				// Try with t as is
 				if (t > currentTime && t < minTime) {
 					minTime = t;
+				} else if (t >= 86400) {
+					// Try with t - 86400 (previous day)
+					const tPrevDay = t - 86400;
+					if (tPrevDay > currentTime && tPrevDay < minTime) {
+						minTime = tPrevDay;
+					}
 				}
 			}
 		}
@@ -161,14 +168,21 @@ export const getTimeRemainingForNextPrayer = (masjids: [string, IMasjid][], now?
 	let soonestTime: number;
 	if (futureTimes.length > 0) {
 		soonestTime = Math.min(...futureTimes);
+		// These futures may be in the next UTC day, try adding 86400 to current time and find again
+		const newCurrentTime = currentTime + 86400;
+		const newFutureTimes = times.filter(t => t > newCurrentTime);
+		if (newFutureTimes.length > 0) {
+			soonestTime = Math.min(...newFutureTimes);
+		}
 	} else {
 		// All are in the past, so wrap to the earliest for the next day
 		soonestTime = Math.min(...times);
 	}
 
 	let seconds = soonestTime - currentTime;
-	if (seconds < 0) {
-		seconds += 24 * 60 * 60;
+	// Wrap seconds to 0-86399 if soonestTime is in the next day or more
+	if (seconds < 0 || soonestTime >= 86400) {
+		seconds = ((seconds % 86400) + 86400) % 86400;
 	}
 	let minutes = Math.floor(seconds / SECONDS_PER_MINUTE);
 	const remainingSeconds = seconds % SECONDS_PER_MINUTE;
