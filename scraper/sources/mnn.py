@@ -5,7 +5,7 @@ class MNNexusSource(HTMLSource):
     def __init__(self):
         super().__init__("MNNexus", headers={
             "Accept": "text/html",
-        }, url="https://jangda.ca/mnnpt.php",
+        }, url="https://iqamah.mnnexus.ca",
         timezone="America/Toronto")
         self.display_name = 'Muslim Neighbour Nexus (MNN)'
         self.website = 'https://mnnexus.ca/'
