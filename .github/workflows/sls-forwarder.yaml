@@ -45,3 +45,4 @@ jobs:
             --verbose
         env:
           ADMIN_EMAIL: ${{ vars.ADMIN_EMAIL }}
+
