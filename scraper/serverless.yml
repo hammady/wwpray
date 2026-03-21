@@ -54,7 +54,7 @@ resources:
     ScraperErrorAlarm:
       Type: AWS::CloudWatch::Alarm
       Properties:
-        AlarmName: scraper-lambda-errors-${sls:stage}
+        AlarmName: wwpray-scraper-lambda-errors-${sls:stage}
         AlarmDescription: "WWPray Scraper Lambda function failed"
         Namespace: AWS/Lambda
         MetricName: Errors
@@ -73,7 +73,7 @@ resources:
     AlertTopic:
       Type: AWS::SNS::Topic
       Properties:
-        TopicName: scraper-alerts-${sls:stage}
+        TopicName: wwpray-scraper-alerts-${sls:stage}
         Subscription:
           - Protocol: email
             Endpoint: ${param:admin_email}
