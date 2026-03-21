@@ -6,6 +6,7 @@ params:
   default:
     sources: MNNexusSource,ShalimarSource,ICCOSource,WEICSource,ISNACanadaSource,DarFoundationSource,AlfalahSource,AlfarooqSource,ArRehmanSource,MICSource,DarulTaqwaSource
     s3_bucket: ${file(../common-params.yml):data_bucket_prefix}-${sls:stage}
+    feedback_email: ${file(../common-params.yml):feedback_email_user}@${file(../common-params.yml):${sls:stage}.custom_domain}
   dev:
     log_level: debug
     cron_enabled: false
@@ -34,6 +35,7 @@ functions:
   cronHandler:
     handler: handler.run
     timeout: 30 # default is 6, TODO optimize later by doing requests in parallel
+    maximumRetryAttempts: 0 # don't retry on failure, since we will run again in a few hours
     events:
       # Invoke Lambda function everyday at 7am UTC
       - schedule:
@@ -46,3 +48,32 @@ functions:
 
 plugins:
   - serverless-python-requirements
+
+resources:
+  Resources:
+    ScraperErrorAlarm:
+      Type: AWS::CloudWatch::Alarm
+      Properties:
+        AlarmName: scraper-lambda-errors-${sls:stage}
+        AlarmDescription: "WWPray Scraper Lambda function failed"
+        Namespace: AWS/Lambda
+        MetricName: Errors
+        Dimensions:
+          - Name: FunctionName
+            Value: !Ref CronHandlerLambdaFunction
+        Statistic: Sum
+        Period: 300
+        EvaluationPeriods: 1
+        Threshold: 1
+        ComparisonOperator: GreaterThanOrEqualToThreshold
+        TreatMissingData: notBreaching
+        AlarmActions:
+          - !Ref AlertTopic
+
+    AlertTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: scraper-alerts-${sls:stage}
+        Subscription:
+          - Protocol: email
+            Endpoint: ${param:feedback_email}

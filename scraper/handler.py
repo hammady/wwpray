@@ -33,6 +33,7 @@ def run(event, context):
     # Results objects below are manipulated in the main thread, so we don't need to worry about locking
     response = {"masjids": {}}
     processed = 0
+    failed = 0
 
     # Run each source in a separate thread
     with ThreadPoolExecutor() as executor:
@@ -62,6 +63,7 @@ def run(event, context):
                 logger.info(f"[{source.name}] Iqamas: {iqamas}. Jumas: {jumas}")
             except Exception:
                 logger.error(f"Failed to process source: {traceback.format_exc()}")
+                failed += 1
                 continue
 
     # write response to json file
@@ -79,5 +81,8 @@ def run(event, context):
         Bucket=bucket_name,
         Key='data/scraped.json'
     )
+
+    if failed > 0:
+        raise Exception(f"{failed} out of {len(source_class_names)} sources failed")
 
     return f"Scraped {processed} out of {len(source_class_names)} sources"
