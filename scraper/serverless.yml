@@ -6,7 +6,7 @@ params:
   default:
     sources: MNNexusSource,ShalimarSource,ICCOSource,WEICSource,ISNACanadaSource,DarFoundationSource,AlfalahSource,AlfarooqSource,ArRehmanSource,MICSource,DarulTaqwaSource
     s3_bucket: ${file(../common-params.yml):data_bucket_prefix}-${sls:stage}
-    feedback_email: ${file(../common-params.yml):feedback_email_user}@${file(../common-params.yml):${sls:stage}.custom_domain}
+    admin_email: ${env:ADMIN_EMAIL}
   dev:
     log_level: debug
     cron_enabled: false
@@ -76,4 +76,4 @@ resources:
         TopicName: scraper-alerts-${sls:stage}
         Subscription:
           - Protocol: email
-            Endpoint: ${param:feedback_email}
+            Endpoint: ${param:admin_email}
