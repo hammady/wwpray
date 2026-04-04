@@ -4,7 +4,7 @@ frameworkVersion: '3'
 
 params:
   default:
-    sources: MNNexusSource,ShalimarSource,ICCOSource,WEICSource,ISNACanadaSource,DarFoundationSource,AlfalahSource,AlfarooqSource,ArRehmanSource,MICSource,DarulTaqwaSource
+    sources: MNNexusSource,ShalimarSource,ICCOSource,WEICSource,ISNACanadaSource,DarFoundationSource,AlfalahSource,AlfarooqSource,MICSource,DarulTaqwaSource
     s3_bucket: ${file(../common-params.yml):data_bucket_prefix}-${sls:stage}
     admin_email: ${env:ADMIN_EMAIL}
   dev:
