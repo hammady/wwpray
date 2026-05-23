@@ -4,17 +4,21 @@
 	import type { IMasjid } from '$lib/types';
 	import Divider from '../uikit/Divider.svelte';
 	import MasjidLastUpdated from './MasjidLastUpdated.svelte';
+	import SubscribeButton from './SubscribeButton.svelte';
 </script>
 
 {#if $filteredMasjids}
 	<div class="w-full">
 		{#each $filteredMasjids as [name, { display_name: displayName, jumas, last_updated: lastUpdated, latitude, longitude }], i}
 			{@const isStale = Date.now() - new Date(lastUpdated + 'Z').getTime() > 86_400_000}
-			<h2 class="flex items-center justify-between">
+			<h2>
 				<a href="{GROUP_BY_ROUTES[EGroupBy.Masjid]}#masjid_{name}">
 					{displayName}
 				</a>
 			</h2>
+			<div class="not-prose mb-3">
+				<SubscribeButton {name} />
+			</div>
 
 			<MasjidLastUpdated {lastUpdated} />
 
