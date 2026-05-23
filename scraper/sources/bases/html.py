@@ -10,6 +10,4 @@ class HTMLSource(Source):
         if self._response is None:
             raise Exception("No response set for source: " + self.name)
         text = self._response.text
-        with open(f"{self.name}.html", "w", encoding="utf-8") as f:
-            f.write(text)
         return BeautifulSoup(text, "html.parser")
