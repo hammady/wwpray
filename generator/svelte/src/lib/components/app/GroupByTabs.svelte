@@ -12,6 +12,7 @@
 			class:tab-active={value === groupBy}
 			class:!border-b-primary={value === groupBy}
 			href={GROUP_BY_ROUTES[value]}
+			data-sveltekit-noscroll
 		>
 			{value}
 		</a>

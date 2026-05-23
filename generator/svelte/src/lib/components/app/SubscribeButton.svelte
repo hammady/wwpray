@@ -10,6 +10,6 @@
 
 <button on:click={onSubscribe}>
 	<label class="btn btn-primary btn-sm drawer-button" for={SUBSCRIPTION_SIDEOVER_ID}>
-		Subscribe
+		Get iqama change alerts
 	</label>
 </button>

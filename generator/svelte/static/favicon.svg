@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Purple rounded background -->
+  <rect width="32" height="32" rx="6" fill="#570df8"/>
+  <!-- Crescent moon (two overlapping circles) -->
+  <circle cx="12.5" cy="17" r="9" fill="white"/>
+  <circle cx="16.5" cy="13.5" r="8" fill="#570df8"/>
+  <!-- 4-pointed star -->
+  <path d="M24,7 L25.2,8.8 L27,10 L25.2,11.2 L24,13 L22.8,11.2 L21,10 L22.8,8.8 Z" fill="white"/>
+</svg>

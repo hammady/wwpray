@@ -29,6 +29,8 @@ export interface IMasjid {
 	address: string;
 	website: string;
 	last_updated: string;
+	latitude?: number;
+	longitude?: number;
 }
 
 export type TMasjidsJSON = {

@@ -10,7 +10,8 @@
 </script>
 
 <div class="w-full">
-	{#each $filteredMasjids as [name, { display_name: displayName, last_updated: lastUpdated, address, website, iqamas, jumas }], i}
+	{#each $filteredMasjids as [name, { display_name: displayName, last_updated: lastUpdated, address, website, iqamas, jumas, latitude, longitude }], i}
+		{@const isStale = Date.now() - new Date(lastUpdated + 'Z').getTime() > 86_400_000}
 		<h2 class="flex items-center justify-between">
 			<a target="_blank" href={website} id="masjid_{name}">
 				{displayName}
@@ -21,19 +22,28 @@
 
 		<p>Address: {address}</p>
 
+		{#if latitude != null && longitude != null}
+			{@const dest = `${latitude},${longitude}`}
+			<p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+				<span class="text-base-content/50 text-xs uppercase tracking-wide">Get directions:</span>
+				<a href="https://maps.apple.com/?daddr={dest}" target="_blank" rel="noopener noreferrer" class="font-semibold text-primary no-underline">🗺 Apple Maps</a>
+				<a href="https://www.google.com/maps/dir/?api=1&destination={dest}" target="_blank" rel="noopener noreferrer" class="font-semibold text-primary no-underline">🗺 Google Maps</a>
+			</p>
+		{/if}
+
 		<div class="px-2 md:px-4">
 			<MasjidLastUpdated {lastUpdated} />
 
-			<div class="max-w-[90vw] overflow-x-auto">
-				<table class="mt-1 table border border-neutral-content/50">
+			<div class="max-w-[90vw] overflow-x-auto rounded-xl ring-1 ring-primary/30 shadow-sm">
+				<table class="table table-zebra">
 					<thead>
-						<tr>
-							<th>Masjid</th>
+						<tr class="bg-primary text-xs uppercase tracking-wide [&>th]:!text-primary-content">
+							<th>Prayer</th>
 							<th>Iqama</th>
 							<th>Last Changed</th>
 						</tr>
 					</thead>
-					<tbody>
+					<tbody class:opacity-40={isStale}>
 						{#each entries(iqamas) as [iqama, { time, changed_on: changedOn }]}
 							<tr
 								class={tw([

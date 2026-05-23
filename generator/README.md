@@ -70,3 +70,53 @@ Which should result in response similar to the following:
     "body": "{\n  \"message\": \"Go Serverless v3.0! Your function executed successfully!\",\n  \"input\": \"\"\n}"
 }
 ```
+
+## Serving the app locally
+
+The frontend lives in `svelte/`. To run it locally:
+
+**1. Install dependencies** (first time only):
+
+```bash
+cd svelte
+npm install
+```
+
+**2. Provide the data file:**
+
+The app reads from `svelte/src/routes/notified.json`. Copy the example file to get started:
+
+```bash
+cp svelte/tests/notified-example.json svelte/src/routes/notified.json
+```
+
+Or point it at a real generated file if you have one.
+
+**3. Set required environment variables:**
+
+Create `svelte/.env.local` with the following:
+
+```env
+# Base URL of the subscriptions API (used by the "Get iqama change alerts" form)
+PUBLIC_SUBSCRIPTIONS_BASE_URL=https://your-api-endpoint
+```
+
+> `PUBLIC_` prefix means this variable is exposed to the browser. See [SvelteKit env docs](https://kit.svelte.dev/docs/modules#$env-static-public).
+
+**4. Start the dev server:**
+
+```bash
+cd svelte
+npm run dev
+```
+
+The app will be available at **http://localhost:5173**.
+
+**Other useful commands:**
+
+| Command | Description |
+|---|---|
+| `npm run build` | Build the static site for production |
+| `npm run preview` | Preview the production build locally |
+| `npm run check` | Type-check the Svelte/TypeScript code |
+| `npm run test:unit` | Run unit tests |

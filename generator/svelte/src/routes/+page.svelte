@@ -8,22 +8,30 @@
 	import { filteredMasjids } from '$lib/stores/masjids';
 
 	$: prayers = getSortedPrayers($filteredMasjids);
+
+	const prayerEmojis: Record<string, string> = {
+		fajr: '🌄',
+		zuhr: '☀️',
+		asr: '🌤️',
+		maghrib: '🌇',
+		isha: '🌙',
+	};
 </script>
 
 <GroupByTabs groupBy={EGroupBy.Prayer} />
 
 {#each prayers as prayer, i (prayer)}
 	<h2 class="capitalize">
-		{prayer}
+		{prayer}{prayerEmojis[prayer] ? ` ${prayerEmojis[prayer]}` : ''}
 
 		{#if i === 0}
 			(Next)
 		{/if}
 	</h2>
-	<div class="border border-neutral-content/50 max-w-[90vw] overflow-x-auto">
-		<table class="mt-1 table">
+	<div class="max-w-[90vw] overflow-x-auto rounded-xl ring-1 ring-primary/30 shadow-sm">
+		<table class="table table-zebra">
 			<thead>
-				<tr>
+				<tr class="bg-primary text-xs uppercase tracking-wide [&>th]:!text-primary-content">
 					<th>Masjid</th>
 					<th>Iqama</th>
 					<th>Last Updated</th>
@@ -32,9 +40,11 @@
 			</thead>
 			<tbody>
 				{#each sortMasjidsForPrayer($filteredMasjids, prayer) as [id, { display_name: name, iqamas, last_updated: lastUpdated }] (id)}
+					{@const isStale = Date.now() - new Date(lastUpdated + 'Z').getTime() > 86_400_000}
 					<tr
 						role="button"
 						class="hover:!bg-primary/5 cursor-pointer"
+						class:opacity-40={isStale}
 						on:click={() => goto(getMasjidRoute(id))}
 					>
 						<td class="capitalize">

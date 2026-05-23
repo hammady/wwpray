@@ -8,7 +8,8 @@
 
 {#if $filteredMasjids}
 	<div class="w-full">
-		{#each $filteredMasjids as [name, { display_name: displayName, jumas, last_updated: lastUpdated }], i}
+		{#each $filteredMasjids as [name, { display_name: displayName, jumas, last_updated: lastUpdated, latitude, longitude }], i}
+			{@const isStale = Date.now() - new Date(lastUpdated + 'Z').getTime() > 86_400_000}
 			<h2 class="flex items-center justify-between">
 				<a href="{GROUP_BY_ROUTES[EGroupBy.Masjid]}#masjid_{name}">
 					{displayName}
@@ -17,8 +18,17 @@
 
 			<MasjidLastUpdated {lastUpdated} />
 
+			{#if latitude != null && longitude != null}
+				{@const dest = `${latitude},${longitude}`}
+				<p class="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+					<span class="text-base-content/50 text-xs uppercase tracking-wide">Get directions:</span>
+					<a href="https://maps.apple.com/?daddr={dest}" target="_blank" rel="noopener noreferrer" class="font-semibold text-primary no-underline">🗺 Apple Maps</a>
+					<a href="https://www.google.com/maps/dir/?api=1&destination={dest}" target="_blank" rel="noopener noreferrer" class="font-semibold text-primary no-underline">🗺 Google Maps</a>
+				</p>
+			{/if}
+
 			<div class="px-2 md:px-4">
-				<ul>
+				<ul class:opacity-40={isStale}>
 					{#each jumas as juma}
 						<li>
 							{juma}
