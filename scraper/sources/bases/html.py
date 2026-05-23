@@ -9,4 +9,7 @@ class HTMLSource(Source):
     def parse(self):
         if self._response is None:
             raise Exception("No response set for source: " + self.name)
-        return BeautifulSoup(self._response.text, "html.parser")
+        text = self._response.text
+        with open(f"{self.name}.html", "w", encoding="utf-8") as f:
+            f.write(text)
+        return BeautifulSoup(text, "html.parser")

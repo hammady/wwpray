@@ -1,3 +1,4 @@
+from bs4 import BeautifulSoup
 from .bases import HTMLSource
 
 
@@ -16,34 +17,28 @@ class AlfarooqSource(HTMLSource):
     def parse(self):
         soup = super().parse()
 
-        nested_rows = soup.select("table.dptTimetable > tr:nth-child(4) > tr")
-
-        if len(nested_rows) == 5:
-            # today is not Friday, jumas will be listed in the 5th row
-            jumas_row = 4
-        else:
-            # today is Friday, jumas will be listed instead of Zuhr
-            jumas_row = 0
-
-        spans = nested_rows[jumas_row].select("td.jamah > span")
-
-        if jumas_row == 4:
-            zuhr_tag = nested_rows[0].select_one("td.jamah")
-        else:
-            zuhr_tag = spans[0]
+        # The table is a flat structure; Sunrise has no td.jamah (colspan=2),
+        # so selecting td.jamah yields exactly 5 cells: Fajr, Dhuhr, Asr, Maghrib, Isha
+        jamah_cells = soup.select("table.dptTimetable td.jamah")
 
         iqamas = self.generate_iqamas_output(
-            [value.text.strip() for value in [
-                soup.select_one("table.dptTimetable > tr:nth-child(3) > td.jamah"),
-                zuhr_tag,
-                nested_rows[1].select_one("td.jamah"),
-                nested_rows[2].select_one("td.jamah"),
-                nested_rows[3].select_one("td.jamah")
-            ]]
+            [cell.text.strip() for cell in jamah_cells]
         )
 
-        jumas = [f"{label} Prayer: {value.text.strip()}" for value, label in zip(
-            spans, self._counter_labels
-        )]
+        # Fetch Juma salah times from the monthly timetable page
+        monthly_response = self._http_method(
+            "https://www.masjidfarooq.com/monthly-timetable/",
+            headers=self._headers,
+            timeout=(3.05, 6)
+        )
+        monthly_response.raise_for_status()
+        monthly_soup = BeautifulSoup(monthly_response.text, "html.parser")
+
+        # Juma table: figure.wp-block-table > table; title in 1st column, khutbah time in 2nd
+        juma_rows = monthly_soup.select("figure.wp-block-table table tbody tr")
+        jumas = [
+            f"{row.select('td')[0].text.strip()}: {row.select('td')[1].text.strip()}"
+            for row in juma_rows
+        ]
 
         return iqamas, jumas

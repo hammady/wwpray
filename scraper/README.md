@@ -143,3 +143,13 @@ deactivate
 ```
 
 Replace `WEICSource` with the class name of the source you want to test.
+
+### Checking logs
+
+The following command will show you logs for `cronHandler` function for the last 12 hours.
+Replace `personal` with the name of your AWS profile if needed, or remove `--aws-profile personal`
+entirely if you are using the default profile.
+
+```bash
+sls logs -f cronHandler --stage prod --aws-profile personal --startTime 12h
+```
