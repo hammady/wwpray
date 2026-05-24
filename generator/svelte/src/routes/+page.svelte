@@ -2,7 +2,7 @@
 	import GroupByTabs from '$lib/components/app/GroupByTabs.svelte';
 	import { EGroupBy } from '$lib/constants';
 	import MasjidLastUpdated from '$lib/components/app/MasjidLastUpdated.svelte';
-	import { getMasjidRoute, sortMasjidsForPrayer, getSortedPrayers } from '$lib/utils';
+	import { getMasjidRoute, sortMasjidsForPrayer, getSortedPrayers, getIqamaRelativeTime } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import PrayerTimeChanged from '$lib/components/app/PrayerTimeChanged.svelte';
 	import { filteredMasjids } from '$lib/stores/masjids';
@@ -41,6 +41,7 @@
 			<tbody>
 				{#each sortMasjidsForPrayer($filteredMasjids, prayer) as [id, { display_name: name, iqamas, last_updated: lastUpdated }] (id)}
 					{@const isStale = Date.now() - new Date(lastUpdated + 'Z').getTime() > 86_400_000}
+					{@const rel = getIqamaRelativeTime(iqamas[prayer].seconds_since_midnight_utc)}
 					<tr
 						role="button"
 						class="hover:!bg-primary/5 cursor-pointer"
@@ -52,6 +53,9 @@
 						</td>
 						<td>
 							{iqamas[prayer].time}
+							{#if rel}
+								<span class="text-xs font-medium ml-1 {rel.isPast ? 'text-red-500 line-through' : 'text-green-600'}">({rel.label})</span>
+							{/if}
 						</td>
 						<td>
 							<MasjidLastUpdated isShort {lastUpdated} />

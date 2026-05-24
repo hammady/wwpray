@@ -63,6 +63,27 @@ export const getFormattedDate = (date: Dayjs) => {
 	return date.format('DD MMM YYYY');
 };
 
+/** Returns a human-readable relative time for an iqama (e.g. "in 5m" or "7m ago").
+ *  Uses circular modulo arithmetic so midnight wraps are handled correctly. */
+export const getIqamaRelativeTime = (
+	iqamaSeconds: number | null
+): { label: string; isPast: boolean } | null => {
+	if (iqamaSeconds == null) return null;
+	const currentTime = getCurrentUTCDateSeconds();
+	const diff = ((iqamaSeconds - currentTime) % 86400 + 86400) % 86400;
+	const isPast = diff > 43200;
+	if (!isPast) {
+		const hours = Math.floor(diff / 3600);
+		const mins = Math.floor((diff % 3600) / 60);
+		return { label: hours > 0 ? `in ${hours}h ${mins}m` : `in ${mins}m`, isPast };
+	} else {
+		const secondsAgo = 86400 - diff;
+		const hours = Math.floor(secondsAgo / 3600);
+		const mins = Math.floor((secondsAgo % 3600) / 60);
+		return { label: hours > 0 ? `${hours}h ${mins}m ago` : `${mins}m ago`, isPast };
+	}
+};
+
 export const getDayNameFromDate = (date: Dayjs) => {
 	return date.format('dddd');
 };
