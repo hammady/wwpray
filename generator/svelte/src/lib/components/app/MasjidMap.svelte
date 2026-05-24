@@ -85,12 +85,14 @@
 			for (const [, masjid] of mappableMasjids) {
 				const iqamaSeconds = masjid.iqamas[nextPrayerName]?.seconds_since_midnight_utc;
 				const iqamaTime = masjid.iqamas[nextPrayerName]?.time ?? '';
-				const markerPast = iqamaSeconds != null &&
+				const isStale = Date.now() - new Date(masjid.last_updated + 'Z').getTime() > 86_400_000;
+				const isPast = iqamaSeconds != null &&
 					((iqamaSeconds - markerTime) % 86400 + 86400) % 86400 > 43200;
+				const markerClass = [isPast ? 'marker-past' : 'marker-future', isStale ? 'marker-stale' : ''].join(' ').trim();
 
 				const icon = L.divIcon({
 					className: '',
-					html: `<div class="masjid-map-marker${markerPast ? ' marker-past' : ''}">
+					html: `<div class="masjid-map-marker ${markerClass}">
 						<span class="marker-name">${masjid.display_name}</span>
 						<span class="marker-divider">·</span>
 						<span class="marker-time">${nextPrayerLabel} ${iqamaTime}</span>
@@ -228,10 +230,18 @@
 		z-index: 1000;
 	}
 
-	:global(.marker-past) {
+	:global(.marker-stale) {
 		opacity: 0.4;
 		border-color: #cbd5e0;
 		box-shadow: none;
+	}
+
+	:global(.marker-past .marker-time) {
+		color: #e53e3e;
+	}
+
+	:global(.marker-future .marker-time) {
+		color: #16a34a;
 	}
 
 	:global(.marker-name) {

@@ -52,8 +52,8 @@
 							<a href={getMasjidRoute(id)}>{name}</a>
 						</td>
 						<td>
-							<span class:line-through={rel?.isPast}>{iqamas[prayer].time}</span>
-							{#if rel}
+							<span class:line-through={i === 0 && rel?.isPast}>{iqamas[prayer].time}</span>
+							{#if i === 0 && rel}
 								<span class="text-xs font-medium ml-1 {rel.isPast ? 'text-red-500' : 'text-green-600'}">({rel.label})</span>
 							{/if}
 						</td>
