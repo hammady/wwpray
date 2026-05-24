@@ -40,8 +40,8 @@
 		return `
 			<div class="masjid-popup">
 				<div class="popup-name">${masjid.display_name}</div>
-				<div class="popup-prayer${isPast ? ' popup-prayer-past' : ''}">${prayerLabel}: <strong>${iqamaTime}</strong></div>
-				${timeRemainingStr ? `<div class="popup-remaining${isPast ? ' popup-remaining-past' : ''}">${timeRemainingStr}</div>` : ''}
+				<div class="popup-prayer">${prayerLabel}: <strong class="${isPast ? 'popup-time-past' : ''}">${iqamaTime}</strong></div>
+				${timeRemainingStr ? `<div class="popup-remaining ${isPast ? 'popup-remaining-past' : 'popup-remaining-future'}">${timeRemainingStr}</div>` : ''}
 				<div class="popup-directions-label">Get directions</div>
 				<div class="popup-directions-row">
 					<a class="popup-directions" href="${appleUrl}" target="_blank" rel="noopener noreferrer">🗺 Apple Maps</a>
@@ -272,13 +272,18 @@
 		margin-bottom: 8px;
 	}
 
-	:global(.popup-prayer-past) {
+	:global(.popup-time-past) {
 		text-decoration: line-through;
 		color: #a0aec0;
 	}
 
 	:global(.popup-remaining-past) {
 		color: #e53e3e;
+		font-weight: 600;
+	}
+
+	:global(.popup-remaining-future) {
+		color: #16a34a;
 		font-weight: 600;
 	}
 

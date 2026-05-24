@@ -61,9 +61,9 @@
 										{/if}
 									</td>
 									<td>
-										{time}
+										<span class:line-through={rel?.isPast}>{time}</span>
 										{#if rel}
-											<span class="text-xs font-medium ml-1 {rel.isPast ? 'text-red-500 line-through' : 'text-green-600'}">({rel.label})</span>
+											<span class="text-xs font-medium ml-1 {rel.isPast ? 'text-red-500' : 'text-green-600'}">({rel.label})</span>
 										{/if}
 									</td>
 								<td>
