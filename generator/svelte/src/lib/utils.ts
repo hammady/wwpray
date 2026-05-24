@@ -66,8 +66,10 @@ export const getFormattedDate = (date: Dayjs) => {
 /** Returns a human-readable relative time for an iqama (e.g. "in 5m" or "7m ago").
  *  Uses circular modulo arithmetic so midnight wraps are handled correctly. */
 export const getIqamaRelativeTime = (
-	iqamaSeconds: number | null
+	iqamaSeconds: number | null,
+	_tick = 0
 ): { label: string; isPast: boolean } | null => {
+	void _tick; // reactive dependency — pass $clock from components to trigger re-evaluation
 	if (iqamaSeconds == null) return null;
 	const currentTime = getCurrentUTCDateSeconds();
 	const diff = ((iqamaSeconds - currentTime) % 86400 + 86400) % 86400;
@@ -75,12 +77,14 @@ export const getIqamaRelativeTime = (
 	if (!isPast) {
 		const hours = Math.floor(diff / 3600);
 		const mins = Math.floor((diff % 3600) / 60);
-		return { label: hours > 0 ? `in ${hours}h ${mins}m` : `in ${mins}m`, isPast };
+		if (hours > 0) return { label: `in ${hours}h ${mins}m`, isPast };
+		return { label: `in ${mins}m ${diff % 60}s`, isPast };
 	} else {
 		const secondsAgo = 86400 - diff;
 		const hours = Math.floor(secondsAgo / 3600);
 		const mins = Math.floor((secondsAgo % 3600) / 60);
-		return { label: hours > 0 ? `${hours}h ${mins}m ago` : `${mins}m ago`, isPast };
+		if (hours > 0) return { label: `${hours}h ${mins}m ago`, isPast };
+		return { label: `${mins}m ${secondsAgo % 60}s ago`, isPast };
 	}
 };
 

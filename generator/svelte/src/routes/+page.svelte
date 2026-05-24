@@ -3,6 +3,7 @@
 	import { EGroupBy } from '$lib/constants';
 	import MasjidLastUpdated from '$lib/components/app/MasjidLastUpdated.svelte';
 	import { getMasjidRoute, sortMasjidsForPrayer, getSortedPrayers, getIqamaRelativeTime } from '$lib/utils';
+	import { clock } from '$lib/stores/clock';
 	import { goto } from '$app/navigation';
 	import PrayerTimeChanged from '$lib/components/app/PrayerTimeChanged.svelte';
 	import { filteredMasjids } from '$lib/stores/masjids';
@@ -39,9 +40,9 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each sortMasjidsForPrayer($filteredMasjids, prayer) as [id, { display_name: name, iqamas, last_updated: lastUpdated }] (id)}
+				{#each ($clock, sortMasjidsForPrayer($filteredMasjids, prayer)) as [id, { display_name: name, iqamas, last_updated: lastUpdated }] (id)}
 					{@const isStale = Date.now() - new Date(lastUpdated + 'Z').getTime() > 86_400_000}
-					{@const rel = getIqamaRelativeTime(iqamas[prayer].seconds_since_midnight_utc)}
+					{@const rel = getIqamaRelativeTime(iqamas[prayer].seconds_since_midnight_utc, $clock)}
 					<tr
 						role="button"
 						class="hover:!bg-primary/5 cursor-pointer"
@@ -54,7 +55,7 @@
 						<td>
 							<span class:line-through={i === 0 && rel?.isPast}>{iqamas[prayer].time}</span>
 							{#if i === 0 && rel}
-								<span class="text-xs font-medium ml-1 {rel.isPast ? 'text-red-500' : 'text-green-600'}">({rel.label})</span>
+								<span class="inline-block min-w-[6rem] tabular-nums text-xs font-medium ml-1 {rel.isPast ? 'text-red-500' : 'text-green-600'}">({rel.label})</span>
 							{/if}
 						</td>
 						<td>

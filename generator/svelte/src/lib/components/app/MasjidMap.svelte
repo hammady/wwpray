@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import type { IMasjid } from '$lib/types';
-	import { getNextPrayerForMasjids, getCurrentUTCDateSeconds } from '$lib/utils';
+	import { getNextPrayerForMasjids, getCurrentUTCDateSeconds, getIqamaRelativeTime } from '$lib/utils';
+	import { clock } from '$lib/stores/clock';
 
 	export let masjids: [string, IMasjid][];
 
@@ -9,29 +10,24 @@
 	let map: import('leaflet').Map | undefined;
 	let locationMessage: string | null = null;
 
+	let openPopup: import('leaflet').Popup | null = null;
+	let openMasjid: IMasjid | null = null;
+	let openPrayerName = '';
+
+	const unsubscribeClock = clock.subscribe(() => {
+		if (openPopup && openMasjid) {
+			openPopup.setContent(buildPopupContent(openMasjid, openPrayerName));
+		}
+	});
+
 	function buildPopupContent(masjid: IMasjid, prayerName: string): string {
 		const iqamaTime = masjid.iqamas[prayerName]?.time ?? '';
 		const prayerLabel = prayerName.charAt(0).toUpperCase() + prayerName.slice(1);
 
-		const iqamaSeconds = masjid.iqamas[prayerName]?.seconds_since_midnight_utc;
-		let timeRemainingStr = '';
-		let isPast = false;
-		if (iqamaSeconds != null) {
-			const currentTime = getCurrentUTCDateSeconds();
-			// Circular time diff: always in [0, 86400). > 43200 means iqama is in the past.
-			const diff = ((iqamaSeconds - currentTime) % 86400 + 86400) % 86400;
-			isPast = diff > 43200;
-			if (!isPast) {
-				const hours = Math.floor(diff / 3600);
-				const mins = Math.floor((diff % 3600) / 60);
-				timeRemainingStr = hours > 0 ? `in ${hours}h ${mins}m` : `in ${mins}m`;
-			} else {
-				const secondsAgo = 86400 - diff;
-				const hours = Math.floor(secondsAgo / 3600);
-				const mins = Math.floor((secondsAgo % 3600) / 60);
-				timeRemainingStr = hours > 0 ? `${hours}h ${mins}m ago` : `${mins}m ago`;
-			}
-		}
+		const iqamaSeconds = masjid.iqamas[prayerName]?.seconds_since_midnight_utc ?? null;
+		const relTime = getIqamaRelativeTime(iqamaSeconds);
+		const timeRemainingStr = relTime?.label ?? '';
+		const isPast = relTime?.isPast ?? false;
 
 		const destParam = `${masjid.latitude},${masjid.longitude}`;
 		const googleUrl = `https://www.google.com/maps/dir/?api=1&destination=${destParam}`;
@@ -100,9 +96,19 @@
 					iconAnchor: [0, 0]
 				});
 
-				L.marker([masjid.latitude as number, masjid.longitude as number], { icon })
+				const marker = L.marker([masjid.latitude as number, masjid.longitude as number], { icon })
 					.addTo(map)
 					.bindPopup(() => buildPopupContent(masjid, nextPrayerName), { minWidth: 200 });
+
+				marker.on('popupopen', (e) => {
+					openMasjid = masjid;
+					openPrayerName = nextPrayerName;
+					openPopup = (e as unknown as { popup: import('leaflet').Popup }).popup;
+				});
+				marker.on('popupclose', () => {
+					openPopup = null;
+					openMasjid = null;
+				});
 			}
 
 			// Close popup when clicking anywhere inside it (including direction links)
@@ -164,6 +170,7 @@
 
 	onDestroy(() => {
 		map?.remove();
+		unsubscribeClock();
 	});
 </script>
 

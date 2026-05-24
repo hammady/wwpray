@@ -6,6 +6,7 @@
 	import PrayerTimeChanged from './PrayerTimeChanged.svelte';
 	import { tw } from 'tail-cn';
 	import { isNextIqama, getIqamaRelativeTime } from '$lib/utils';
+	import { clock } from '$lib/stores/clock';
 	import { filteredMasjids } from '$lib/stores/masjids';
 </script>
 
@@ -45,26 +46,26 @@
 						</tr>
 					</thead>
 					<tbody class:opacity-40={isStale}>
-							{#each entries(iqamas) as [iqama, { time, changed_on: changedOn, seconds_since_midnight_utc: iqamaSeconds }]}
-								{@const rel = getIqamaRelativeTime(iqamaSeconds)}
-								<tr
-									class={tw([
-										'!bg-primary/5 font-semibold',
-										isNextIqama($filteredMasjids, name, iqama)
-									])}
-								>
-									<td class="capitalize">
-										{iqama}
+							{#each ($clock, entries(iqamas)) as [iqama, { time, changed_on: changedOn, seconds_since_midnight_utc: iqamaSeconds }]}
+							{@const rel = getIqamaRelativeTime(iqamaSeconds, $clock)}
+							<tr
+								class={tw([
+									'!bg-primary/5 font-semibold',
+									isNextIqama($filteredMasjids, name, iqama)
+								])}
+							>
+								<td class="capitalize">
+									{iqama}
 
-										{#if isNextIqama($filteredMasjids, name, iqama)}
-											(Next)
-										{/if}
-									</td>
-									<td>
-										<span class:line-through={isNextIqama($filteredMasjids, name, iqama) && rel?.isPast}>{time}</span>
-										{#if isNextIqama($filteredMasjids, name, iqama) && rel}
-											<span class="text-xs font-medium ml-1 {rel.isPast ? 'text-red-500' : 'text-green-600'}">({rel.label})</span>
-										{/if}
+									{#if isNextIqama($filteredMasjids, name, iqama)}
+										(Next)
+									{/if}
+								</td>
+								<td>
+									<span class:line-through={isNextIqama($filteredMasjids, name, iqama) && rel?.isPast}>{time}</span>
+									{#if isNextIqama($filteredMasjids, name, iqama) && rel}
+										<span class="inline-block min-w-[6rem] tabular-nums text-xs font-medium ml-1 {rel.isPast ? 'text-red-500' : 'text-green-600'}">({rel.label})</span>
+									{/if}
 									</td>
 								<td>
 									<PrayerTimeChanged {changedOn} />
