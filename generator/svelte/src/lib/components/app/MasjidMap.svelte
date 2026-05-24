@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount, onDestroy } from 'svelte';
 	import type { IMasjid } from '$lib/types';
-	import { getNextPrayerForMasjid, getCurrentUTCDateSeconds } from '$lib/utils';
+	import { getNextPrayerForMasjids, getCurrentUTCDateSeconds } from '$lib/utils';
 
 	export let masjids: [string, IMasjid][];
 
@@ -9,20 +9,28 @@
 	let map: import('leaflet').Map | undefined;
 	let locationMessage: string | null = null;
 
-	function buildPopupContent(masjid: IMasjid): string {
-		const nextPrayer = getNextPrayerForMasjid(masjid);
-		const iqamaTime = masjid.iqamas[nextPrayer.name]?.time ?? '';
-		const prayerLabel = nextPrayer.name.charAt(0).toUpperCase() + nextPrayer.name.slice(1);
+	function buildPopupContent(masjid: IMasjid, prayerName: string): string {
+		const iqamaTime = masjid.iqamas[prayerName]?.time ?? '';
+		const prayerLabel = prayerName.charAt(0).toUpperCase() + prayerName.slice(1);
 
-		const iqamaSeconds = masjid.iqamas[nextPrayer.name]?.seconds_since_midnight_utc;
+		const iqamaSeconds = masjid.iqamas[prayerName]?.seconds_since_midnight_utc;
 		let timeRemainingStr = '';
+		let isPast = false;
 		if (iqamaSeconds != null) {
 			const currentTime = getCurrentUTCDateSeconds();
-			let secondsRemaining = iqamaSeconds - currentTime;
-			if (secondsRemaining < 0) secondsRemaining += 86400;
-			const hours = Math.floor(secondsRemaining / 3600);
-			const mins = Math.floor((secondsRemaining % 3600) / 60);
-			timeRemainingStr = hours > 0 ? `in ${hours}h ${mins}m` : `in ${mins}m`;
+			// Circular time diff: always in [0, 86400). > 43200 means iqama is in the past.
+			const diff = ((iqamaSeconds - currentTime) % 86400 + 86400) % 86400;
+			isPast = diff > 43200;
+			if (!isPast) {
+				const hours = Math.floor(diff / 3600);
+				const mins = Math.floor((diff % 3600) / 60);
+				timeRemainingStr = hours > 0 ? `in ${hours}h ${mins}m` : `in ${mins}m`;
+			} else {
+				const secondsAgo = 86400 - diff;
+				const hours = Math.floor(secondsAgo / 3600);
+				const mins = Math.floor((secondsAgo % 3600) / 60);
+				timeRemainingStr = hours > 0 ? `${hours}h ${mins}m ago` : `${mins}m ago`;
+			}
 		}
 
 		const destParam = `${masjid.latitude},${masjid.longitude}`;
@@ -32,8 +40,8 @@
 		return `
 			<div class="masjid-popup">
 				<div class="popup-name">${masjid.display_name}</div>
-				<div class="popup-prayer">${prayerLabel}: <strong>${iqamaTime}</strong></div>
-				${timeRemainingStr ? `<div class="popup-remaining">${timeRemainingStr}</div>` : ''}
+				<div class="popup-prayer${isPast ? ' popup-prayer-past' : ''}">${prayerLabel}: <strong>${iqamaTime}</strong></div>
+				${timeRemainingStr ? `<div class="popup-remaining${isPast ? ' popup-remaining-past' : ''}">${timeRemainingStr}</div>` : ''}
 				<div class="popup-directions-label">Get directions</div>
 				<div class="popup-directions-row">
 					<a class="popup-directions" href="${appleUrl}" target="_blank" rel="noopener noreferrer">🗺 Apple Maps</a>
@@ -70,24 +78,29 @@
 			}).addTo(map);
 
 			// Add masjid markers
+			const nextPrayerName = getNextPrayerForMasjids(mappableMasjids)?.name ?? '';
+			const nextPrayerLabel = nextPrayerName.charAt(0).toUpperCase() + nextPrayerName.slice(1);
+			const markerTime = getCurrentUTCDateSeconds();
+
 			for (const [, masjid] of mappableMasjids) {
-				const nextPrayer = getNextPrayerForMasjid(masjid);
-				const iqamaTime = masjid.iqamas[nextPrayer.name]?.time ?? '';
-				const prayerLabel = nextPrayer.name.charAt(0).toUpperCase() + nextPrayer.name.slice(1);
+				const iqamaSeconds = masjid.iqamas[nextPrayerName]?.seconds_since_midnight_utc;
+				const iqamaTime = masjid.iqamas[nextPrayerName]?.time ?? '';
+				const markerPast = iqamaSeconds != null &&
+					((iqamaSeconds - markerTime) % 86400 + 86400) % 86400 > 43200;
 
 				const icon = L.divIcon({
 					className: '',
-					html: `<div class="masjid-map-marker">
+					html: `<div class="masjid-map-marker${markerPast ? ' marker-past' : ''}">
 						<span class="marker-name">${masjid.display_name}</span>
 						<span class="marker-divider">·</span>
-						<span class="marker-time">${prayerLabel} ${iqamaTime}</span>
+						<span class="marker-time">${nextPrayerLabel} ${iqamaTime}</span>
 					</div>`,
 					iconAnchor: [0, 0]
 				});
 
 				L.marker([masjid.latitude as number, masjid.longitude as number], { icon })
 					.addTo(map)
-					.bindPopup(() => buildPopupContent(masjid), { minWidth: 200 });
+					.bindPopup(() => buildPopupContent(masjid, nextPrayerName), { minWidth: 200 });
 			}
 
 			// Close popup when clicking anywhere inside it (including direction links)
@@ -215,6 +228,12 @@
 		z-index: 1000;
 	}
 
+	:global(.marker-past) {
+		opacity: 0.4;
+		border-color: #cbd5e0;
+		box-shadow: none;
+	}
+
 	:global(.marker-name) {
 		font-weight: 700;
 	}
@@ -251,6 +270,16 @@
 		font-size: 12px;
 		color: #718096;
 		margin-bottom: 8px;
+	}
+
+	:global(.popup-prayer-past) {
+		text-decoration: line-through;
+		color: #a0aec0;
+	}
+
+	:global(.popup-remaining-past) {
+		color: #e53e3e;
+		font-weight: 600;
 	}
 
 	:global(.popup-directions-label) {
