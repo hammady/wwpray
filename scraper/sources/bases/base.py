@@ -13,6 +13,9 @@ class Source:
         self.display_name = None
         self.website = None
         self.address = None
+        # When True, HTML sources dump the fetched page to disk for local
+        # debugging. Kept False in serverless since its filesystem is read-only.
+        self.dump_html = False
         self._five_prayers = ["fajr", "zuhr", "asr", "maghrib", "isha"]
         self._counter_labels = [
             'First', 'Second', 'Third', 'Fourth', 'Fifth',

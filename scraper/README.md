@@ -144,6 +144,17 @@ deactivate
 
 Replace `WEICSource` with the class name of the source you want to test.
 
+#### Dumping fetched HTML for debugging
+
+HTML-based sources can save the fetched page to `<SourceName>.html` to help
+debug selectors. This is **off by default** because the serverless/Lambda
+filesystem is read-only and writing would crash the function. Enable it by
+passing the `--dump-html` (`-d`) flag when running locally:
+
+```bash
+python3 cli.py --source WEICSource --dump-html
+```
+
 ### Checking logs
 
 The following command will show you logs for `cronHandler` function for the last 12 hours.

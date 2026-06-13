@@ -2,6 +2,7 @@
 
 import click
 from sources.bases.base import Source
+from sources.bases.html import HTMLSource
 
 
 def _format_seconds_utc(seconds, timezone):
@@ -19,9 +20,13 @@ def _format_seconds_utc(seconds, timezone):
 
 @click.command()
 @click.option('--source', '-s', required=True, help='Python class name for the source to scrape')
-def main(source):
+@click.option('--dump-html', '-d', is_flag=True,
+              help='For HTML sources, save the fetched page to <SourceName>.html '
+                   'for debugging (local only; the serverless filesystem is read-only).')
+def main(source, dump_html):
     klass = getattr(__import__("sources"), source)
     source = klass()
+    source.dump_html = dump_html
     print(f"Scraping {source.name}...")
     source.request()
     iqamas, jumas, jumas_seconds = source.parse()
@@ -32,6 +37,12 @@ def main(source):
     print("Jumas:")
     for juma, seconds in zip(jumas, jumas_seconds):
         print(f"  {_format_seconds_utc(seconds, source._timezone)}  <-  {juma}")
+
+    if dump_html:
+        if isinstance(source, HTMLSource):
+            print(f"Dumped fetched HTML to {source.name}.html")
+        else:
+            print("--dump-html ignored: this source does not fetch HTML")
 
 if __name__ == "__main__":
     main()

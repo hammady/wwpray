@@ -7,3 +7,5 @@ serverless_sdk
 node_modules
 data
 output.csv
+# HTML dumps from the cli's --dump-html flag
+*.html
