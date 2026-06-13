@@ -81,3 +81,141 @@ class TestSource(TestCase):
 
     def test_parse_time_invalid(self):
         self.assertIsNone(Source._parse_time("invalid_time", self.timezone))
+
+    # test parsing of jumas arrays
+
+    def make_source(self):
+        return Source("test", timezone=self.timezone)
+
+    def expected_seconds(self, hour, minute):
+        return hour * self.seconds_in_hour + minute * 60 - self.timezone_offset
+
+    def test_parse_jumas_returns_same_size(self):
+        source = self.make_source()
+        jumas = ["First Prayer: 12:15 PM", "Second Prayer: 1:15 PM", "Third Prayer: 2:30PM"]
+        self.assertEqual(len(source.parse_jumas(jumas)), len(jumas))
+
+    def test_parse_jumas_empty(self):
+        source = self.make_source()
+        self.assertEqual(source.parse_jumas([]), [])
+
+    def test_parse_jumas_prayer_prefix_with_space(self):
+        source = self.make_source()
+        jumas = ["First Prayer: 12:15 PM", "Second Prayer: 1:15 PM", "Third Prayer: 2:30PM"]
+        self.assertEqual(source.parse_jumas(jumas), [
+            self.expected_seconds(12, 15),
+            self.expected_seconds(13, 15),
+            self.expected_seconds(14, 30),
+        ])
+
+    def test_parse_jumas_lowercase_pm(self):
+        source = self.make_source()
+        jumas = ["First Prayer: 1:00 pm", "Second Prayer: 2:00 pm", "Third Prayer: 3:00 pm"]
+        self.assertEqual(source.parse_jumas(jumas), [
+            self.expected_seconds(13, 0),
+            self.expected_seconds(14, 0),
+            self.expected_seconds(15, 0),
+        ])
+
+    def test_parse_jumas_picks_first_time(self):
+        # "Khutbah ... - Jammah ..." should pick the Khutbah (first) time
+        source = self.make_source()
+        jumas = [
+            "1st: Khutbah: 1:05 pm - Jammah: 1:25 pm",
+            "2nd: Khutbah: 1:40 pm - Jammah: 02:00 pm",
+            "3rd: Khutbah: 02:15 pm - Jammah: 02:35 pm",
+            "4th: Khutbah: 02:50 pm - Jammah: 03:10 pm",
+        ]
+        self.assertEqual(source.parse_jumas(jumas), [
+            self.expected_seconds(13, 5),
+            self.expected_seconds(13, 40),
+            self.expected_seconds(14, 15),
+            self.expected_seconds(14, 50),
+        ])
+
+    def test_parse_jumas_dotted_meridiem(self):
+        # times formatted as "P.M."
+        source = self.make_source()
+        jumas = [
+            "Sheikh 1 - (English) 12:15 P.M.",
+            "Sheikh 2 - (English) 1:15 P.M.",
+            "Sheikh 3 - (Arabic) 2:15 PM",
+            "Sheikh 4 - (English) 3:15 P.M.",
+        ]
+        self.assertEqual(source.parse_jumas(jumas), [
+            self.expected_seconds(12, 15),
+            self.expected_seconds(13, 15),
+            self.expected_seconds(14, 15),
+            self.expected_seconds(15, 15),
+        ])
+
+    def test_parse_jumas_azaan_iqama_picks_first(self):
+        # "Azaan: 1:30PM, Iqama: 1:50PM" should pick Azaan (first) time
+        source = self.make_source()
+        jumas = ["Azaan: 1:30PM, Iqama: 1:50PM"]
+        self.assertEqual(source.parse_jumas(jumas), [self.expected_seconds(13, 30)])
+
+    def test_parse_jumas_with_trailing_text(self):
+        # time followed by parenthetical notes
+        source = self.make_source()
+        jumas = [
+            "1st Jumma: 1:25 PM (Local Imam) at Masjid (Limited Parking)",
+            "2nd Jumma: 2:15 PM (Visiting Imam) at Masjid (Limited Parking)",
+            "3rd Jumma: 3:10 PM (Visiting Imam) at Masjid (Limited Parking)",
+        ]
+        self.assertEqual(source.parse_jumas(jumas), [
+            self.expected_seconds(13, 25),
+            self.expected_seconds(14, 15),
+            self.expected_seconds(15, 10),
+        ])
+
+    def test_parse_jumas_no_space_pm(self):
+        # time with no space before PM and multiple location lines
+        source = self.make_source()
+        jumas = [
+            "MNN Masjid: 1st: 1:15PM",
+            "MNN Masjid: 2nd: 2:15PM",
+            "MNN Masjid: 3rd: 3:00PM",
+            "Ruth Thompson School Gym: 1st: 1:30PM",
+            "Ruth Thompson School Gym: 2nd: 2:15PM",
+        ]
+        self.assertEqual(source.parse_jumas(jumas), [
+            self.expected_seconds(13, 15),
+            self.expected_seconds(14, 15),
+            self.expected_seconds(15, 0),
+            self.expected_seconds(13, 30),
+            self.expected_seconds(14, 15),
+        ])
+
+    def test_parse_jumas_time_at_start(self):
+        # time at the start followed by description
+        source = self.make_source()
+        jumas = [
+            "12:35 pm - Shalimar. Walk-in. Come 5 mins early.",
+            "1:35 pm - Shalimar. Walk-in. Come 5 mins early.",
+        ]
+        self.assertEqual(source.parse_jumas(jumas), [
+            self.expected_seconds(12, 35),
+            self.expected_seconds(13, 35),
+        ])
+
+    def test_parse_jumas_glued_label(self):
+        # "PrayerKhutbah" glued before the dash and time
+        source = self.make_source()
+        jumas = [
+            "1st PrayerKhutbah - 1:30 PM - English",
+            "2nd PrayerKhutbah - 2:30 PM - Urdu",
+            "3rd PrayerKhutbah - 3:30 PM - English",
+        ]
+        self.assertEqual(source.parse_jumas(jumas), [
+            self.expected_seconds(13, 30),
+            self.expected_seconds(14, 30),
+            self.expected_seconds(15, 30),
+        ])
+
+    def test_parse_jumas_no_time_returns_none(self):
+        source = self.make_source()
+        self.assertEqual(source.parse_jumas(["No time here", "1:00 PM"]), [
+            None,
+            self.expected_seconds(13, 0),
+        ])

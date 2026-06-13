@@ -67,6 +67,24 @@ class Source:
     def parse(self):
         raise NotImplementedError
 
+    def parse_jumas(self, jumas):
+        # Extract the first time token from each juma string and parse it into
+        # seconds since midnight UTC. Handles formats seen across all sources:
+        # "12:15 PM", "2:30PM" (no space), "1:00 pm" (lowercase) and
+        # "12:15 P.M." (dotted). When a string has multiple times
+        # (e.g. "Khutbah: 1:05 pm - Jammah: 1:25 pm"), the first match is used.
+        time_regex = re.compile(r'\d{1,2}:\d{2}\s*[AP]\.?M\.?', re.IGNORECASE)
+        parsed = []
+        for juma in jumas:
+            match = time_regex.search(juma)
+            if match is None:
+                parsed.append(None)
+                continue
+            # Strip the dots from "P.M." so _parse_time recognizes the format
+            time_string = match.group().replace('.', '')
+            parsed.append(self._parse_time(time_string, self._timezone))
+        return parsed
+
     def generate_iqamas_output(self, iqama_times):
         if len(iqama_times) != len(self._five_prayers):
             raise Exception(f"Expected {len(self._five_prayers)} iqama times, got {len(iqama_times)}")
