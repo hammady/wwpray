@@ -8,7 +8,9 @@
     "test": "pip install -r requirements.txt && python -m unittest"
   },
   "dependencies": {
-    "serverless": "^3.38.0",
-    "serverless-python-requirements": "^6.1.0"
+    "serverless": "^3.38.0"
+  },
+  "devDependencies": {
+    "serverless-python-requirements": "^6.1.2"
   }
 }
