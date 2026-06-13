@@ -37,6 +37,11 @@
                 "Second Prayer: 1:15 PM",
                 "Third Prayer: 2:30PM"
             ],
+            "jumas_seconds_since_midnight_utc": [
+                58500,
+                62100,
+                66600
+            ],
             "last_updated": "2025-08-23T22:00:39.615715"
         },
         "Alfarooq": {
@@ -76,6 +81,11 @@
                 "First Prayer: 1:00 pm",
                 "Second Prayer: 2:00 pm",
                 "Third Prayer: 3:00 pm"
+            ],
+            "jumas_seconds_since_midnight_utc": [
+                61200,
+                64800,
+                68400
             ],
             "last_updated": "2025-08-23T22:00:39.615715"
         },
@@ -118,6 +128,12 @@
                 "3rd: Khutbah: 02:15 pm - Jammah: 02:35 pm",
                 "4th: Khutbah: 02:50 pm - Jammah: 03:10 pm"
             ],
+            "jumas_seconds_since_midnight_utc": [
+                61500,
+                63600,
+                65700,
+                67800
+            ],
             "last_updated": "2025-08-23T22:00:39.615715"
         },
         "DarFoundation": {
@@ -159,6 +175,12 @@
                 "Third Prayer: 3:00 PM",
                 "Fourth Prayer: 4:30 PM"
             ],
+            "jumas_seconds_since_midnight_utc": [
+                58500,
+                63000,
+                68400,
+                73800
+            ],
             "last_updated": "2025-08-23T22:00:39.615715"
         },
         "DarulTaqwa": {
@@ -194,6 +216,9 @@
             },
             "jumas": [
                 "Azaan: 1:30PM, Iqama: 1:50PM"
+            ],
+            "jumas_seconds_since_midnight_utc": [
+                63000
             ],
             "last_updated": "2025-08-23T22:00:39.615715"
         },
@@ -236,6 +261,12 @@
                 "Sheikh Samir Khalil - (Arabic) 2:15 PM",
                 "Guest - (English) 3:15 P.M."
             ],
+            "jumas_seconds_since_midnight_utc": [
+                58500,
+                62100,
+                65700,
+                69300
+            ],
             "last_updated": "2025-08-23T22:00:39.615715"
         },
         "ISNACanada": {
@@ -275,6 +306,10 @@
                 "First Prayer: 1:00 PM",
                 "Second Prayer: 3:00 PM"
             ],
+            "jumas_seconds_since_midnight_utc": [
+                61200,
+                68400
+            ],
             "last_updated": "2025-08-23T22:00:39.615715"
         },
         "MIC": {
@@ -312,6 +347,11 @@
                 "1st Jumma: 1:25 PM (Imam Sarmad) at Masjid (Limited Parking)",
                 "2nd Jumma: 2:15 PM (Visiting Imam) at Masjid (Limited Parking)",
                 "3rd Jumma: 3:10 PM (Visiting Imam) at Masjid (Limited Parking)"
+            ],
+            "jumas_seconds_since_midnight_utc": [
+                62700,
+                65700,
+                69000
             ],
             "last_updated": "2025-08-23T22:00:39.615715"
         },
@@ -355,6 +395,13 @@
                 "Ruth Thompson School Gym: 1st: 1:30PM",
                 "Ruth Thompson School Gym: 2nd: 2:15PM"
             ],
+            "jumas_seconds_since_midnight_utc": [
+                62100,
+                65700,
+                68400,
+                63000,
+                65700
+            ],
             "last_updated": "2025-08-23T22:00:39.615715"
         },
         "Shalimar": {
@@ -393,6 +440,10 @@
             "jumas": [
                 "12:35 pm - Shalimar. Walk-in. Come 5 mins early.",
                 "1:35 pm - Shalimar. Walk-in. Come 5 mins early."
+            ],
+            "jumas_seconds_since_midnight_utc": [
+                59700,
+                63300
             ],
             "last_updated": "2025-08-23T22:00:39.615715"
         },
@@ -433,6 +484,11 @@
                 "1st PrayerKhutbah - 1:30 PM - English",
                 "2nd PrayerKhutbah - 2:30 PM - Urdu",
                 "3rd PrayerKhutbah - 3:30 PM - English"
+            ],
+            "jumas_seconds_since_midnight_utc": [
+                63000,
+                66600,
+                70200
             ],
             "last_updated": "2025-08-23T22:00:39.615715"
         }
