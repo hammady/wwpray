@@ -41,4 +41,4 @@ class AlfarooqSource(HTMLSource):
             for row in juma_rows
         ]
 
-        return iqamas, jumas
+        return iqamas, jumas, self.parse_jumas(jumas)

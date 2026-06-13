@@ -48,4 +48,4 @@ class WEICSource(HTMLSource):
         # Get all trs in the tbody, and join the text of all tds
         jumas = [" - ".join([td.text.strip() for td in tr.select("td")]) for tr in tbody.select("tr")]
 
-        return iqamas, jumas
+        return iqamas, jumas, self.parse_jumas(jumas)

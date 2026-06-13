@@ -27,8 +27,8 @@ def run(event, context):
     def process_source(source):
         logger.info(f"Running source: {source.name}")
         source.request()
-        iqamas, jumas = source.parse()
-        return source, iqamas, jumas
+        iqamas, jumas, jumas_seconds = source.parse()
+        return source, iqamas, jumas, jumas_seconds
 
     # Results objects below are manipulated in the main thread, so we don't need to worry about locking
     response = {"masjids": {}}
@@ -56,10 +56,11 @@ def run(event, context):
         for future in as_completed(futures):
             try:
                 # Get the result of the thread, or raise an exception if the thread failed
-                source, iqamas, jumas = future.result()
+                source, iqamas, jumas, jumas_seconds = future.result()
                 processed += 1
                 response["masjids"][source.name]["iqamas"] = iqamas
                 response["masjids"][source.name]["jumas"] = jumas
+                response["masjids"][source.name]["jumas_seconds_since_midnight_utc"] = jumas_seconds
                 logger.info(f"[{source.name}] Iqamas: {iqamas}. Jumas: {jumas}")
             except Exception:
                 logger.error(f"Failed to process source: {traceback.format_exc()}")

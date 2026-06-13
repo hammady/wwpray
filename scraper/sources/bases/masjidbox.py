@@ -58,4 +58,4 @@ class MasjidBoxSource(Source):
                 jumas = [f"{label} Prayer: {parse_time(juma)}" for juma, label in zip(day['jumuah'], self._counter_labels)]
                 break
 
-        return iqamas, jumas
+        return iqamas, jumas, self.parse_jumas(jumas)

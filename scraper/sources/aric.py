@@ -35,4 +35,4 @@ class ArRehmanSource(HTMLSource):
             for tr in table.select("tr")[1:]
         ]
 
-        return iqamas, jumas
+        return iqamas, jumas, self.parse_jumas(jumas)

@@ -36,4 +36,4 @@ class DarulTaqwaSource(Source):
         # $.data.listAzanTimes.data[0].azaanTime.jumah
         juma_azan = payload['data']['listAzanTimes']['data'][0]['azaanTime']['jumah']
         jumas = [f"Azaan: {juma_azan}, Iqama: {iqamah_times['jumah']}"]
-        return iqamas, jumas
+        return iqamas, jumas, self.parse_jumas(jumas)

@@ -30,4 +30,4 @@ class ICCOSource(HTMLSource):
         # combine each 2 consecutive rows into a single string separated by a space
         jumas = [rows[i].text.strip() + ' ' + rows[i + 1].text.strip() for i in range(0, len(rows), 2)]
         
-        return iqamas, jumas
+        return iqamas, jumas, self.parse_jumas(jumas)

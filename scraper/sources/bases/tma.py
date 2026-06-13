@@ -70,4 +70,4 @@ class TMASource(Source):
 
         jumas = [f"{juma['timeDesc']} - {juma['locationDesc']}" for juma in masjid["jumas"]]
 
-        return iqamas, jumas
+        return iqamas, jumas, self.parse_jumas(jumas)

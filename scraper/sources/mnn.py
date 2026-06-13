@@ -32,4 +32,4 @@ class MNNexusSource(HTMLSource):
             f"{juma_locations[1]} {juma.text.strip()}" for juma in soup.select("div.comm-center-jumas>div.juma")
         ]
 
-        return iqamas, jumas
+        return iqamas, jumas, self.parse_jumas(jumas)

@@ -33,4 +33,4 @@ class MasjidalSource(Source):
         jumas = [f"{label} Prayer: {value}"
                  for value, label in zip(juma_times, self._counter_labels)]
 
-        return iqamas, jumas
+        return iqamas, jumas, self.parse_jumas(jumas)
