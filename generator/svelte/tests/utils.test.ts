@@ -13,6 +13,7 @@ function makeMasjid(iqamas: Record<string, number | null>): IMasjid {
 		website: '',
 		last_updated: '',
 		jumas: [],
+		jumas_seconds_since_midnight_utc: [],
 		iqamas: Object.fromEntries(
 			Object.entries(iqamas).map(([name, seconds]) => [name, { time: '', seconds_since_midnight_utc: seconds }])
 		)

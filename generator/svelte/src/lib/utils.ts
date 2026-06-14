@@ -53,7 +53,16 @@ export const getCurrentLocalDateTime = () => {
 	return dayjs.utc().local();
 };
 
+// Set to a UTC seconds-since-midnight value to simulate a specific time of day
+// Using Al Falah juma times (58500, 62700, 66600) as reference:
+//   58400 → 1 min before 1st juma: all green
+//   58600 → just after 1st juma: 1st red, 2nd & 3rd green
+//   63000 → after 2nd juma: 1st & 2nd red, 3rd green
+//   70000 → after all jumas: all red, "No upcoming Jumaa prayers" on marker
+const MOCK_UTC_SECONDS: number | null = null;
+
 export const getCurrentUTCDateSeconds = () => {
+	if (MOCK_UTC_SECONDS !== null) return MOCK_UTC_SECONDS;
 	const todayUTC = dayjs().utc();
 	const today = todayUTC.hour(0).minute(0).second(0).millisecond(0);
 	return todayUTC.diff(today, 'seconds');

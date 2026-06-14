@@ -25,6 +25,7 @@ export type TIqama = {
 export interface IMasjid {
 	iqamas: Record<string, TIqama>;
 	jumas: string[];
+	jumas_seconds_since_midnight_utc: (number | null)[];
 	display_name: string;
 	address: string;
 	website: string;

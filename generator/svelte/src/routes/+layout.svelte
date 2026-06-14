@@ -65,7 +65,7 @@
 				Get iqama change alerts
 			</label>
 		</div>
-		<MasjidMap masjids={$masjids} />
+		<MasjidMap masjids={$masjids} showJumas={$page.url.pathname === GROUP_BY_ROUTES[EGroupBy.jumas]} />
 
 		<div class="my-8"></div>
 
