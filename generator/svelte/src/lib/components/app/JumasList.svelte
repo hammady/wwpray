@@ -1,15 +1,19 @@
 <script lang="ts">
 	import { EGroupBy, GROUP_BY_ROUTES } from '$lib/constants';
 	import { filteredMasjids } from '$lib/stores/masjids';
-	import type { IMasjid } from '$lib/types';
 	import Divider from '../uikit/Divider.svelte';
 	import MasjidLastUpdated from './MasjidLastUpdated.svelte';
 	import SubscribeButton from './SubscribeButton.svelte';
+	import { getIqamaRelativeTime } from '$lib/utils';
+	import { clock } from '$lib/stores/clock';
+
+	// Set to true to test Friday behaviour
+	const isFriday = new Date().getDay() === 5;
 </script>
 
 {#if $filteredMasjids}
 	<div class="w-full">
-		{#each $filteredMasjids as [name, { display_name: displayName, jumas, last_updated: lastUpdated, latitude, longitude }], i}
+		{#each $filteredMasjids as [name, { display_name: displayName, jumas, jumas_seconds_since_midnight_utc: jumasSeconds, last_updated: lastUpdated, latitude, longitude }], i}
 			{@const isStale = Date.now() - new Date(lastUpdated + 'Z').getTime() > 86_400_000}
 			<h2>
 				<a href="{GROUP_BY_ROUTES[EGroupBy.Masjid]}#masjid_{name}">
@@ -33,9 +37,13 @@
 
 			<div class="px-2 md:px-4">
 				<ul class:opacity-40={isStale}>
-					{#each jumas as juma}
+					{#each jumas as juma, j}
+						{@const relTime = isFriday ? getIqamaRelativeTime(jumasSeconds?.[j] ?? null, $clock) : null}
 						<li>
-							{juma}
+							<span class:line-through={relTime?.isPast} class:opacity-40={relTime?.isPast}>{juma}</span>
+							{#if relTime?.label}
+								<span class="inline-block min-w-[6rem] tabular-nums text-xs font-medium ml-1 {relTime.isPast ? 'text-red-500' : 'text-green-600'}">({relTime.label})</span>
+							{/if}
 						</li>
 					{/each}
 				</ul>
