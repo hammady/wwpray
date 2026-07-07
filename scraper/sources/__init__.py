@@ -9,3 +9,4 @@ from .alfarooq import AlfarooqSource
 from .aric import ArRehmanSource
 from .mic import MICSource
 from .darultaqwa import DarulTaqwaSource
+from .alezz import AlEzzSource
