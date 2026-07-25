@@ -10,3 +10,4 @@ from .aric import ArRehmanSource
 from .mic import MICSource
 from .darultaqwa import DarulTaqwaSource
 from .alezz import AlEzzSource
+from .hicc import HICCSource
