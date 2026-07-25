@@ -61,6 +61,7 @@ def detect_changes(old_data, new_data, save_to_file=None):
             # copy all values from old data
             new_value["iqamas"] = old_iqamas
             new_value["jumas"] = old_value.get("jumas")
+            new_value["jumas_seconds_since_midnight_utc"] = old_value.get("jumas_seconds_since_midnight_utc")
             new_value["last_updated"] = old_value["last_updated"]
             continue
 

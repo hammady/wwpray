@@ -19,6 +19,7 @@ class TestHandler(unittest.TestCase):
                 "maghrib": {"time": "18:00"}
             },
             "jumas": ["12:30"],
+            "jumas_seconds_since_midnight_utc": [45000],
             "last_updated": "2020-05-01T00:00:00"
         }
 
@@ -246,6 +247,26 @@ class TestHandler(unittest.TestCase):
         self.assertEqual(saved_data["masjids"]["m1"]["iqamas"], self.base_masjid["iqamas"])
         self.assertEqual(saved_data["masjids"]["m1"]["jumas"], self.base_masjid["jumas"])
         self.assertEqual(saved_data["masjids"]["m1"].get("last_updated"), self.base_masjid["last_updated"])
+
+    def test_detect_changes_when_no_new_iqamas_copy_old_jumas_seconds(self):
+        # reproduces the case when scraping fails, the scraper only
+        # sets metadata on the masjid (no iqamas, jumas or jumas_seconds keys
+        # at all). detect_changes must copy jumas_seconds_since_midnight_utc
+        # from old data too, just like it does for iqamas and jumas.
+        masjid_with_scrape_failure = {"last_updated": "2020-05-01T00:00:00"}
+        changes = detect_changes(
+            old_data={
+                "masjids": {"m1": self.base_masjid, "m2": self.base_masjid}
+            },
+            new_data={
+                "masjids": {"m1": masjid_with_scrape_failure, "m2": self.base_masjid}
+            },
+            save_to_file=self.test_saved_file)
+        self.assertIsNone(changes)
+        saved_data = read_json(self.test_saved_file)
+        self.assertEqual(
+            saved_data["masjids"]["m1"]["jumas_seconds_since_midnight_utc"],
+            self.base_masjid["jumas_seconds_since_midnight_utc"])
 
     @patch('handler.datetime')
     def test_detect_changes_when_new_masjid_return_one_change(self, datetime_mock):
