@@ -99,6 +99,9 @@ Create `svelte/.env.local` with the following:
 ```env
 # Base URL of the subscriptions API (used by the "Get iqama change alerts" form)
 PUBLIC_SUBSCRIPTIONS_BASE_URL=https://your-api-endpoint
+
+# Email address used for the "Feedback / Request a Masjid" mailto link
+PUBLIC_FEEDBACK_EMAIL=hello@dev.wwpray.net
 ```
 
 > `PUBLIC_` prefix means this variable is exposed to the browser. See [SvelteKit env docs](https://kit.svelte.dev/docs/modules#$env-static-public).

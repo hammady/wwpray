@@ -53,3 +53,11 @@ export enum EPrayer {
 
 export const MINUTES_PER_HOUR = 60;
 export const SECONDS_PER_MINUTE = 60;
+
+export const FEEDBACK_EMAIL_SUBJECT = 'WWPray Feedback / Request a Masjid';
+export const FEEDBACK_EMAIL_BODY = `Masjid website (required): 
+Masjid name (optional): 
+Masjid address (optional): 
+
+Additional comments:
+`;

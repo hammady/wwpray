@@ -12,7 +12,7 @@
 	import type { LayoutData } from './$types';
 	import { filteredMasjids, masjids } from '$lib/stores/masjids';
 	import { onMount } from 'svelte';
-	import { shouldDefaultToJumas } from '$lib/utils';
+	import { getFeedbackMailtoLink, shouldDefaultToJumas } from '$lib/utils';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 	import MasjidMap from '$lib/components/app/MasjidMap.svelte';
@@ -60,6 +60,16 @@
 					<path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
 				</svg>
 				<span>Proudly open source</span>
+			</a>
+			<a
+				href={getFeedbackMailtoLink()}
+				class="flex items-start gap-1.5 text-sm text-base-content/60 hover:text-base-content transition-colors no-underline"
+				title="Send feedback or request a masjid be added"
+			>
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="w-5 h-5 shrink-0 mt-0.5" aria-hidden="true">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0a2.25 2.25 0 0 0-2.25-2.25h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+				</svg>
+				<span>Feedback / Request a Masjid</span>
 			</a>
 			<label class="btn btn-primary btn-sm drawer-button ml-auto whitespace-nowrap" for={SUBSCRIPTION_SIDEOVER_ID}>
 				Get iqama change alerts

@@ -3,11 +3,14 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import calendar from 'dayjs/plugin/calendar';
 import customParseFormat from 'dayjs/plugin/customParseFormat';
 import utc from 'dayjs/plugin/utc';
+import { PUBLIC_FEEDBACK_EMAIL } from '$env/static/public';
 import type { IMasjid, TPrayer } from './types';
 import {
 	EDay,
 	EGroupBy,
 	EPrayer,
+	FEEDBACK_EMAIL_BODY,
+	FEEDBACK_EMAIL_SUBJECT,
 	GROUP_BY_ROUTES,
 	MINUTES_PER_HOUR,
 	PRAYER_NAMES,
@@ -18,6 +21,13 @@ dayjs.extend(utc);
 dayjs.extend(relativeTime);
 dayjs.extend(calendar);
 dayjs.extend(customParseFormat);
+
+/** Builds a mailto: link for sending feedback or requesting a new masjid be added. */
+export const getFeedbackMailtoLink = () => {
+	const subject = encodeURIComponent(FEEDBACK_EMAIL_SUBJECT);
+	const body = encodeURIComponent(FEEDBACK_EMAIL_BODY);
+	return `mailto:${PUBLIC_FEEDBACK_EMAIL}?subject=${subject}&body=${body}`;
+};
 
 /** Date helpers */
 export const convertToRelativeTime = (isoDate: string) => {
